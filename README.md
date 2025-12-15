@@ -1,16 +1,38 @@
-# transversals
-Esquema mínim de carpetes pels projectes transversals
+# OFICIS COMPARTITS
 
-És obligatori seguir aquesta estructura tot i que la podeu ampliar.
+<h1 align="center">
+  <img src="https://raw.githubusercontent.com/ABSphreak/ABSphreak/master/gifs/Hi.gif" width="30px" />
+  Bones! Som el Grup 5: Edson, Maciel, Moises i Alvaro
+</h1>
 
-## Atenció
-Un cop comenceu heu de canviar aquesta explicació amb la corresponent al vostre projecte (utilitzant markdown)
+<div align="center">
+  <br>
+  Aquest projecte encara segueix en procés. Mentrestant, podeu veure al nostre GitHub l'estructura del codi dividida en diferents branques (frontend, backend, docker...) que finalment s'uniran a la branca <code>main</code>.
+  <br>
+  <br>
+  <i>Esperem que us agradi!</i>
+</div>
+
+---
+
+## 🎮 Concepte del Projecte
+
+La nostra **Proposta** és millorar la motivació i les expectatives acadèmiques i professionals del jovent afavorint, així, la creació d’un projecte personal estimulant a part de facilitar l’orientació de l’alumnat cap a itineraris formatius més personalitzats i de futur de les etapes de l’ESO.
+
+El nostre **Objectiu** es desenvolupar una aplicació web amb 3 portals diferents (Centres, Administració, Professors) per connectar l'oferta (Tallers) amb la demanda (Centres Educatius) i gestionar-ne l'assignació.
+
+El fluxe de l'aplicació consta d'un sistema que ha de soportar aques cicle complet
+
+**1. Configuració:** L'admin apuja els tallers i els profes.<br>
+**2. Sol·licitud:** Els centres demanen allò que volen i posen les seves preferències.<br>
+**3. El "Match" (Punt Crític):** El sistema creua les peticions amb les places disponibles i assigna qui va a on (l'algorisme). També assigna 2 professors responsables per taller.<br>
+**4. Confirmació:** El sistema avisa a tothom (email/notificació).<br>
+**5. Preparació:** El centre omple el Checklist ("Tenim projector? Sí. Aula llista? Sí").<br>
+**6. Avaluació:** En acabar, el sistema envia enquestes de satisfacció a alumnes, profes i centres per treure informes de qualitat.<br>
 
 # Aquest fitxer ha de contenir com a mínim:
- * Nom dels integrants
- * Nom del projecte
- * Petita descripció
- * Adreça del gestor de tasques (taiga, jira, trello...)
- * Adreça del prototip gràfic del projecte (Penpot, figma, moqups...)
- * URL de producció (quan la tingueu)
- * Estat: (explicació d'en quin punt està)
+
+- Adreça del gestor de tasques (taiga, jira, trello...)
+- Adreça del prototip gràfic del projecte (Penpot, figma, moqups...)
+- URL de producció (quan la tingueu)
+- Estat: (explicació d'en quin punt està)
