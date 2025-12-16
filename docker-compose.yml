@@ -1,0 +1,73 @@
+version: "3.8"
+
+services:
+  # 1. Base de Datos (MySQL)
+  db:
+    image: mysql:8.0
+    container_name: mysql_db
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: mi_base_datos
+      MYSQL_USER: user
+      MYSQL_PASSWORD: password
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - app-network
+
+  # 2. phpMyAdmin (Interfaz visual para la BD)
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: phpmyadmin
+    restart: always
+    depends_on:
+      - db
+    environment:
+      PMA_HOST: db
+      PMA_USER: root
+      PMA_PASSWORD: rootpassword
+    ports:
+      - "8081:80" # Accede en localhost:8081
+    networks:
+      - app-network
+
+  # 3. Backend (Node.js API)
+  backend:
+    build: ./backend
+    container_name: node_backend
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    depends_on:
+      - db
+    environment:
+      DB_HOST: db
+      DB_USER: root
+      DB_PASS: rootpassword
+      DB_NAME: mi_base_datos
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+    networks:
+      - app-network
+
+  # 4. Frontend (Vue.js)
+  frontend:
+    build: ./frontend
+    container_name: vue_frontend
+    restart: unless-stopped
+    ports:
+      - "5173:5173" # Puerto estándar de Vite (o 8080 si usas Webpack)
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    networks:
+      - app-network
+
+volumes:
+  mysql_data:
+
+networks:
+  app-network:
+    driver: bridge
