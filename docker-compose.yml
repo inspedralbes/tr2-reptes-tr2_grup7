@@ -1,73 +1,63 @@
-version: "3.8"
-
 services:
-  # 1. Base de Datos (MySQL)
+  # 🧱 Servicio de Base de Datos PostgreSQL
   db:
-    image: mysql:8.0
-    container_name: mysql_db
+    image: postgres:16-alpine # Imagen ligera y estable
+    container_name: postgres_dev
     restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: rootpassword
-      MYSQL_DATABASE: mi_base_datos
-      MYSQL_USER: user
-      MYSQL_PASSWORD: password
-    volumes:
-      - mysql_data:/var/lib/mysql
-    networks:
-      - app-network
-
-  # 2. phpMyAdmin (Interfaz visual para la BD)
-  phpmyadmin:
-    image: phpmyadmin/phpmyadmin
-    container_name: phpmyadmin
-    restart: always
-    depends_on:
-      - db
-    environment:
-      PMA_HOST: db
-      PMA_USER: root
-      PMA_PASSWORD: rootpassword
+      POSTGRES_DB: ${POSTGRES_DB:-mydatabase}
+      POSTGRES_USER: ${POSTGRES_USER:-myuser}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-mypassword}
     ports:
-      - "8081:80" # Accede en localhost:8081
-    networks:
-      - app-network
+      - "5432:5432"
+    volumes:
+      - pg_data_dev:/var/lib/postgresql/data # Persistencia de datos
+      # Opcional: Para scripts de inicialización de DB
+      # - ./backend/init.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck: # Comprobación de salud (muy recomendable)
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
 
-  # 3. Backend (Node.js API)
+  # 🖥️ Servicio de Back-end (Node.js)
   backend:
-    build: ./backend
-    container_name: node_backend
-    restart: unless-stopped
+    build:
+      context: ./back # Ruta al Dockerfile del back-end
+      dockerfile: Dockerfile.dev
+    container_name: backend_dev
+    command: npm start # Comando para iniciar con hot-reloading (ej: nodemon)
     ports:
-      - "3000:3000"
-    depends_on:
-      - db
+      - "3000:3000" # Mapea el puerto del contenedor al host
+    volumes:
+      - ./back:/app # Montaje de volumen para live-reloading
+      - /app/node_modules # Evita sobreescribir node_modules del contenedor con los del host
     environment:
-      DB_HOST: db
-      DB_USER: root
-      DB_PASS: rootpassword
-      DB_NAME: mi_base_datos
-    volumes:
-      - ./backend:/app
-      - /app/node_modules
-    networks:
-      - app-network
+      NODE_ENV: development
+      DATABASE_URL: postgres://${POSTGRES_USER:-myuser}:${POSTGRES_PASSWORD:-mypassword}@db:5432/${POSTGRES_DB:-mydatabase}
+    depends_on:
+      db:
+        condition: service_healthy # Espera a que la DB esté lista
 
-  # 4. Frontend (Vue.js)
+  # 🌐 Servicio de Front-end (Vue + Vuetify/Pinia/Vue Router)
   frontend:
-    build: ./frontend
-    container_name: vue_frontend
-    restart: unless-stopped
+    build:
+      context: ./front # Ruta al Dockerfile del front-end
+      dockerfile: Dockerfile.dev
+    container_name: frontend_dev
+    command: npm run dev # O el comando para iniciar el servidor de desarrollo (ej: vite dev)
     ports:
-      - "5173:5173" # Puerto estándar de Vite (o 8080 si usas Webpack)
+      - "8080:8080" # Mapea el puerto del servidor de desarrollo de Vue/Vite
     volumes:
-      - ./frontend:/app
+      - ./front:/app # Montaje de volumen para live-reloading (HMR)
       - /app/node_modules
-    networks:
-      - app-network
+    environment:
+      NODE_ENV: development
+      VITE_API_URL: http://backend:3000 # La URL del back-end vista desde el front-end (el nombre del servicio: puerto)
+    # No necesita depends_on si el front-end no requiere la API para arrancar
+    # Pero es común que necesite el back-end para algo. Puedes añadirlo si es necesario.
 
+# 🗄️ Volúmenes para persistencia
 volumes:
-  mysql_data:
-
-networks:
-  app-network:
-    driver: bridge
+  pg_data_dev:

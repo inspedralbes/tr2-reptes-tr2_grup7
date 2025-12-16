@@ -1,0 +1,6 @@
+# Dockerfile.dev en la carpeta 'frontend/'
+FROM node:20-alpine
+WORKDIR /app
+COPY package*.json ./
+RUN npm install
+# El código y el comando de inicio se gestionan con el volumen y el docker-compose

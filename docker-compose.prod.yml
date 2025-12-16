@@ -1,0 +1,43 @@
+services:
+  # 🧱 Servicio de Base de Datos PostgreSQL
+  db:
+    image: postgres:16-alpine
+    container_name: postgres_prod
+    restart: always
+    environment:
+      # Usa variables de entorno para las credenciales de producción (ej. desde un .env o un secreto)
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - pg_data_prod:/var/lib/postgresql/data
+    # No exponer puerto en producción es más seguro (solo accesible a través del back-end)
+
+  # 🖥️ Servicio de Back-end (Node.js)
+  backend:
+    build:
+      context: ./backend
+      target: production # Usa la etapa de producción del Dockerfile
+    container_name: backend_prod
+    environment:
+      NODE_ENV: production
+      DATABASE_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
+    ports:
+      - "3000:3000"
+    depends_on:
+      db:
+        condition: service_started # No se usa 'healthy' ya que el 'healthcheck' debe ser muy robusto para prod
+
+  # 🌐 Servicio de Front-end (Vue con Nginx)
+  frontend:
+    build:
+      context: ./frontend
+      target: production # Usa la etapa de producción del Dockerfile (Nginx)
+    container_name: frontend_prod
+    ports:
+      - "80:80" # El puerto 80 es estándar para Nginx
+    depends_on:
+      - backend
+
+volumes:
+  pg_data_prod:

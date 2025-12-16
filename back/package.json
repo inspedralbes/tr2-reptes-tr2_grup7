@@ -1,5 +1,8 @@
 {
   "dependencies": {
     "node": "^24.12.0"
+  },
+  "scripts": {
+    "start": "node index.js"
   }
 }
