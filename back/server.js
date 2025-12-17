@@ -4,6 +4,7 @@ import { Server } from "socket.io";
 import cors from "cors";
 import * as db from "./db.js";
 import dotenv from "dotenv";
+import usuarioRouter from "./routers/usuarioRouter.js";
 
 dotenv.config();
 
@@ -43,6 +44,7 @@ app.get("/", (req, res) => {
 });
 
 // Aquí irán las rutas reales:
+app.use("/api/usuarios", usuarioRouter);
 
 // 6. Lógica de Socket.io (Tiempo Real)
 io.on("connection", (socket) => {
