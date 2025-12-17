@@ -28,11 +28,11 @@ async function assertDatabaseConnectionOk() {
   try {
     const res = await db.query("SELECT NOW()");
     console.log(
-      "✅ Conexión a Base de Datos establecida correctamente.",
+      " Conexión a Base de Datos establecida correctamente.",
       res.rows[0].now
     );
   } catch (error) {
-    console.error("❌ No se pudo conectar a la Base de Datos:", error);
+    console.error(" No se pudo conectar a la Base de Datos:", error);
   }
 }
 assertDatabaseConnectionOk();
