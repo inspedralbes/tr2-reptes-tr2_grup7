@@ -2,8 +2,10 @@ import express from "express";
 import http from "http";
 import { Server } from "socket.io";
 import cors from "cors";
-import * as db from "./db.js"; // Importante el .js al final
-import "dotenv/config";
+import * as db from "./db.js";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 // 1. Inicialización del Servidor
 const app = express();
@@ -37,8 +39,10 @@ assertDatabaseConnectionOk();
 
 // 5. Rutas de la API (Endpoints)
 app.get("/", (req, res) => {
-  res.send("API del Gestor de Talleres funcionando");
+  res.send("API del Gestor de Talleres funcionando ");
 });
+
+// Aquí irán las rutas reales:
 
 // 6. Lógica de Socket.io (Tiempo Real)
 io.on("connection", (socket) => {
@@ -50,12 +54,14 @@ io.on("connection", (socket) => {
   });
 
   socket.on("disconnect", () => {
-    console.log(`Cliente desconectado: ${socket.id}`);
+    console.log(` Cliente desconectado: ${socket.id}`);
   });
 });
 
 // 7. Arrancar el servidor
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
-  console.log(`\n🚀 Servidor corriendo en http://localhost:${PORT}`);
+  console.log(`\n Servidor corriendo en http://localhost:${PORT}`);
 });
+
+export { io };
