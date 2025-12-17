@@ -2,11 +2,8 @@ import express from "express";
 import http from "http";
 import { Server } from "socket.io";
 import cors from "cors";
-import * as db from "./db.js";
-import dotenv from "dotenv";
-import usuarioRouter from "./routers/usuarioRouter.js";
-
-dotenv.config();
+import * as db from "./data/db.js"; // Importante el .js al final
+import "dotenv/config";
 
 // 1. Inicialización del Servidor
 const app = express();
