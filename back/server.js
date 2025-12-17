@@ -1,9 +1,11 @@
-const express = require("express");
-const http = require("http");
-const { Server } = require("socket.io");
-const cors = require("cors");
-const db = require("./db");
-require("dotenv").config();
+import express from "express";
+import http from "http";
+import { Server } from "socket.io";
+import cors from "cors";
+import * as db from "./db.js";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 // 1. Inicialización del Servidor
 const app = express();
@@ -62,4 +64,4 @@ server.listen(PORT, () => {
   console.log(`\n Servidor corriendo en http://localhost:${PORT}`);
 });
 
-module.exports = { io };
+export { io };

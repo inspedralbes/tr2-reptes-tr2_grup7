@@ -1,27 +1,31 @@
-const { Pool } = require("pg");
-require("dotenv").config();
+import pg from "pg";
+import dotenv from "dotenv";
 
-// Configuración de la conexión a PostgreSQL usando variables de entorno
-// Se asume que en el docker-compose.yml o .env están definidas:
-// DB_USER, DB_PASSWORD, DB_HOST, DB_PORT, DB_NAME
-// O bien una DATABASE_URL completa.
-// En el docker-compose original vi: DATABASE_URL: postgres://...
+dotenv.config();
 
+const { Pool } = pg;
+
+// Configuración de la conexión a la base de datos PostgreSQL
+// Se utiliza 'DATABASE_URL' si existe (común en despliegues y docker-compose)
+// De lo contrario, se usan las variables individuales.
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
+  // Si no usas DATABASE_URL, puedes configurar explícitamente:
+  // user: process.env.DB_USER,
+  // host: process.env.DB_HOST,
+  // database: process.env.DB_NAME,
+  // password: process.env.DB_PASSWORD,
+  // port: process.env.DB_PORT,
 });
 
-// Eventos del pool para debug
 pool.on("connect", () => {
-  // console.log("📦 Conexión creada con la base de datos");
+  // console.log(" Base de datos conectada con éxito.");
 });
 
 pool.on("error", (err) => {
-  console.error("❌ Error inesperado en el cliente de PG", err);
+  console.error(" Error inesperado en el cliente de PostgreSQL", err);
   process.exit(-1);
 });
 
-module.exports = {
-  query: (text, params) => pool.query(text, params),
-  pool,
-};
+export const query = (text, params) => pool.query(text, params);
+export { pool };
