@@ -1,4 +1,6 @@
-import * as db from "../db.js";
+import * as db from "../data/db.js";
+
+//Aquí es on es fa tota la lógica de la base de dades SELECT, INSERT, UPDATE, DELETE
 
 export const getAll = async () => {
   const text = "SELECT * FROM Usuaris";

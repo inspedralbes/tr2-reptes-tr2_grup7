@@ -1,5 +1,7 @@
 import * as User from "../models/usuario.js";
 
+//Aquí es fan les peticions express de la pàgina web
+
 export const getAllUsuarios = async (req, res) => {
   try {
     const users = await User.getAll();
