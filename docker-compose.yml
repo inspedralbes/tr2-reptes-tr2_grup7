@@ -1,63 +1,62 @@
 services:
-  # 🧱 Servicio de Base de Datos PostgreSQL
+  # 🧱 Base de Datos
   db:
-    image: postgres:16-alpine # Imagen ligera y estable
+    image: postgres:16-alpine
     container_name: postgres_dev
     restart: always
     environment:
-      POSTGRES_DB: ${POSTGRES_DB:-mydatabase}
-      POSTGRES_USER: ${POSTGRES_USER:-myuser}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-mypassword}
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     ports:
-      - "5432:5432"
+      - "${PORT_DATABASE}:5432"
     volumes:
-      - pg_data_dev:/var/lib/postgresql/data # Persistencia de datos
-      # Opcional: Para scripts de inicialización de DB
-      # - ./backend/init.sql:/docker-entrypoint-initdb.d/init.sql
-    healthcheck: # Comprobación de salud (muy recomendable)
+      - pg_data_dev:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql # Importante para las tablas iniciales
+    healthcheck:
       test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
       interval: 5s
       timeout: 5s
       retries: 5
       start_period: 20s
 
-  # 🖥️ Servicio de Back-end (Node.js)
+  # 🖥️ Back-end (Node.js)
   backend:
     build:
-      context: ./back # Ruta al Dockerfile del back-end
+      context: ./back # Asegúrate de que la carpeta se llame 'back'
       dockerfile: Dockerfile.dev
     container_name: backend_dev
-    command: npm start # Comando para iniciar con hot-reloading (ej: nodemon)
+    # Usamos 'npm run dev' para que nodemon funcione
+    command: npm run dev 
     ports:
-      - "3000:3000" # Mapea el puerto del contenedor al host
+      - "${PORT_BACKEND}:3000"
     volumes:
-      - ./back:/app # Montaje de volumen para live-reloading
-      - /app/node_modules # Evita sobreescribir node_modules del contenedor con los del host
+      - ./back:/app
+      - /app/node_modules # Protege las dependencias del contenedor
     environment:
       NODE_ENV: development
-      DATABASE_URL: postgres://${POSTGRES_USER:-myuser}:${POSTGRES_PASSWORD:-mypassword}@db:5432/${POSTGRES_DB:-mydatabase}
+      DATABASE_URL: ${DATABASE_URL}
+      JWT_SECRET: ${JWT_SECRET}
     depends_on:
       db:
-        condition: service_healthy # Espera a que la DB esté lista
+        condition: service_healthy
 
-  # 🌐 Servicio de Front-end (Vue + Vuetify/Pinia/Vue Router)
+  # 🌐 Front-end (Vue + Vite)
   frontend:
     build:
-      context: ./front # Ruta al Dockerfile del front-end
+      context: ./front # Asegúrate de que la carpeta se llame 'front'
       dockerfile: Dockerfile.dev
     container_name: frontend_dev
-    command: npm run dev # O el comando para iniciar el servidor de desarrollo (ej: vite dev)
+    command: npm run dev
     ports:
-      - "8080:8080" # Mapea el puerto del servidor de desarrollo de Vue/Vite
+      - "${PORT_FRONTEND}:8080"
     volumes:
-      - ./front:/app # Montaje de volumen para live-reloading (HMR)
+      - ./front:/app
       - /app/node_modules
     environment:
-      NODE_ENV: development
-      VITE_API_URL: http://backend:3000 # La URL del back-end vista desde el front-end (el nombre del servicio: puerto)
-    # No necesita depends_on si el front-end no requiere la API para arrancar
-    # Pero es común que necesite el back-end para algo. Puedes añadirlo si es necesario.
+      - VITE_API_URL=${VITE_API_URL}
+    depends_on:
+      - backend
 
-# 🗄️ Volúmenes para persistencia
 volumes:
   pg_data_dev:
