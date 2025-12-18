@@ -82,9 +82,9 @@
       <main class="flex-1 p-6" style="background-color: white; margin-left: 240px;">
         <!-- Centro -->
         <template v-if="currentRole === 'centre'">
-          <CentreDashboard v-if="currentSubsection === 'taula-centre'" />
-          <CatalogWorkshops v-else-if="currentSubsection === 'catalog'" />
-          <NewRequestForm v-else-if="currentSubsection === 'nova-peticio'" />
+          <PanelCentro v-if="currentSubsection === 'taula-centre'" />
+          <CatalogoTalleres v-else-if="currentSubsection === 'catalog'" />
+          <NuevaPeticion v-else-if="currentSubsection === 'nova-peticio'" />
           <div v-else-if="currentSubsection === 'info-taller'">
             <h2 class="text-xl font-semibold mb-4" style="color: var(--text-primary);">Informació del Taller</h2>
             <p style="color: var(--text-secondary);">Contingut d'informació del taller...</p>
@@ -97,9 +97,9 @@
 
         <!-- Admin -->
         <template v-if="currentRole === 'admin'">
-          <AdminDashboard v-if="currentSubsection === 'dashboard'" />
-          <AdminRequests v-else-if="currentSubsection === 'peticions'" />
-          <AssignmentTool v-else-if="currentSubsection === 'assignacio'" />
+          <PanelAdmin v-if="currentSubsection === 'dashboard'" />
+          <GestionPeticiones v-else-if="currentSubsection === 'peticions'" />
+          <HerramientaAsignacion v-else-if="currentSubsection === 'assignacio'" />
           <div v-else>
             <h2 class="text-xl font-semibold mb-4" style="color: var(--text-primary);">{{ getCurrentSubsectionName() }}</h2>
             <p style="color: var(--text-secondary);">Contingut de {{ getCurrentSubsectionName() }}...</p>
@@ -108,8 +108,8 @@
 
         <!-- Profesor -->
         <template v-if="currentRole === 'teacher'">
-          <TeacherDashboard v-if="currentSubsection === 'meus-tallers'" />
-          <WorkshopDetail v-else-if="currentSubsection === 'detall-taller'" />
+          <PanelProfesor v-if="currentSubsection === 'meus-tallers'" />
+          <DetalleTaller v-else-if="currentSubsection === 'detall-taller'" />
           <div v-else>
             <h2 class="text-xl font-semibold mb-4" style="color: var(--text-primary);">{{ getCurrentSubsectionName() }}</h2>
             <p style="color: var(--text-secondary);">Contingut de {{ getCurrentSubsectionName() }}...</p>
@@ -125,15 +125,15 @@ import { ref, computed } from 'vue';
 import { BookOpen } from 'lucide-vue-next';
 import logo from '../img/logo.jpg';
 
-// Importar componentes
-import CentreDashboard from './CentreDashboard.vue';
-import CatalogWorkshops from './CatalogWorkshops.vue';
-import NewRequestForm from './NewRequestForm.vue';
-import AdminDashboard from './AdminDashboard.vue';
-import AdminRequests from './AdminRequests.vue';
-import AssignmentTool from './AssignmentTool.vue';
-import TeacherDashboard from './TeacherDashboard.vue';
-import WorkshopDetail from './WorkshopDetail.vue';
+// Importar componentes - reorganizados por vista
+import PanelCentro from './views/centre/PanelCentro.vue';
+import NuevaPeticion from './views/centre/NuevaPeticion.vue';
+import PanelAdmin from './views/admin/PanelAdmin.vue';
+import GestionPeticiones from './views/admin/GestionPeticiones.vue';
+import HerramientaAsignacion from './views/admin/HerramientaAsignacion.vue';
+import PanelProfesor from './views/teacher/PanelProfesor.vue';
+import CatalogoTalleres from './shared/CatalogoTalleres.vue';
+import DetalleTaller from './shared/DetalleTaller.vue';
 
 // Estado
 const currentRole = ref('centre');

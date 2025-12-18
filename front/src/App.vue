@@ -1,9 +1,9 @@
 <script setup>
-import WorkshopScreens from './components/WorkshopScreens.vue'
+import MainLayout from './components/MainLayout.vue'
 </script>
 
 <template>
-  <WorkshopScreens />
+  <MainLayout />
 </template>
 
 <style scoped></style>
