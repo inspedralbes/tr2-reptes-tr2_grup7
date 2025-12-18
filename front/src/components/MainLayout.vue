@@ -40,7 +40,7 @@
           <button
             v-for="section in mainSections"
             :key="section.id"
-            @click="currentSection = section.id; currentSubsection = section.subsections[0]?.id || null"
+            @click="navigateToSection(section)"
             :class="['px-6 py-3 text-sm font-medium transition-colors', 
               currentSection === section.id 
                 ? 'text-white border-b-3' 
@@ -65,14 +65,16 @@
             <button
               v-for="subsection in currentSubsections"
               :key="subsection.id"
-              @click="currentSubsection = subsection.id"
+              @click="navigateToSubsection(subsection)"
               :class="['w-full text-left px-4 py-2.5 text-sm font-medium transition-colors',
                 currentSubsection === subsection.id 
                   ? 'sidebar-item-active' 
-                  : 'hover:bg-gray-100']"
+                  : subsection.route ? 'hover:bg-gray-100' : 'opacity-50 cursor-not-allowed']"
               :style="currentSubsection === subsection.id ? '' : 'color: var(--text-primary);'"
+              :disabled="!subsection.route"
             >
               {{ subsection.name }}
+              <span v-if="!subsection.route" class="text-xs ml-2">(próximamente)</span>
             </button>
           </nav>
         </div>
@@ -80,41 +82,7 @@
 
       <!-- Contenido Principal -->
       <main class="flex-1 p-6" style="background-color: white; margin-left: 240px;">
-        <!-- Centro -->
-        <template v-if="currentRole === 'centre'">
-          <PanelCentro v-if="currentSubsection === 'taula-centre'" />
-          <CatalogoTalleres v-else-if="currentSubsection === 'catalog'" />
-          <NuevaPeticion v-else-if="currentSubsection === 'nova-peticio'" />
-          <div v-else-if="currentSubsection === 'info-taller'">
-            <h2 class="text-xl font-semibold mb-4" style="color: var(--text-primary);">Informació del Taller</h2>
-            <p style="color: var(--text-secondary);">Contingut d'informació del taller...</p>
-          </div>
-          <div v-else>
-            <h2 class="text-xl font-semibold mb-4" style="color: var(--text-primary);">{{ getCurrentSubsectionName() }}</h2>
-            <p style="color: var(--text-secondary);">Contingut de {{ getCurrentSubsectionName() }}...</p>
-          </div>
-        </template>
-
-        <!-- Admin -->
-        <template v-if="currentRole === 'admin'">
-          <PanelAdmin v-if="currentSubsection === 'dashboard'" />
-          <GestionPeticiones v-else-if="currentSubsection === 'peticions'" />
-          <HerramientaAsignacion v-else-if="currentSubsection === 'assignacio'" />
-          <div v-else>
-            <h2 class="text-xl font-semibold mb-4" style="color: var(--text-primary);">{{ getCurrentSubsectionName() }}</h2>
-            <p style="color: var(--text-secondary);">Contingut de {{ getCurrentSubsectionName() }}...</p>
-          </div>
-        </template>
-
-        <!-- Profesor -->
-        <template v-if="currentRole === 'teacher'">
-          <PanelProfesor v-if="currentSubsection === 'meus-tallers'" />
-          <DetalleTaller v-else-if="currentSubsection === 'detall-taller'" />
-          <div v-else>
-            <h2 class="text-xl font-semibold mb-4" style="color: var(--text-primary);">{{ getCurrentSubsectionName() }}</h2>
-            <p style="color: var(--text-secondary);">Contingut de {{ getCurrentSubsectionName() }}...</p>
-          </div>
-        </template>
+        <router-view />
       </main>
     </div>
   </div>
@@ -122,18 +90,11 @@
 
 <script setup>
 import { ref, computed } from 'vue';
+import { useRouter } from 'vue-router';
 import { BookOpen } from 'lucide-vue-next';
 import logo from '../img/logo.jpg';
 
-// Importar componentes - reorganizados por vista
-import PanelCentro from './views/centre/PanelCentro.vue';
-import NuevaPeticion from './views/centre/NuevaPeticion.vue';
-import PanelAdmin from './views/admin/PanelAdmin.vue';
-import GestionPeticiones from './views/admin/GestionPeticiones.vue';
-import HerramientaAsignacion from './views/admin/HerramientaAsignacion.vue';
-import PanelProfesor from './views/teacher/PanelProfesor.vue';
-import CatalogoTalleres from './shared/CatalogoTalleres.vue';
-import DetalleTaller from './shared/DetalleTaller.vue';
+const router = useRouter();
 
 // Estado
 const currentRole = ref('centre');
@@ -147,33 +108,33 @@ const navigationStructure = {
       id: 'taula',
       name: 'Taula',
       subsections: [
-        { id: 'taula-centre', name: 'Taula Central' },
-        { id: 'info-taller', name: 'Informació Tallers' },
-        { id: 'alumnes', name: 'Llista Alumnes' }
+        { id: 'taula-centre', name: 'Taula Central', route: '/centro/panel' },
+        { id: 'info-taller', name: 'Informació Tallers', route: null },
+        { id: 'alumnes', name: 'Llista Alumnes', route: null }
       ]
     },
     {
       id: 'catalog',
       name: 'Catàleg',
       subsections: [
-        { id: 'catalog', name: 'Veure Catàleg' }
+        { id: 'catalog', name: 'Veure Catàleg', route: '/centro/catalogo' }
       ]
     },
     {
       id: 'peticions',
       name: 'Peticions',
       subsections: [
-        { id: 'nova-peticio', name: 'Nova Petició' },
-        { id: 'meves-peticions', name: 'Les Meves Peticions' },
-        { id: 'historial', name: 'Historial' }
+        { id: 'nova-peticio', name: 'Nova Petició', route: '/centro/nueva-peticion' },
+        { id: 'meves-peticions', name: 'Les Meves Peticions', route: null },
+        { id: 'historial', name: 'Historial', route: null }
       ]
     },
     {
       id: 'checklist',
       name: 'Checklist',
       subsections: [
-        { id: 'checklist-actual', name: 'Checklist Actual' },
-        { id: 'finalitzats', name: 'Finalitzats' }
+        { id: 'checklist-actual', name: 'Checklist Actual', route: null },
+        { id: 'finalitzats', name: 'Finalitzats', route: null }
       ]
     }
   ],
@@ -182,41 +143,41 @@ const navigationStructure = {
       id: 'dashboard',
       name: 'Dashboard',
       subsections: [
-        { id: 'dashboard', name: 'Resum General' },
-        { id: 'estadistiques', name: 'Estadístiques' }
+        { id: 'dashboard', name: 'Resum General', route: '/admin/panel' },
+        { id: 'estadistiques', name: 'Estadístiques', route: null }
       ]
     },
     {
       id: 'peticions',
       name: 'Peticions',
       subsections: [
-        { id: 'peticions', name: 'Totes les Peticions' },
-        { id: 'pendents', name: 'Pendents' },
-        { id: 'assignades', name: 'Assignades' }
+        { id: 'peticions', name: 'Totes les Peticions', route: '/admin/peticiones' },
+        { id: 'pendents', name: 'Pendents', route: null },
+        { id: 'assignades', name: 'Assignades', route: null }
       ]
     },
     {
       id: 'assignacio',
       name: 'Assignació',
       subsections: [
-        { id: 'assignacio', name: 'Eina Assignació' },
-        { id: 'professors', name: 'Professors Disponibles' }
+        { id: 'assignacio', name: 'Eina Assignació', route: '/admin/asignacion' },
+        { id: 'professors', name: 'Professors Disponibles', route: null }
       ]
     },
     {
       id: 'tallers',
       name: 'Tallers',
       subsections: [
-        { id: 'gestio-tallers', name: 'Gestió Tallers' },
-        { id: 'nou-taller', name: 'Crear Taller' }
+        { id: 'gestio-tallers', name: 'Gestió Tallers', route: null },
+        { id: 'nou-taller', name: 'Crear Taller', route: null }
       ]
     },
     {
       id: 'centres',
       name: 'Centres',
       subsections: [
-        { id: 'llista-centres', name: 'Llista Centres' },
-        { id: 'estadistiques-centres', name: 'Estadístiques' }
+        { id: 'llista-centres', name: 'Llista Centres', route: null },
+        { id: 'estadistiques-centres', name: 'Estadístiques', route: null }
       ]
     }
   ],
@@ -225,32 +186,32 @@ const navigationStructure = {
       id: 'tallers',
       name: 'Els Meus Tallers',
       subsections: [
-        { id: 'meus-tallers', name: 'Tallers Actius' },
-        { id: 'historial-tallers', name: 'Historial' }
+        { id: 'meus-tallers', name: 'Tallers Actius', route: '/profesor/talleres' },
+        { id: 'historial-tallers', name: 'Historial', route: null }
       ]
     },
     {
       id: 'sessions',
       name: 'Sessions',
       subsections: [
-        { id: 'proximes-sessions', name: 'Pròximes Sessions' },
-        { id: 'detall-taller', name: 'Detall Taller' }
+        { id: 'proximes-sessions', name: 'Pròximes Sessions', route: null },
+        { id: 'detall-taller', name: 'Detall Taller', route: '/profesor/detalle' }
       ]
     },
     {
       id: 'avaluacions',
       name: 'Avaluacions',
       subsections: [
-        { id: 'crear-avaluacio', name: 'Crear Avaluació' },
-        { id: 'avaluacions-enviades', name: 'Enviades' }
+        { id: 'crear-avaluacio', name: 'Crear Avaluació', route: null },
+        { id: 'avaluacions-enviades', name: 'Enviades', route: null }
       ]
     },
     {
       id: 'materials',
       name: 'Materials',
       subsections: [
-        { id: 'materials-taller', name: 'Materials del Taller' },
-        { id: 'recursos', name: 'Recursos Educatius' }
+        { id: 'materials-taller', name: 'Materials del Taller', route: null },
+        { id: 'recursos', name: 'Recursos Educatius', route: null }
       ]
     }
   ]
@@ -288,9 +249,32 @@ const getCurrentSubsectionName = () => {
   return subsection?.name || '';
 };
 
+const navigateToSection = (section) => {
+  console.log('Navigating to section:', section);
+  currentSection.value = section.id;
+  const firstSubsection = section.subsections[0];
+  currentSubsection.value = firstSubsection?.id || null;
+  
+  if (firstSubsection?.route) {
+    console.log('Pushing route:', firstSubsection.route);
+    router.push(firstSubsection.route);
+  }
+};
+
+const navigateToSubsection = (subsection) => {
+  console.log('Navigating to subsection:', subsection);
+  if (subsection.route) {
+    currentSubsection.value = subsection.id;
+    console.log('Pushing route:', subsection.route);
+    router.push(subsection.route);
+  } else {
+    console.log('No route defined for this subsection');
+  }
+};
+
 const handleRoleChange = () => {
+  console.log('Role changed to:', currentRole.value);
   const firstSection = navigationStructure[currentRole.value][0];
-  currentSection.value = firstSection.id;
-  currentSubsection.value = firstSection.subsections[0]?.id || null;
+  navigateToSection(firstSection);
 };
 </script>
