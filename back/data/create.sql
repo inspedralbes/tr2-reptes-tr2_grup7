@@ -8,6 +8,8 @@ CREATE TABLE centers (
     id_center SERIAL PRIMARY KEY,
     center_name VARCHAR(255) NOT NULL,
     center_code VARCHAR(50) UNIQUE NOT NULL,
+    official_email VARCHAR(255) UNIQUE,
+    password_hash VARCHAR(255) NOT NULL,
     address TEXT,
     phone VARCHAR(20),
     registration_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
@@ -20,7 +22,7 @@ CREATE TABLE users (
     last_name VARCHAR(100),
     email VARCHAR(255) UNIQUE NOT NULL,
     password_hash VARCHAR(255) NOT NULL,
-    role VARCHAR(20) NOT NULL CHECK (role IN ('ADMIN', 'TEACHER', 'CENTER')),
+    role VARCHAR(20) NOT NULL CHECK (role IN ('ADMIN', 'TEACHER')),
     phone VARCHAR(20),
     id_center INT,
     is_active BOOLEAN DEFAULT TRUE,
