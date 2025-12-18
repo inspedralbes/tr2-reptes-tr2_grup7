@@ -2,7 +2,7 @@ import express from "express";
 import http from "http";
 import { Server } from "socket.io";
 import cors from "cors";
-import * as db from "./data/db.js"; // Importante el .js al final
+import db from "./data/db.js"; // Importante el .js al final
 import usuarioRouter from "./routers/usuarioRouter.js";
 import centreRouter from "./routers/centreRouter.js"; // Importante el .js al final
 import "dotenv/config";
