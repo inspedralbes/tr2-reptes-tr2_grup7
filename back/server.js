@@ -3,8 +3,8 @@ import http from "http";
 import { Server } from "socket.io";
 import cors from "cors";
 import db from "./data/db.js"; // Importante el .js al final
-import usuarioRouter from "./routers/usuarioRouter.js";
-import centreRouter from "./routers/centreRouter.js"; // Importante el .js al final
+import usuarioRouter from "./routes/usuarioRouter.js";
+import centreRouter from "./routes/centreRouter.js"; // Importante el .js al final
 import "dotenv/config";
 
 // 1. Inicialización del Servidor
@@ -65,5 +65,3 @@ const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
   console.log(`\n Servidor corriendo en http://localhost:${PORT}`);
 });
-
-export { io };
