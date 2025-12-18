@@ -34,10 +34,6 @@
               <p class="font-medium">15/01/2026</p>
             </div>
             <div>
-              <p class="text-sm text-gray-600">Modalitat</p>
-              <p class="font-medium">Modalitat A</p>
-            </div>
-            <div>
               <p class="text-sm text-gray-600">Sessions</p>
               <p class="font-medium">8 sessions</p>
             </div>

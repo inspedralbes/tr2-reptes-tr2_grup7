@@ -1,13 +1,12 @@
 <template>
   <div class="min-h-screen" style="background-color: var(--background-alt);">
     <!-- Header Superior - Navegación Principal Horizontal -->
-    <header class="header" style="box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+    <header class="header" style="position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
       <div class="flex items-center justify-between px-6 py-3">
         <!-- Logo y Título -->
         <div class="flex items-center gap-4">
-          <div style="background-color: rgba(255,255,255,0.2); padding: 0.5rem; border-radius: 3px;">
-            <BookOpen class="text-white" :size="24" />
-          </div>
+          <!-- logo de imagen que esta en /img/logo.png -->
+          <img :src="logo" alt="Logo" style="height: 70px;">
           <div>
             <h1 class="text-lg font-semibold text-white">Sistema Tallers Educatius</h1>
             <p class="text-xs text-white" style="opacity: 0.85;">Consorci d'Educació de Barcelona</p>
@@ -55,9 +54,9 @@
     </header>
 
     <!-- Layout: Sidebar Izquierdo + Contenido Principal -->
-    <div class="flex" style="min-height: calc(100vh - 120px);">
+    <div class="flex">
       <!-- Sidebar Izquierdo - Submenú -->
-      <aside class="sidebar" style="width: 240px; border-right: 1px solid var(--border-color);">
+      <aside class="sidebar" style="width: 240px; border-right: 1px solid var(--border-color); overflow-y: auto; position: fixed; top: 160px; left: 0; height: calc(100vh - 130px); z-index: 50;">
         <div class="p-4">
           <h3 class="text-xs font-semibold mb-3 px-4" style="color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px;">
             {{ getCurrentSectionName() }}
@@ -80,7 +79,7 @@
       </aside>
 
       <!-- Contenido Principal -->
-      <main class="flex-1 p-6" style="background-color: white;">
+      <main class="flex-1 p-6" style="background-color: white; margin-left: 240px;">
         <!-- Centro -->
         <template v-if="currentRole === 'centre'">
           <CentreDashboard v-if="currentSubsection === 'taula-centre'" />
@@ -124,6 +123,7 @@
 <script setup>
 import { ref, computed } from 'vue';
 import { BookOpen } from 'lucide-vue-next';
+import logo from '../img/logo.jpg';
 
 // Importar componentes
 import CentreDashboard from './CentreDashboard.vue';
@@ -156,8 +156,7 @@ const navigationStructure = {
       id: 'catalog',
       name: 'Catàleg',
       subsections: [
-        { id: 'catalog', name: 'Veure Catàleg' },
-        { id: 'modalitats', name: 'Modalitats' }
+        { id: 'catalog', name: 'Veure Catàleg' }
       ]
     },
     {

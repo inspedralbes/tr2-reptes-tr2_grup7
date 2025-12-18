@@ -9,8 +9,8 @@
       </button>
     </div>
 
-    <div class="card overflow-hidden">
-      <div class="overflow-x-auto">
+    <div class="card overflow-hidden" style="max-height: calc(100vh - 250px);">
+      <div class="overflow-auto" style="scroll-behavior: smooth;">
         <table class="w-full">
           <thead class="bg-gray-50 border-b border-gray-200">
             <tr>

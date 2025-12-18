@@ -12,17 +12,7 @@
         </div>
       </div>
 
-      <div class="flex gap-2">
-        <button class="btn-primary px-4 py-2">
-          Tots
-        </button>
-        <button class="px-4 py-2" style="background: var(--gray-200); color: var(--text-primary); border-radius: 3px; font-weight: 500; transition: background-color 0.2s;" onmouseover="this.style.backgroundColor='var(--gray-300)'" onmouseout="this.style.backgroundColor='var(--gray-200)'">
-          Modalitat A
-        </button>
-        <button class="px-4 py-2" style="background: var(--gray-200); color: var(--text-primary); border-radius: 3px; font-weight: 500; transition: background-color 0.2s;" onmouseover="this.style.backgroundColor='var(--gray-300)'" onmouseout="this.style.backgroundColor='var(--gray-200)'">
-          Modalitat B
-        </button>
-      </div>
+
 
     <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
       <div
@@ -36,9 +26,6 @@
             <h3 class="text-base font-semibold" style="color: var(--text-primary);">
               {{ workshop.name }}
             </h3>
-            <span class="badge-info">
-              Mod. {{ workshop.modality }}
-            </span>
           </div>
           <div class="space-y-2 mb-4">
             <div class="flex justify-between text-sm py-1">

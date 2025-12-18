@@ -69,10 +69,6 @@
               <span style="color: var(--text-secondary); font-size: 0.9rem;">Nombre d'alumnes:</span>
               <span class="font-semibold" style="color: var(--text-primary);">22</span>
             </div>
-            <div class="flex justify-between py-2.5" style="border-bottom: 1px solid var(--border-color);">
-              <span style="color: var(--text-secondary); font-size: 0.9rem;">Modalitat:</span>
-              <span class="font-semibold" style="color: var(--text-primary);">Modalitat A</span>
-            </div>
             <div class="flex justify-between py-2.5">
               <span style="color: var(--text-secondary); font-size: 0.9rem;">Sessions:</span>
               <span class="font-semibold" style="color: var(--text-primary);">8 sessions de 2h</span>
@@ -84,7 +80,7 @@
           <h2 class="text-lg font-semibold mb-4" style="color: var(--text-primary); padding-bottom: 0.75rem; border-bottom: 1px solid var(--border-color);">
             Llista d'Alumnes (22)
           </h2>
-          <div class="max-h-96 overflow-y-auto">
+          <div class="max-h-96 overflow-y-auto" style="scroll-behavior: smooth; scrollbar-width: thin;">
             <table class="w-full">
               <thead class="bg-gray-50 sticky top-0">
                 <tr>
