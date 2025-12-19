@@ -8,38 +8,137 @@ export const getAll = async () => {
   return result.rows;
 };
 
+export const findByEmail = async (email) => {
+  const text = `
+      SELECT u.id, u.email, u.password_hash, u.role, u.is_active,
+             c.center_name, c.center_code, c.address, c.phone as center_phone,
+             t.first_name as t_first, t.last_name as t_last, t.id_center_assigned as t_center,
+             s.first_name as s_first, s.last_name as s_last, s.birth_date, s.id_center_assigned as s_center
+      FROM users u
+      LEFT JOIN centers c ON u.id = c.id_user AND u.role = 'CENTER'
+      LEFT JOIN teachers t ON u.id = t.id_user AND u.role = 'TEACHER'
+      LEFT JOIN students s ON u.id = s.id_user AND u.role = 'STUDENT'
+      WHERE u.email = $1
+    `;
+  const result = await db.query(text, [email]);
+  if (result.rows.length === 0) return null;
+
+  // Helper to format result nicely
+  const raw = result.rows[0];
+  const user = {
+    id: raw.id,
+    email: raw.email,
+    password_hash: raw.password_hash,
+    role: raw.role,
+    is_active: raw.is_active,
+  };
+
+  if (raw.role === "CENTER") {
+    user.center_name = raw.center_name;
+    user.center_code = raw.center_code;
+    user.address = raw.address;
+    user.phone = raw.center_phone;
+  } else if (raw.role === "TEACHER") {
+    user.first_name = raw.t_first;
+    user.last_name = raw.t_last;
+    user.id_center_assigned = raw.t_center;
+  } else if (raw.role === "STUDENT") {
+    user.first_name = raw.s_first;
+    user.last_name = raw.s_last;
+    user.birth_date = raw.birth_date;
+    user.id_center_assigned = raw.s_center;
+  }
+  return user;
+};
+
 export const getById = async (id) => {
-  const text = "SELECT * FROM users WHERE id_user = $1";
+  //Canviem el id_user per id normal ja que en la base de dades es id i depenent del rol tenen id_centre etc..
+  const text = "SELECT * FROM users WHERE id = $1";
   const result = await db.query(text, [id]);
   return result.rows[0];
 };
 
 export const create = async (usuario) => {
   const {
-    first_name,
-    last_name,
     email,
     password_hash,
     role,
+    // Centros
+    center_name,
+    center_code,
+    address,
     phone,
-    id_center,
+    // Profesores/Alumnos
+    first_name,
+    last_name,
+    // Profesores
+    id_center_assigned: teacher_center,
+    // Alumnos
+    birth_date,
+    id_center_assigned: student_center,
   } = usuario;
-  const text = `
-        INSERT INTO users (first_name, last_name, email, password_hash, role, phone, id_center)
-        VALUES ($1, $2, $3, $4, $5, $6, $7)
-        RETURNING *
+
+  const client = await db.default.connect(); // Necesitamos el cliente para acceder al pool de conexiones
+
+  try {
+    await client.query("BEGIN");
+
+    // 1. Insert dentro de Users (Tabla padre)
+    const userText = `
+        INSERT INTO users (email, password_hash, role)
+        VALUES ($1, $2, $3)
+        RETURNING id
     `;
-  const values = [
-    first_name,
-    last_name,
-    email,
-    password_hash,
-    role,
-    phone,
-    id_center,
-  ];
-  const result = await db.query(text, values);
-  return result.rows[0];
+    const userValues = [email, password_hash, role];
+    const userResult = await client.query(userText, userValues);
+    const userId = userResult.rows[0].id;
+
+    // 2. Insert dentro de la tabla Hija dependiendo del rol
+    if (role === "CENTER") {
+      const centerText = `
+            INSERT INTO centers (id_user, center_name, center_code, address, phone)
+            VALUES ($1, $2, $3, $4, $5)
+        `;
+      const centerValues = [userId, center_name, center_code, address, phone];
+      await client.query(centerText, centerValues);
+    } else if (role === "TEACHER") {
+      const teacherText = `
+            INSERT INTO teachers (id_user, first_name, last_name, id_center_assigned)
+            VALUES ($1, $2, $3, $4)
+        `;
+      const teacherValues = [userId, first_name, last_name, teacher_center];
+      await client.query(teacherText, teacherValues);
+    } else if (role === "STUDENT") {
+      const studentText = `
+            INSERT INTO students (id_user, first_name, last_name, birth_date, phone, id_center_assigned)
+            VALUES ($1, $2, $3, $4, $5, $6)
+        `;
+      const studentValues = [
+        userId,
+        first_name,
+        last_name,
+        birth_date,
+        phone,
+        student_center,
+      ];
+      await client.query(studentText, studentValues);
+    } else if (role === "ADMIN") {
+      // Admins might not have an extra table, or maybe we just want them in users
+      // Doing nothing extra for proper admin for now
+    } else {
+      throw new Error(`Invalid role: ${role}`);
+    }
+
+    await client.query("COMMIT");
+
+    // Devuelve el usuario con ID
+    return { id: userId, email, role, ...usuario }; // Devuelve el objeto usuario con el ID
+  } catch (error) {
+    await client.query("ROLLBACK");
+    throw error;
+  } finally {
+    client.release();
+  }
 };
 
 export const update = async (id, usuario) => {
