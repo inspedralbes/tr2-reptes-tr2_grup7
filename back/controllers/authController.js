@@ -1,4 +1,4 @@
-import * as UserModel from "../models/user.model.js";
+import * as db from "../data/db.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 
@@ -6,30 +6,37 @@ export const login = async (req, res) => {
   const { email, password } = req.body;
 
   try {
-    // 1. Buscar usuario
-    const text = "SELECT * FROM users WHERE email = $1";
-    const result = await db.query(text, [email]);
+    // 1. Buscar al usuario por email
+    const result = await db.query("SELECT * FROM users WHERE email = $1", [
+      email,
+    ]);
     const user = result.rows[0];
 
-    if (!user) return res.status(401).json({ error: "Credenciales inválidas" });
+    // 2. Si no existe o la contraseña no coincide (usamos bcrypt)
+    // No decimos cuál de las dos falla por seguridad
+    if (!user || !(await bcrypt.compare(password, user.password_hash))) {
+      return res.status(401).json({ error: "Invalid credentials" });
+    }
 
-    // 2. Comparar password (encriptada)
-    const validPassword = await bcrypt.compare(password, user.password_hash);
-    if (!validPassword)
-      return res.status(401).json({ error: "Credenciales inválidas" });
-
-    // 3. Generar JWT
+    // 3. Generar el Token (JWT)
+    // Guardamos el id y el rol dentro del token
     const token = jwt.sign(
       { id: user.id_user, role: user.role },
       process.env.JWT_SECRET,
-      { expiresIn: "8h" }
+      { expiresIn: "8h" } // El token caduca en 8 horas
     );
 
+    // 4. Responder al Front con lo que necesita
     res.json({
       token,
-      user: { id: user.id_user, email: user.email, role: user.role },
+      user: {
+        first_name: user.first_name,
+        role: user.role,
+        id_center: user.id_center,
+      },
     });
   } catch (error) {
-    res.status(500).json({ error: "Error en el servidor" });
+    console.error("Login error:", error);
+    res.status(500).json({ error: "Internal server error" });
   }
 };
