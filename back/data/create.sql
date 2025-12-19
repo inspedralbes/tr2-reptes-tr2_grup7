@@ -74,6 +74,7 @@ CREATE TABLE center_requests (
     requested_slots INT CHECK (requested_slots <= 4), -- El centro pide p.ej. 3 plazas
     status VARCHAR(20) DEFAULT 'PENDING' CHECK (status IN ('PENDING', 'ACCEPTED', 'REJECTED', 'PARTIAL')),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    comments TEXT,
 );
 
 CREATE TABLE student_interest (

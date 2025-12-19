@@ -5,6 +5,8 @@ import cors from "cors";
 import db from "./data/db.js"; // Importante el .js al final
 import usuarioRouter from "./routes/usuarioRouter.js";
 import centreRouter from "./routes/centreRouter.js"; // Importante el .js al final
+import interestRouter from "./routes/interestRouter.js"; // Importante el .js al final
+import requestRouter from "./routes/requestRouter.js"; // Importante el .js al final
 import "dotenv/config";
 
 // 1. Inicialización del Servidor
@@ -45,6 +47,8 @@ app.get("/", (req, res) => {
 // Aquí irán las rutas reales:
 app.use("/api/usuarios", usuarioRouter);
 app.use("/api/centros", centreRouter);
+app.use("/api/interests", interestRouter);
+app.use("/api/requests", requestRouter);
 
 // 6. Lógica de Socket.io (Tiempo Real)
 io.on("connection", (socket) => {
