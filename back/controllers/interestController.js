@@ -22,7 +22,7 @@ export const createInterest = async (req, res) => {
     res.status(500).json({ error: "Error creating interest" });
   }
 };
-
+// con esto el centro puede ver los alumnos que quieren un taller
 export const getInterestsByCenter = async (req, res) => {
   try {
     // Assuming the Center user is logged in, or we pass center ID.
