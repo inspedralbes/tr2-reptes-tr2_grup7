@@ -1,4 +1,4 @@
-import * as User from "../models/usuario.js";
+import * as User from "../models/user.js";
 
 //Aquí es fan les peticions express de la pàgina web
 
