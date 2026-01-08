@@ -52,7 +52,7 @@ const router = createRouter({
         {
           path: 'talleres',
           name: 'profesor-talleres',
-          component: () => import('../components/views/teacher/PanelProfesor.vue')
+          component: () => import('../components/views/profesor/PanelProfesor.vue')
         },
         {
           path: 'detalle/:id?',
