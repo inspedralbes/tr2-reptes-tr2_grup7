@@ -87,3 +87,14 @@ export const remove = async (id) => {
   );
   return result.rows[0];
 };
+
+export const assignTeacher = async (id_workshop, id_teacher) => {
+  const text = `
+    INSERT INTO workshop_teachers (id_workshop, id_teacher)
+    VALUES ($1, $2)
+    ON CONFLICT DO NOTHING
+    RETURNING *
+  `;
+  const result = await db.query(text, [id_workshop, id_teacher]);
+  return result.rows[0];
+};

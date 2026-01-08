@@ -156,6 +156,17 @@ export const update = async (id, usuario) => {
   return result.rows[0];
 };
 
+export const getTeachersByCenter = async (id_center) => {
+  const text = `
+    SELECT u.*, t.first_name, t.last_name 
+    FROM users u
+    JOIN teachers t ON u.id = t.id_user
+    WHERE t.id_center_assigned = $1
+  `;
+  const result = await db.query(text, [id_center]);
+  return result.rows;
+};
+
 export const remove = async (id) => {
   const text = "DELETE FROM users WHERE id_user = $1 RETURNING *";
   const result = await db.query(text, [id]);

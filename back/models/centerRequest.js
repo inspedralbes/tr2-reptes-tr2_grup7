@@ -42,3 +42,10 @@ export const getAllPending = async () => {
   const result = await db.query(text);
   return result.rows;
 };
+
+export const updateStatus = async (id, status) => {
+  const text =
+    "UPDATE center_requests SET status = $1 WHERE id_request = $2 RETURNING *";
+  const result = await db.query(text, [status, id]);
+  return result.rows[0];
+};
