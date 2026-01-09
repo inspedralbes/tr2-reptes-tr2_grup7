@@ -9,12 +9,7 @@ import interestRouter from "./routes/interestRouter.js";
 import requestRouter from "./routes/requestRouter.js";
 import workshopRouter from "./routes/workshopRouter.js";
 import authRouter from "./routes/authRouter.js";
-import db from "./data/db.js"; // Importante el .js al final
-import usuarioRouter from "./routes/usuarioRouter.js";
-import centreRouter from "./routes/centreRouter.js"; // Importante el .js al final
-import interestRouter from "./routes/interestRouter.js"; // Importante el .js al final
-import requestRouter from "./routes/requestRouter.js"; // Importante el .js al final
-import assignRouter from "./routes/assignRouter.js"; // Importante el .js al final
+import assignRouter from "./routes/assignRouter.js";
 import "dotenv/config";
 
 // 1. Inicialización del Servidor

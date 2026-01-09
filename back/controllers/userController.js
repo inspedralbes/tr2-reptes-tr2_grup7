@@ -2,7 +2,7 @@ import * as User from "../models/user.js";
 
 //Aquí es fan les peticions express de la pàgina web
 
-export const getAllUsuarios = async (req, res) => {
+export const getAllUsers = async (req, res) => {
   try {
     const users = await User.getAll();
     res.json(users);
@@ -12,7 +12,7 @@ export const getAllUsuarios = async (req, res) => {
   }
 };
 
-export const getUsuarioById = async (req, res) => {
+export const getUserById = async (req, res) => {
   try {
     const user = await User.getById(req.params.id);
     if (user) {
@@ -26,7 +26,7 @@ export const getUsuarioById = async (req, res) => {
   }
 };
 
-export const createUsuario = async (req, res) => {
+export const createUser = async (req, res) => {
   try {
     const newUser = await User.create(req.body);
     res.status(201).json(newUser);
@@ -36,7 +36,7 @@ export const createUsuario = async (req, res) => {
   }
 };
 
-export const updateUsuario = async (req, res) => {
+export const updateUser = async (req, res) => {
   try {
     const updatedUser = await User.update(req.params.id, req.body);
     if (updatedUser) {
@@ -50,7 +50,7 @@ export const updateUsuario = async (req, res) => {
   }
 };
 
-export const deleteUsuario = async (req, res) => {
+export const deleteUser = async (req, res) => {
   try {
     const deletedUser = await User.remove(req.params.id);
     if (deletedUser) {
