@@ -98,3 +98,13 @@ export const assignTeacher = async (id_workshop, id_teacher) => {
   const result = await db.query(text, [id_workshop, id_teacher]);
   return result.rows[0];
 };
+
+export const removeTeacher = async (id_workshop, id_teacher) => {
+  const text = `
+      DELETE FROM workshop_teachers 
+      WHERE id_workshop = $1 AND id_teacher = $2
+      RETURNING *
+    `;
+  const result = await db.query(text, [id_workshop, id_teacher]);
+  return result.rows[0];
+};

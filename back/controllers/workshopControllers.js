@@ -53,3 +53,27 @@ export const deleteWorkshop = async (req, res) => {
     res.status(500).json({ error: "Error deleting workshop" });
   }
 };
+
+export const addTeacherToWorkshop = async (req, res) => {
+  try {
+    const { id_teacher } = req.body;
+    const { id } = req.params;
+    const result = await Workshop.assignTeacher(id, id_teacher);
+    res.json(result);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Error assigning teacher" });
+  }
+};
+
+export const removeTeacherFromWorkshop = async (req, res) => {
+  try {
+    const { id, teacherId } = req.params;
+    const result = await Workshop.removeTeacher(id, teacherId);
+    // If result is undefined, it means no row deleted (maybe not found), but idempotent delete is usually 200/204
+    res.json({ message: "Teacher removed" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Error removing teacher" });
+  }
+};
