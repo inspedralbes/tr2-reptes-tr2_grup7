@@ -1,5 +1,6 @@
 import express from "express";
 import * as userController from "../controllers/userController.js";
+import { verifyToken } from "../middleware/auth.js";
 
 //Aquí es posa tota les rutes que tinguem per a la gestió dels usuaris
 

@@ -1,6 +1,6 @@
 import * as Request from "../models/centerRequest.js";
 import * as Workshop from "../models/workshop.js";
-import * as User from "../models/usuario.js";
+import * as User from "../models/user.js";
 
 export const triggerAssignment = async (req, res) => {
   try {
