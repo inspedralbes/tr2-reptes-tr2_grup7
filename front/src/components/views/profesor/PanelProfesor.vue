@@ -42,7 +42,9 @@
                 :style="{ backgroundColor: getCategoryColor(workshop.category).text + ' !important' }">
           Veure Detalls
         </button>
-        <button v-else class="w-full mt-3 btn-outline py-2">
+        <button v-else 
+                @click="goToDetail(workshop.id_workshop)" 
+                class="w-full mt-3 btn-outline py-2">
           Veure Historial
         </button>
       </div>

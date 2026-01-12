@@ -12,14 +12,22 @@
           </div>
         </div>
 
-        <!-- User Info -->
-        <div class="flex items-center gap-3">
+        <!-- User Info & Logout -->
+        <div class="flex items-center gap-4">
           <div class="flex items-center gap-2" style="border-left: 1px solid rgba(255,255,255,0.3); padding-left: 1rem;">
             <span class="text-sm text-white font-medium">{{ getRoleName() }}</span>
             <div style="width: 32px; height: 32px; background: rgba(255,255,255,0.2); border-radius: 3px; display: flex; align-items: center; justify-content: center;">
               <span class="text-white font-semibold text-sm">{{ getRoleInitial() }}</span>
             </div>
           </div>
+          <button 
+            @click="handleLogout" 
+            class="flex items-center gap-2 px-3 py-1.5 rounded bg-white bg-opacity-10 hover:bg-opacity-20 text-white transition-all"
+            title="Tancar sessió"
+          >
+            <LogOut :size="18" />
+            <span class="text-xs font-medium">Sortir</span>
+          </button>
         </div>
       </div>
 
@@ -80,7 +88,8 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
-import { BookOpen } from 'lucide-vue-next';
+import { BookOpen, LogOut } from 'lucide-vue-next';
+import { logout } from '../../services/authService';
 import logo from '../../img/logo.jpg';
 
 const router = useRouter();
@@ -155,6 +164,13 @@ const navigationStructure = {
         { id: 'checklist-actual', name: 'Checklist Actual', route: null },
         { id: 'finalitzats', name: 'Finalitzats', route: null }
       ]
+    },
+    {
+      id: 'sessio',
+      name: 'Sessió',
+      subsections: [
+        { id: 'logout', name: 'Tancar Sessió', route: '/login' }
+      ]
     }
   ],
   admin: [
@@ -198,6 +214,13 @@ const navigationStructure = {
         { id: 'llista-centres', name: 'Llista Centres', route: null },
         { id: 'estadistiques-centres', name: 'Estadístiques', route: null }
       ]
+    },
+    {
+      id: 'sessio',
+      name: 'Sessió',
+      subsections: [
+        { id: 'logout', name: 'Tancar Sessió', route: '/login' }
+      ]
     }
   ],
   teacher: [
@@ -231,6 +254,13 @@ const navigationStructure = {
       subsections: [
         { id: 'materials-taller', name: 'Materials del Taller', route: null },
         { id: 'recursos', name: 'Recursos Educatius', route: null }
+      ]
+    },
+    {
+      id: 'sessio',
+      name: 'Sessió',
+      subsections: [
+        { id: 'logout', name: 'Tancar Sessió', route: '/login' }
       ]
     }
   ]
@@ -280,6 +310,10 @@ const navigateToSection = (section) => {
 
 const navigateToSubsection = (subsection) => {
   console.log('Navigating to subsection:', subsection);
+  if (subsection.id === 'logout') {
+    handleLogout();
+    return;
+  }
   if (subsection.route) {
     currentSubsection.value = subsection.id;
     console.log('Pushing route:', subsection.route);
@@ -293,5 +327,11 @@ const handleRoleChange = () => {
   console.log('Role changed to:', currentRole.value);
   const firstSection = navigationStructure[currentRole.value][0];
   navigateToSection(firstSection);
+};
+
+const handleLogout = () => {
+  if (confirm('Estàs segur que vols sortir?')) {
+    logout();
+  }
 };
 </script>
