@@ -130,7 +130,6 @@
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { login } from '../../services/authService'
-//importa el logo
 import logo from '../../img/logo.jpg'
 
 const router = useRouter()

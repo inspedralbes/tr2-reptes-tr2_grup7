@@ -5,7 +5,6 @@
       <div class="flex items-center justify-between px-6 py-3">
         <!-- Logo y Título -->
         <div class="flex items-center gap-4">
-          <!-- logo de imagen que esta en /img/logo.png -->
           <img :src="logo" alt="Logo" style="height: 70px;">
           <div>
             <h1 class="text-lg font-semibold text-white">Sistema Tallers Educatius</h1>
@@ -15,17 +14,7 @@
 
         <!-- User Info -->
         <div class="flex items-center gap-3">
-          <select
-            v-model="currentRole"
-            @change="handleRoleChange"
-            class="text-sm px-3 py-1.5"
-            style="background: white; color: #00426b; border: 1px solid rgba(255,255,255,0.3); border-radius: 3px; font-weight: 300;"
-          >
-            <option value="centre" style="color: #00426b;">Centre Educatiu</option>
-            <option value="admin" style="color: #00426b;">Administració</option>
-            <option value="teacher" style="color: #00426b;">Professor</option>
-          </select>
-          <div class="flex items-center gap-2 pl-3" style="border-left: 1px solid rgba(255,255,255,0.3);">
+          <div class="flex items-center gap-2" style="border-left: 1px solid rgba(255,255,255,0.3); padding-left: 1rem;">
             <span class="text-sm text-white font-medium">{{ getRoleName() }}</span>
             <div style="width: 32px; height: 32px; background: rgba(255,255,255,0.2); border-radius: 3px; display: flex; align-items: center; justify-content: center;">
               <span class="text-white font-semibold text-sm">{{ getRoleInitial() }}</span>
@@ -89,7 +78,7 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { BookOpen } from 'lucide-vue-next';
 import logo from '../img/logo.jpg';
@@ -100,6 +89,36 @@ const router = useRouter();
 const currentRole = ref('centre');
 const currentSection = ref('taula');
 const currentSubsection = ref('taula-centre');
+const user = ref(null);
+
+// Función para obtener el usuario actual
+const loadUser = () => {
+  const userData = localStorage.getItem('user');
+  if (userData) {
+    user.value = JSON.parse(userData);
+    // Mapear rol a currentRole
+    if (user.value.role === 'ADMIN') {
+      currentRole.value = 'admin';
+    } else if (user.value.role === 'CENTER') {
+      currentRole.value = 'centre';
+    } else if (user.value.role === 'TEACHER') {
+      currentRole.value = 'teacher';
+    }
+  }
+};
+
+onMounted(() => {
+  loadUser();
+  // Inicializar sección y subsección por defecto
+  const sections = navigationStructure[currentRole.value];
+  if (sections && sections.length > 0) {
+    currentSection.value = sections[0].id;
+    const subsections = sections[0].subsections;
+    if (subsections && subsections.length > 0) {
+      currentSubsection.value = subsections[0].id;
+    }
+  }
+});
 
 // Estructura de navegación por rol
 const navigationStructure = {
@@ -227,15 +246,13 @@ const currentSubsections = computed(() => {
 
 // Métodos
 const getRoleName = () => {
-  if (currentRole.value === 'centre') return 'IES Terrassa';
-  if (currentRole.value === 'admin') return 'Administració';
-  return 'Prof. Maria García';
+  if (!user.value) return '';
+  return user.value.name || 'Usuario';
 };
 
 const getRoleInitial = () => {
-  if (currentRole.value === 'centre') return 'C';
-  if (currentRole.value === 'admin') return 'A';
-  return 'P';
+  if (!user.value || !user.value.name) return 'U';
+  return user.value.name.charAt(0).toUpperCase();
 };
 
 const getCurrentSectionName = () => {
