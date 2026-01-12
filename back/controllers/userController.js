@@ -1,3 +1,4 @@
+import bcrypt from "bcrypt";
 import * as User from "../models/user.js";
 
 //Aquí es fan les peticions express de la pàgina web
@@ -28,7 +29,11 @@ export const getUserById = async (req, res) => {
 
 export const createUser = async (req, res) => {
   try {
-    const newUser = await User.create(req.body);
+    const { password, ...userData } = req.body;
+    const password_hash = await bcrypt.hash(password, 10);
+    
+    // Pasamos el password_hash junto con el resto de datos
+    const newUser = await User.create({ ...userData, password_hash });
     res.status(201).json(newUser);
   } catch (error) {
     console.error("Error creating user:", error);

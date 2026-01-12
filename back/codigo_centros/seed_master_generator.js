@@ -2,9 +2,11 @@ import { createRequire } from 'module';
 const require = createRequire(import.meta.url);
 const XLSX = require('xlsx');
 const crypto = require('crypto'); 
+const bcrypt = require('bcrypt');
 import fs from 'fs';
 
 const NOMBRE_ARCHIVO = 'centres-educatius.xlsx'; 
+const SALT_ROUNDS = 10; // Para el hasheo de contraseñas
 
 const REGIONES = {
     '08': 'barcelona',
@@ -14,10 +16,7 @@ const REGIONES = {
 };
 
 const sqlOutputs = {
-    'barcelona': [],
-    'girona': [],
-    'lleida': [],
-    'tarragona': []
+    'barcelona': [], 'girona': [], 'lleida': [], 'tarragona': []
 };
 
 function generarPassword() {
@@ -28,18 +27,10 @@ function calcularEmailXtec(codigo) {
     if (!codigo) return null;
     const codStr = String(codigo).trim();
     const prefix = codStr.substring(0, 2);
-    let letra = '';
-
-    if (prefix === '08') letra = 'a';
-    else if (prefix === '17') letra = 'b';
-    else if (prefix === '25') letra = 'c';
-    else if (prefix === '43') letra = 'e';
-    else return null;
-
-    return `${letra}${codStr.substring(1)}@xtec.cat`;
+    let letra = prefix === '08' ? 'a' : prefix === '17' ? 'b' : prefix === '25' ? 'c' : prefix === '43' ? 'e' : null;
+    return letra ? `${letra}${codStr.substring(1)}@xtec.cat` : null;
 }
 
-// Escapar comillas
 function escaparSQL(texto) {
     if (!texto) return '';
     return String(texto).replace(/'/g, "''"); 
@@ -48,61 +39,52 @@ function escaparSQL(texto) {
 // --- PROCESO ---
 
 try {
-    console.log(`Generando SQL con contraseñas...`);
-    
     const workbook = XLSX.readFile(NOMBRE_ARCHIVO);
     const sheet = workbook.Sheets[workbook.SheetNames[0]];
     const datos = XLSX.utils.sheet_to_json(sheet);
     
-    console.log(`Procesando ${datos.length} filas...`);
+    console.log(`Procesando ${datos.length} filas y hasheando contraseñas...`);
     
-    datos.forEach(row => {
+    datos.forEach((row, index) => {
         const codigo = row['Codi_centre'];
         const nombre = row['Denominació_completa'];
-        
         if (!codigo || !nombre) return;
 
         const prefijo = String(codigo).substring(0, 2);
         const region = REGIONES[prefijo];
-
         if (!region) return;
 
-        // Datos básicos
         const telefono = row['Telèfon'] || '';
         const direccion = `${row['Adreça'] || ''}, ${row['Codi_postal'] || ''} ${row['Nom_municipi'] || ''}`;
+        let emailFinal = row['E-mail_centre'] || calcularEmailXtec(codigo);
+
+        // Hasheo de contraseña (Brutalmente necesario para tu authController)
+        const passwordPlana = generarPassword();
+        const hash = bcrypt.hashSync(passwordPlana, SALT_ROUNDS);
+
+        // Construcción de la consulta SQL Compleja (Inserta en dos tablas a la vez)
+        const query = `
+WITH new_user AS (
+    INSERT INTO users (email, password_hash, role) 
+    VALUES ('${emailFinal}', '${hash}', 'CENTER') 
+    RETURNING id
+)
+INSERT INTO centers (id_user, center_name, center_code, address, phone)
+SELECT id, '${escaparSQL(nombre)}', '${codigo}', '${escaparSQL(direccion)}', '${telefono}' FROM new_user;`;
         
-        let emailFinal = row['E-mail_centre'];
-        if (!emailFinal || emailFinal === '') {
-            emailFinal = calcularEmailXtec(codigo);
-        }
+        sqlOutputs[region].push(query);
 
-        const passwordTemp = generarPassword();
-
-        const sqlName = `'${escaparSQL(nombre)}'`;
-        const sqlCode = `'${codigo}'`;
-        const sqlEmail = emailFinal ? `'${emailFinal.trim()}'` : 'NULL';
-        const sqlPass = `'${passwordTemp}'`; 
-        const sqlAddr = direccion ? `'${escaparSQL(direccion)}'` : 'NULL';
-        const sqlPhone = telefono ? `'${telefono}'` : 'NULL';
-
-        const val = `(${sqlName}, ${sqlCode}, ${sqlEmail}, ${sqlPass}, ${sqlAddr}, ${sqlPhone})`;
-        
-        sqlOutputs[region].push(val);
+        if (index % 100 === 0) console.log(`Progreso: ${index}/${datos.length}...`);
     });
 
-    for (const [region, values] of Object.entries(sqlOutputs)) {
-        if (values.length > 0) {
+    for (const [region, queries] of Object.entries(sqlOutputs)) {
+        if (queries.length > 0) {
             const fileName = `seed_centers_${region}.sql`;
-            let content = `-- Seed ${region.toUpperCase()}\n`;
-            content += `INSERT INTO centers (center_name, center_code, official_email, password_hash, address, phone) VALUES \n`;
-            content += values.join(",\n");
-            content += ";\n";
-
-            fs.writeFileSync(fileName, content);
-            console.log(`SQL Generado: ${fileName}`);
+            fs.writeFileSync(fileName, queries.join("\n"));
+            console.log(`✅ SQL Generado: ${fileName}`);
         }
     }
 
 } catch (error) {
-    console.error("Error:", error.message);
+    console.error("❌ Error:", error.message);
 }
