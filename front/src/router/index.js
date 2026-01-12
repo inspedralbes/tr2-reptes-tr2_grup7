@@ -3,6 +3,12 @@ import { createRouter, createWebHistory } from 'vue-router'
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
+    // Ruta de Login
+    {
+      path: '/login',
+      name: 'login',
+      component: () => import('../components/general/login.vue')
+    },
     // Rutas de Centro Educativo
     {
       path: '/centro',
@@ -64,9 +70,36 @@ const router = createRouter({
     // Ruta por defecto
     {
       path: '/',
-      redirect: '/centro/panel'
+      redirect: '/login'
     }
   ],
+})
+
+// Navigation Guard - Protege las rutas según autenticación
+router.beforeEach((to, from, next) => {
+  const token = localStorage.getItem('token')
+  const user = localStorage.getItem('user')
+  
+  // Si intenta acceder a una ruta protegida sin estar autenticado
+  if (to.path !== '/login' && !token) {
+    next('/login')
+  } 
+  // Si está autenticado e intenta ir a login, redirigir a su panel
+  else if (to.path === '/login' && token && user) {
+    const userData = JSON.parse(user)
+    if (userData.role === 'ADMIN') {
+      next('/admin/panel')
+    } else if (userData.role === 'CENTER') {
+      next('/centro/panel')
+    } else if (userData.role === 'TEACHER') {
+      next('/profesor/talleres')
+    } else {
+      next()
+    }
+  }
+  else {
+    next()
+  }
 })
 
 export default router

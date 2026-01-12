@@ -98,5 +98,7 @@ CREATE TABLE workshop_enrollments (
 );
 
 -- 7. INSERT ADMIN (CORREGIDO)
+-- Password: 123 (bcrypt hash with 10 rounds)
+-- Use the fix-admin-password.js script to regenerate this hash if needed
 INSERT INTO users (email, password_hash, role, is_active)
-VALUES ('admin@workshop.com', '123', 'ADMIN', TRUE);
+VALUES ('admin@workshop.com', '$2b$10$N9qo8uLOickgx2ZMRZoMye7FRNpZeS2wT6W83YHVe6JwZuMzCqP8O', 'ADMIN', TRUE);

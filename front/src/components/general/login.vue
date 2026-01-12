@@ -95,10 +95,22 @@
             </a>
           </div>
 
+          <!-- Mensaje de error -->
+          <div v-if="error" style="padding: 0.75rem; background-color: #fee; border: 1px solid #fcc; border-radius: 4px; margin-top: 1rem;">
+            <p class="text-sm" style="color: #c33; text-align: center;">
+              {{ error }}
+            </p>
+          </div>
+
           <!-- Botón de login -->
           <div style="padding-top: 1rem;">
-            <button type="submit" class="btn-primary w-full py-3">
-              Iniciar Sessió
+            <button 
+              type="submit" 
+              class="btn-primary w-full py-3"
+              :disabled="loading"
+              :style="loading ? 'opacity: 0.7; cursor: not-allowed;' : ''"
+            >
+              {{ loading ? 'Iniciant sessió...' : 'Iniciar Sessió' }}
             </button>
           </div>
 
@@ -116,18 +128,48 @@
 
 <script setup>
 import { ref } from 'vue'
+import { useRouter } from 'vue-router'
+import { login } from '../../services/authService'
 //importa el logo
 import logo from '../../img/logo.jpg'
+
+const router = useRouter()
 
 const email = ref('')
 const password = ref('') 
 const rememberMe = ref(false)
+const error = ref('')
+const loading = ref(false)
 
+const handleLogin = async () => {
+  // Limpiar errores previos
+  error.value = ''
+  loading.value = true
 
-const handleLogin = () => {
-  console.log('Intentando login con:', email.value, password.value)
-  // Aquí más adelante se implementará la lógica de autenticación
-  // y la detección del rol según el correo electrónico
+  try {
+    console.log('Intentando login con:', email.value, password.value)
+    
+    // Llamar al servicio de autenticación
+    const response = await login(email.value, password.value)
+    
+    console.log('Login exitoso:', response)
+    
+    // Redirigir según el rol del usuario
+    if (response.user.role === 'ADMIN') {
+      router.push('/admin/panel')
+    } else if (response.user.role === 'CENTER') {
+      router.push('/centro/panel')
+    } else if (response.user.role === 'TEACHER') {
+      router.push('/profesor/talleres')
+    } else {
+      error.value = 'Rol de usuario no reconocido'
+    }
+  } catch (err) {
+    console.error('Error en login:', err)
+    error.value = err.error || 'Error al iniciar sesión. Verifica tus credenciales.'
+  } finally {
+    loading.value = false
+  }
 }
 </script>
 
