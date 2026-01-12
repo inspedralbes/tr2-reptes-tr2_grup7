@@ -1,0 +1,22 @@
+name: Deploy to Production (Test Connection)
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.PROD_HOST }}
+          username: ${{ secrets.PROD_USERNAME }}
+          password: ${{ secrets.PROD_PASSWORD }}
+          port: ${{ secrets.PROD_PORT || '22' }}
+          script: |
+            echo "✅ ¡Conexión SSH exitosa!"
+            echo "El servidor es accesible y las credenciales son correctas."
+            echo "No se ha desplegado nada porque estamos en modo prueba."
