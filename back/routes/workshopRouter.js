@@ -4,6 +4,7 @@ import * as workshopController from "../controllers/workshopController.js";
 const router = express.Router();
 
 // La ruta base será /api/tallers (definida en server.js)
+router.get("/mine", workshopController.getMyWorkshops);
 router.get("/", workshopController.getAllWorkshops);
 router.get("/:id", workshopController.getWorkshopById);
 router.post("/", workshopController.createWorkshop);

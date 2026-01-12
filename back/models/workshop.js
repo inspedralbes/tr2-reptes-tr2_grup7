@@ -1,4 +1,4 @@
-import * as db from "../data/db.js";
+import db from "../data/db.js";
 
 export const getAll = async () => {
   const result = await db.query(
@@ -9,7 +9,10 @@ export const getAll = async () => {
 
 export const getById = async (id) => {
   const result = await db.query(
-    "SELECT * FROM workshops WHERE id_workshop = $1",
+    `SELECT w.*, c.center_name, c.address as center_address, c.phone as center_phone 
+     FROM workshops w
+     LEFT JOIN centers c ON w.center_id = c.id_user
+     WHERE w.id_workshop = $1`,
     [id]
   );
   return result.rows[0];
@@ -98,3 +101,15 @@ export const assignTeacher = async (id_workshop, id_teacher) => {
   const result = await db.query(text, [id_workshop, id_teacher]);
   return result.rows[0];
 };
+
+export const getByTeacherId = async (teacherId) => {
+  const result = await db.query(
+    `SELECT w.* FROM workshops w
+     JOIN workshop_teachers wt ON w.id_workshop = wt.id_workshop
+     WHERE wt.id_teacher = $1 
+     ORDER BY w.created_at DESC`,
+    [teacherId]
+  );
+  return result.rows;
+};
+

@@ -81,7 +81,7 @@
 import { ref, computed, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { BookOpen } from 'lucide-vue-next';
-import logo from '../img/logo.jpg';
+import logo from '../../img/logo.jpg';
 
 const router = useRouter();
 

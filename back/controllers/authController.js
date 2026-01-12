@@ -6,24 +6,25 @@ export const login = async (req, res) => {
   const { email, password } = req.body;
 
   try {
-    console.log("🔐 Login attempt for email:", email);
+    console.log("🔐 Login attempt for email:", `[${email}]`);
     
     // 1. Buscar al usuario por email
     const user = await User.findByEmail(email);
     
     if (!user) {
-      console.log("❌ User not found:", email);
+      console.log("❌ User not found in DB:", `[${email}]`);
       return res.status(401).json({ error: "Invalid credentials" });
     }
 
     console.log("✅ User found:", { id: user.id, email: user.email, role: user.role });
+    console.log("🔑 Comparing password...");
 
     // 2. Verificar contraseña
     const passwordMatch = await bcrypt.compare(password, user.password_hash);
-    console.log("🔑 Password match:", passwordMatch);
+    console.log("🔑 Password match result:", passwordMatch);
     
     if (!passwordMatch) {
-      console.log("❌ Invalid password for:", email);
+      console.log("❌ Invalid password for:", `[${email}]`);
       return res.status(401).json({ error: "Invalid credentials" });
     }
 
@@ -48,6 +49,9 @@ export const login = async (req, res) => {
     } else {
       userData.name = user.first_name;
       userData.id_center = user.id_center_assigned;
+      if (user.role === 'TEACHER') {
+        userData.teacher_id = user.teacher_id;
+      }
     }
 
     console.log("✅ Login successful for:", email, "Role:", user.role);
