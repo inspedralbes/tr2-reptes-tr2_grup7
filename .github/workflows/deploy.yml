@@ -17,7 +17,7 @@ jobs:
         with:
           host: ${{ secrets.PROD_HOST }}
           username: ${{ secrets.PROD_USERNAME }}
-          key: ${{ secrets.PROD_SSH_KEY }}
+          password: ${{ secrets.PROD_PASSWORD }}
           port: ${{ secrets.PROD_PORT || '22' }}
           script: |
             # Navegar al directorio del proyecto (asegúrate que la ruta coincide con donde clonaste)
