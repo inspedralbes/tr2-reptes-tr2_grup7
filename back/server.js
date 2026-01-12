@@ -10,6 +10,7 @@ import requestRouter from "./routes/requestRouter.js";
 import workshopRouter from "./routes/workshopRouter.js";
 import authRouter from "./routes/authRouter.js";
 import assignRouter from "./routes/assignRouter.js";
+import adminRouter from "./routes/adminRouter.js";
 import "dotenv/config";
 
 // 1. Inicialización del Servidor
@@ -55,6 +56,7 @@ app.use("/api/requests", requestRouter);
 app.use("/api/workshops", workshopRouter);
 app.use("/api/auth", authRouter);
 app.use("/api/assign", assignRouter);
+app.use("/api/admin", adminRouter);
 
 // 6. Lógica de Socket.io (Tiempo Real)
 io.on("connection", (socket) => {

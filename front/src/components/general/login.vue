@@ -5,7 +5,7 @@
       <div class="flex items-center justify-between px-6 py-3">
         <!-- Logo y Título -->
         <div class="flex items-center gap-4">
-          <img :src="logo" alt="Logo" style="height: 70px;">
+          <img :src="'/logo.png'" alt="Logo" style="height: 70px;">
           <div>
             <h1 class="text-lg font-semibold text-white">Sistema Tallers Educatius</h1>
             <p class="text-xs text-white" style="opacity: 0.85;">Consorci d'Educació de Barcelona</p>
@@ -130,7 +130,6 @@
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { login } from '../../services/authService'
-import logo from '../../img/logo.jpg'
 
 const router = useRouter()
 
