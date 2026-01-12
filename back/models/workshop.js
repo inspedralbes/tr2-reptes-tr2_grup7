@@ -15,6 +15,24 @@ export const getById = async (id) => {
   return result.rows[0];
 };
 
+export const getByTeacherId = async (id_teacher) => {
+  const text = `
+    SELECT 
+      w.*, 
+      c.center_name,
+      (SELECT COUNT(*) FROM workshop_enrollments WHERE id_workshop = w.id_workshop) as enrolled_count,
+      cr.status as request_status
+    FROM workshops w
+    JOIN workshop_teachers wt ON w.id_workshop = wt.id_workshop
+    LEFT JOIN centers c ON w.center_id = c.id_user
+    LEFT JOIN center_requests cr ON w.id_workshop = cr.id_workshop
+    WHERE wt.id_teacher = $1
+    ORDER BY w.start_date ASC
+  `;
+  const result = await db.query(text, [id_teacher]);
+  return result.rows;
+};
+
 export const create = async (data) => {
   const {
     title,

@@ -64,7 +64,7 @@ const router = createRouter({
     // Ruta por defecto
     {
       path: '/',
-      redirect: '/centro/panel'
+      redirect: '/profesor/talleres' // Changed for testing purposes
     }
   ],
 })
