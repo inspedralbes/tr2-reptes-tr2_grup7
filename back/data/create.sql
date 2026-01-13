@@ -237,3 +237,4 @@ INSERT INTO workshop_enrollments (id_workshop, id_student) VALUES
 (3, 14), -- Lucía inscrita en Impresión 3D
 (1, 12), -- María inscrita en Robótica
 (5, 15); -- Miguel inscrito en IA
+VALUES ('admin@workshop.com', '123', 'ADMIN', TRUE);
