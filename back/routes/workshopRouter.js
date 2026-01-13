@@ -10,6 +10,13 @@ router.post("/", workshopController.createWorkshop);
 router.put("/:id", workshopController.updateWorkshop);
 router.delete("/:id", workshopController.deleteWorkshop);
 
+// Manual Assignment
+router.post("/:id/teachers", workshopController.addTeacherToWorkshop);
+router.delete(
+  "/:id/teachers/:teacherId",
+  workshopController.removeTeacherFromWorkshop
+);
+
 // Legacy endpoints removed. Use /api/requests
 // router.post("/request", workshopController.createRequest);
 // router.post("/assign", workshopController.assignTeachersToRequests);

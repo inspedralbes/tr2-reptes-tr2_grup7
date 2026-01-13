@@ -16,7 +16,7 @@ services:
   # 🖥️ Servicio de Back-end (Node.js)
   backend:
     build:
-      context: ./backend
+      context: ./back
       target: production # Usa la etapa de producción del Dockerfile
     container_name: backend_prod
     environment:
@@ -31,7 +31,7 @@ services:
   # 🌐 Servicio de Front-end (Vue con Nginx)
   frontend:
     build:
-      context: ./frontend
+      context: ./front
       target: production # Usa la etapa de producción del Dockerfile (Nginx)
     container_name: frontend_prod
     ports:

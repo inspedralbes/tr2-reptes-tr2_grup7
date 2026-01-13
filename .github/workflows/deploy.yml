@@ -1,0 +1,34 @@
+name: Deploy to Production
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.PROD_HOST }}
+          username: ${{ secrets.PROD_USERNAME }}
+          password: ${{ secrets.PROD_PASSWORD }}
+          port: ${{ secrets.PROD_PORT || '22' }}
+          script: |
+            # Navegar al directorio del proyecto (asegúrate que la ruta coincide con donde clonaste)
+            # Si clonaste en /root/tr2-reptes-tr2_grup7:
+            cd ~/tr2-reptes-tr2_grup7
+
+            # Obtener los últimos cambios
+            git pull origin main
+
+            # Reconstruir y levantar los contenedores en modo producción
+            docker compose -f docker-compose.prod.yml up -d --build --remove-orphans
+
+            # Limpiar imágenes antiguas para no llenar el disco
+            docker image prune -f
