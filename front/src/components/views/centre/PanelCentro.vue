@@ -1,9 +1,9 @@
 <template>
   <div class="space-y-6">
     <div class="flex justify-between items-center" style="border-bottom: 2px solid var(--border-color); padding-bottom: 1rem; margin-bottom: 1.5rem;">
-      <h1 class="text-2xl font-semibold" style="color: var(--text-primary); text-transform: uppercase; letter-spacing: 0.5px;">Tauler de Control</h1>
+      <h1 class="text-2xl font-semibold" style="color: var(--text-primary); text-transform: uppercase; letter-spacing: 0.5px;">Tauler de control</h1>
       <button class="btn-primary px-6 py-2 flex items-center gap-2">
-        <Plus :size="18" /> Nova Petició
+        <Plus :size="18" /> Nova petició
       </button>
     </div>
 
@@ -11,7 +11,7 @@
       <div class="stat-card-blue text-white p-5">
         <div class="flex items-start justify-between">
           <div>
-            <p class="text-sm" style="opacity: 0.9; margin-bottom: 0.5rem; font-weight: 500;">Peticions Actives</p>
+            <p class="text-sm" style="opacity: 0.9; margin-bottom: 0.5rem; font-weight: 500;">Peticions actives</p>
             <p class="text-3xl font-bold">5</p>
           </div>
           <FileText :size="32" style="opacity: 0.75;" />
@@ -41,7 +41,7 @@
       <div class="stat-card-purple text-white p-5">
         <div class="flex items-start justify-between">
           <div>
-            <p class="text-sm" style="opacity: 0.9; margin-bottom: 0.5rem; font-weight: 500;">Alumnes Total</p>
+            <p class="text-sm" style="opacity: 0.9; margin-bottom: 0.5rem; font-weight: 500;">Total d'alumnes</p>
             <p class="text-3xl font-bold">87</p>
           </div>
           <Users :size="32" style="opacity: 0.75;" />
@@ -54,7 +54,7 @@
       <div class="md:col-span-2 space-y-6">
         <div class="card p-6">
           <h2 class="text-lg font-semibold mb-4" style="color: var(--text-primary); padding-bottom: 0.75rem; border-bottom: 1px solid var(--border-color);">
-            Informació del Taller
+            Informació del taller
           </h2>
           <div class="space-y-2">
             <div class="flex justify-between py-2.5" style="border-bottom: 1px solid var(--border-color);">
@@ -78,7 +78,7 @@
 
         <div class="card p-6">
           <h2 class="text-lg font-semibold mb-4" style="color: var(--text-primary); padding-bottom: 0.75rem; border-bottom: 1px solid var(--border-color);">
-            Llista d'Alumnes (22)
+            Llista d'alumnes (22)
           </h2>
           <div class="max-h-96 overflow-y-auto" style="scroll-behavior: smooth; scrollbar-width: thin;">
             <table class="w-full">
@@ -138,7 +138,7 @@
       <div class="space-y-6">
         <div class="card p-5">
           <h3 class="text-base font-semibold mb-3" style="color: var(--text-primary); padding-bottom: 0.5rem; border-bottom: 1px solid var(--border-color);">
-            Contacte Centre
+            Contacte del centre
           </h3>
           <div class="space-y-3">
             <div>
@@ -157,13 +157,13 @@
             </div>
           </div>
           <button class="w-full mt-4 btn-primary py-2.5">
-            Enviar Missatge
+            Enviar missatge
           </button>
         </div>
 
         <div class="card p-5">
           <h3 class="text-base font-semibold mb-3" style="color: var(--text-primary); padding-bottom: 0.5rem; border-bottom: 1px solid var(--border-color);">
-            Professor Co-Referent
+            Professor co-referent
           </h3>
           <div class="space-y-3">
             <div>
@@ -178,14 +178,14 @@
         </div>
 
         <button class="w-full btn-secondary py-3 flex items-center justify-center gap-2">
-          <Award :size="18" /> Avaluar Taller
+          <Award :size="18" /> Avaluar taller
         </button>
       </div>
     </div>
 
     <div class="card p-6">
       <h2 class="text-lg font-semibold mb-4" style="color: var(--text-primary); padding-bottom: 0.75rem; border-bottom: 1px solid var(--border-color);">
-        Notificacions Recents
+        Notificacions recents
       </h2>
       <div class="space-y-3">
         <div class="flex items-start gap-3 p-4" style="background-color: #e3f2fd; border-left: 4px solid var(--info);">

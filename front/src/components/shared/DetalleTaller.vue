@@ -1,5 +1,5 @@
 <template>
-  <div class="space-y-6">
+  <div class="space-y-6 pb-12">
     <div v-if="loading" class="text-center py-10">
       <p style="color: var(--text-secondary);">Carregant detalls del taller...</p>
     </div>
@@ -24,7 +24,7 @@
         <div class="md:col-span-2 space-y-6">
           <div class="card p-6">
             <h2 class="text-xl font-semibold text-gray-800 mb-4">
-              Informació del Taller
+              Informació del taller
             </h2>
             <div class="grid grid-cols-2 gap-4">
               <div>
@@ -36,15 +36,11 @@
                 <p class="font-medium">{{ workshop.category }}</p>
               </div>
               <div>
-                <p class="text-sm text-gray-600">Alumnes inscrits</p>
-                <p class="font-medium">{{ workshop.available_slots }} / {{ workshop.max_slots }}</p>
-              </div>
-              <div>
-                <p class="text-sm text-gray-600">Data inici</p>
+                <p class="text-sm text-gray-600">Data d'inici</p>
                 <p class="font-medium">{{ formatDate(workshop.start_date) }}</p>
               </div>
               <div>
-                <p class="text-sm text-gray-600">Data finalització</p>
+                <p class="text-sm text-gray-600">Data de finalització</p>
                 <p class="font-medium">{{ formatDate(workshop.end_date) }}</p>
               </div>
               <div>
@@ -67,7 +63,7 @@
         <div class="space-y-6">
           <div class="card p-6">
             <h2 class="text-xl font-semibold text-gray-800 mb-4">
-              Contacte Centre
+              Contacte del centre
             </h2>
             <div class="space-y-3">
               <div>
@@ -79,17 +75,24 @@
                 <p class="font-medium">{{ workshop.center_phone || 'No disponible' }}</p>
               </div>
             </div>
-            <button class="w-full mt-4 btn-primary py-2">
-              Contactar Centre
+            <button 
+              @click="contactCenter"
+              class="w-full mt-4 btn-primary py-2"
+              :disabled="!workshop.center_email"
+            >
+              Contactar amb el centre
             </button>
           </div>
 
           <div class="card p-6">
             <h2 class="text-xl font-semibold text-gray-800 mb-4">
-              Materials
+              Materials didàctics
             </h2>
             <div class="space-y-2">
-              <button class="w-full flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100">
+              <button 
+                @click="downloadMaterial('Guia del taller')"
+                class="w-full flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100"
+              >
                 <div class="flex items-center gap-3">
                   <FileText class="text-gray-600" :size="20" />
                   <span class="text-sm">Guia del taller</span>
@@ -99,8 +102,11 @@
             </div>
           </div>
 
-          <button class="w-full bg-green-600 text-white py-3 rounded-lg hover:bg-green-700 flex items-center justify-center gap-2">
-            <Award :size="20" /> Avaluar Sessió
+          <button 
+            @click="evaluateSession"
+            class="w-full bg-green-600 text-white py-3 rounded-lg hover:bg-green-700 flex items-center justify-center gap-2"
+          >
+            <Award :size="20" /> Avaluar sessió
           </button>
         </div>
       </div>
@@ -139,6 +145,21 @@ const fetchWorkshop = async () => {
 
 const goBack = () => {
   router.back();
+};
+
+const contactCenter = () => {
+  if (workshop.value.center_email) {
+    window.location.href = `mailto:${workshop.value.center_email}?subject=Consulta sobre el taller: ${workshop.value.title}`;
+  }
+};
+
+const downloadMaterial = (name) => {
+  alert(`Descarregant material: ${name}`);
+  console.log(`Download started for: ${name}`);
+};
+
+const evaluateSession = () => {
+  alert('Aquesta funcionalitat d\'avaluació estarà disponible pròximament.');
 };
 
 const formatDate = (dateStr) => {

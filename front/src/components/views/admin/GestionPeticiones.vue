@@ -2,7 +2,7 @@
   <div class="space-y-6">
     <div class="flex justify-between items-center">
       <h1 class="text-3xl font-bold text-gray-800">
-        Bandeja de Peticions
+        Bústia de peticions
       </h1>
       <button class="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 flex items-center gap-2">
         <Settings :size="20" /> Assignació Automàtica
@@ -67,19 +67,19 @@
               <td class="px-6 py-4">
                 <div class="flex gap-2">
                   <button
-                    class="p-2 hover:bg-blue-50 rounded-lg"
+                    class="p-2 hover-bg-blue rounded-lg"
                     title="Veure"
                   >
                     <Eye :size="18" class="text-blue-600" />
                   </button>
                   <button
-                    class="p-2 hover:bg-green-50 rounded-lg"
+                    class="p-2 hover-bg-green rounded-lg"
                     title="Assignar"
                   >
                     <CheckCircle :size="18" class="text-green-600" />
                   </button>
                   <button
-                    class="p-2 hover:bg-red-50 rounded-lg"
+                    class="p-2 hover-bg-red rounded-lg"
                     title="Eliminar"
                   >
                     <Trash2 :size="18" class="text-red-600" />

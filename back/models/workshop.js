@@ -9,9 +9,10 @@ export const getAll = async () => {
 
 export const getById = async (id) => {
   const result = await db.query(
-    `SELECT w.*, c.center_name, c.address as center_address, c.phone as center_phone 
+    `SELECT w.*, c.center_name, c.address as center_address, c.phone as center_phone, u.email as center_email 
      FROM workshops w
      LEFT JOIN centers c ON w.center_id = c.id_user
+     LEFT JOIN users u ON c.id_user = u.id
      WHERE w.id_workshop = $1`,
     [id]
   );

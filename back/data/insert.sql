@@ -1,36 +1,38 @@
--- Población de datos inicial (Ejemplos Extensos) --
+-- Limpiar y reiniciar secuencias
+TRUNCATE users, centers, teachers, students, workshops, workshop_teachers, center_requests, student_interest, workshop_enrollments RESTART IDENTITY CASCADE;
 
 -- ==========================================
 -- 1. USUARIOS (USERS)
 -- ==========================================
--- Admin (ID 1) se asume creado.
+-- Admin (ID 1)
+INSERT INTO users (email, password_hash, role, is_active)
+VALUES ('admin@workshop.com', '$2b$10$Ni4bF4TGBudgsxtSUHKw/eRsDKYa1Hsmp/lxZzbi9M/H3oK4Xk4Pm', 'ADMIN', TRUE);
+
 -- IDs 2-6: Centros
--- IDs 7-11: Profesores
--- IDs 12-16: Alumnos
 
 -- 1.1 Centros
 INSERT INTO users (email, password_hash, role, is_active) VALUES
-('centro1@ejemplo.com', '1234', 'CENTER', TRUE),
-('centro2@ejemplo.com', '1234', 'CENTER', TRUE),
-('centro3@ejemplo.com', '1234', 'CENTER', TRUE),
-('centro4@ejemplo.com', '1234', 'CENTER', TRUE),
-('centro5@ejemplo.com', '1234', 'CENTER', TRUE);
+('centro1@ejemplo.com', '$2b$10$Ni4bF4TGBudgsxtSUHKw/eRsDKYa1Hsmp/lxZzbi9M/H3oK4Xk4Pm', 'CENTER', TRUE),
+('centro2@ejemplo.com', '$2b$10$Ni4bF4TGBudgsxtSUHKw/eRsDKYa1Hsmp/lxZzbi9M/H3oK4Xk4Pm', 'CENTER', TRUE),
+('centro3@ejemplo.com', '$2b$10$Ni4bF4TGBudgsxtSUHKw/eRsDKYa1Hsmp/lxZzbi9M/H3oK4Xk4Pm', 'CENTER', TRUE),
+('centro4@ejemplo.com', '$2b$10$Ni4bF4TGBudgsxtSUHKw/eRsDKYa1Hsmp/lxZzbi9M/H3oK4Xk4Pm', 'CENTER', TRUE),
+('centro5@ejemplo.com', '$2b$10$Ni4bF4TGBudgsxtSUHKw/eRsDKYa1Hsmp/lxZzbi9M/H3oK4Xk4Pm', 'CENTER', TRUE);
 
 -- 1.2 Profesores
 INSERT INTO users (email, password_hash, role, is_active) VALUES
-('profe1@ejemplo.com', '1234', 'TEACHER', TRUE),
-('profe2@ejemplo.com', '1234', 'TEACHER', TRUE),
-('profe3@ejemplo.com', '1234', 'TEACHER', TRUE),
-('profe4@ejemplo.com', '1234', 'TEACHER', TRUE),
-('profe5@ejemplo.com', '1234', 'TEACHER', TRUE);
+('profe1@ejemplo.com', '$2b$10$Ni4bF4TGBudgsxtSUHKw/eRsDKYa1Hsmp/lxZzbi9M/H3oK4Xk4Pm', 'TEACHER', TRUE),
+('profe2@ejemplo.com', '$2b$10$Ni4bF4TGBudgsxtSUHKw/eRsDKYa1Hsmp/lxZzbi9M/H3oK4Xk4Pm', 'TEACHER', TRUE),
+('profe3@ejemplo.com', '$2b$10$Ni4bF4TGBudgsxtSUHKw/eRsDKYa1Hsmp/lxZzbi9M/H3oK4Xk4Pm', 'TEACHER', TRUE),
+('profe4@ejemplo.com', '$2b$10$Ni4bF4TGBudgsxtSUHKw/eRsDKYa1Hsmp/lxZzbi9M/H3oK4Xk4Pm', 'TEACHER', TRUE),
+('profe5@ejemplo.com', '$2b$10$Ni4bF4TGBudgsxtSUHKw/eRsDKYa1Hsmp/lxZzbi9M/H3oK4Xk4Pm', 'TEACHER', TRUE);
 
 -- 1.3 Alumnos
 INSERT INTO users (email, password_hash, role, is_active) VALUES
-('alumno1@ejemplo.com', '1234', 'STUDENT', TRUE),
-('alumno2@ejemplo.com', '1234', 'STUDENT', TRUE),
-('alumno3@ejemplo.com', '1234', 'STUDENT', TRUE),
-('alumno4@ejemplo.com', '1234', 'STUDENT', TRUE),
-('alumno5@ejemplo.com', '1234', 'STUDENT', TRUE);
+('alumno1@ejemplo.com', '$2b$10$Ni4bF4TGBudgsxtSUHKw/eRsDKYa1Hsmp/lxZzbi9M/H3oK4Xk4Pm', 'STUDENT', TRUE),
+('alumno2@ejemplo.com', '$2b$10$Ni4bF4TGBudgsxtSUHKw/eRsDKYa1Hsmp/lxZzbi9M/H3oK4Xk4Pm', 'STUDENT', TRUE),
+('alumno3@ejemplo.com', '$2b$10$Ni4bF4TGBudgsxtSUHKw/eRsDKYa1Hsmp/lxZzbi9M/H3oK4Xk4Pm', 'STUDENT', TRUE),
+('alumno4@ejemplo.com', '$2b$10$Ni4bF4TGBudgsxtSUHKw/eRsDKYa1Hsmp/lxZzbi9M/H3oK4Xk4Pm', 'STUDENT', TRUE),
+('alumno5@ejemplo.com', '$2b$10$Ni4bF4TGBudgsxtSUHKw/eRsDKYa1Hsmp/lxZzbi9M/H3oK4Xk4Pm', 'STUDENT', TRUE);
 
 
 -- ==========================================
@@ -74,11 +76,11 @@ INSERT INTO students (id_user, first_name, last_name, birth_date, phone, id_cent
 -- ==========================================
 -- Suponemos que auto-increment empieza en 1 -> 5
 INSERT INTO workshops (title, short_description, max_slots, start_date, end_date, available_slots, category, center_id) VALUES
-('Robótica Básica', 'Intro a Arduino',  16, '2025-05-10 09:00', '2025-05-10 13:00', 16, 'Tecnología', 2),
-('Diseño Web',      'HTML y CSS',       20, '2025-05-11 10:00', '2025-05-11 14:00', 20, 'Informática', 2),
-('Impresión 3D',    'Modelado básico',  10, '2025-05-12 16:00', '2025-05-12 19:00', 10, 'Fabricación', 3),
-('Ciberseguridad',  'Hacking ético',    15, '2025-06-01 09:00', '2025-06-01 13:00', 15, 'Seguridad',   3),
-('IA para Todos',   'Conceptos de LLM', 25, '2025-06-02 10:00', '2025-06-02 12:00', 25, 'IA',          4);
+('Robòtica bàsica', 'Introducció a Arduino',  16, '2025-05-10 09:00', '2025-05-10 13:00', 16, 'Tecnologia', 2),
+('Disseny Web',      'HTML i CSS',          20, '2025-05-11 10:00', '2025-05-11 14:00', 20, 'Informàtica', 2),
+('Impressió 3D',    'Modelatge bàsic',      10, '2025-05-12 16:00', '2025-05-12 19:00', 10, 'Fabricació', 3),
+('Ciberseguretat',  'Hacking ètic',        15, '2025-06-01 09:00', '2025-06-01 13:00', 15, 'Seguretat',   3),
+('IA per a tots',   'Conceptes de LLM',     25, '2025-06-02 10:00', '2025-06-02 12:00', 25, 'IA',          4);
 
 
 -- ==========================================

@@ -1,5 +1,5 @@
 <template>
-  <div class="space-y-6">
+  <div class="space-y-6 pb-12">
     <h1 class="text-2xl font-semibold" style="color: var(--text-primary); text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid var(--border-color); padding-bottom: 1rem; margin-bottom: 1.5rem;">
       Tauler d'Administració
     </h1>
@@ -8,7 +8,7 @@
       <div class="stat-card-blue text-white p-5">
         <div class="flex items-start justify-between">
           <div>
-            <p class="text-sm" style="opacity: 0.9; margin-bottom: 0.5rem; font-weight: 500;">Total Peticions</p>
+            <p class="text-sm" style="opacity: 0.9; margin-bottom: 0.5rem; font-weight: 500;">Total de peticions</p>
             <p class="text-3xl font-bold">24</p>
           </div>
           <FileText :size="32" style="opacity: 0.75;" />
@@ -38,7 +38,7 @@
       <div class="stat-card-purple text-white p-5">
         <div class="flex items-start justify-between">
           <div>
-            <p class="text-sm" style="opacity: 0.9; margin-bottom: 0.5rem; font-weight: 500;">Centres Actius</p>
+            <p class="text-sm" style="opacity: 0.9; margin-bottom: 0.5rem; font-weight: 500;">Centres actius</p>
             <p class="text-3xl font-bold">12</p>
           </div>
           <Users :size="32" style="opacity: 0.75;" />
@@ -49,7 +49,7 @@
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
       <div class="card p-6">
         <h2 class="text-lg font-semibold mb-4" style="color: var(--text-primary); padding-bottom: 0.75rem; border-bottom: 1px solid var(--border-color);">
-          Peticions per Estat
+          Peticions per estat
         </h2>
         <div class="space-y-3">
           <div class="flex items-center justify-between p-3" style="background-color: #e8f5e9; border-left: 4px solid var(--success);">
@@ -65,7 +65,7 @@
 
       <div class="card p-6">
         <h2 class="text-lg font-semibold mb-4" style="color: var(--text-primary); padding-bottom: 0.75rem; border-bottom: 1px solid var(--border-color);">
-          Tallers Més Sol·licitats
+          Tallers més sol·licitats
         </h2>
         <div class="space-y-3">
           <div class="flex items-center justify-between py-2" style="border-bottom: 1px solid var(--border-color);">

@@ -4,7 +4,7 @@
 
     <div class="card p-6">
       <h2 class="text-xl font-semibold text-gray-800 mb-4">
-        Assignació Manual
+        Assignació manual
       </h2>
 
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -20,7 +20,7 @@
 
         <div>
           <label class="block text-sm font-medium text-gray-700 mb-2">
-            Places Assignades
+            Places assignades
           </label>
           <input
             type="number"
@@ -31,7 +31,7 @@
 
         <div>
           <label class="block text-sm font-medium text-gray-700 mb-2">
-            Professor Referent 1
+            Professor referent 1
           </label>
           <select class="w-full border border-gray-300 rounded-lg px-4 py-2">
             <option>Selecciona professor...</option>
@@ -42,7 +42,7 @@
 
         <div>
           <label class="block text-sm font-medium text-gray-700 mb-2">
-            Professor Referent 2
+            Professor referent 2
           </label>
           <select class="w-full border border-gray-300 rounded-lg px-4 py-2">
             <option>Selecciona professor...</option>
@@ -65,10 +65,10 @@
 
       <div class="flex gap-4 mt-6">
         <button class="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 flex items-center gap-2">
-          <CheckCircle :size="20" /> Confirmar Assignació
+          <CheckCircle :size="20" /> Confirmar assignació
         </button>
         <button class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 flex items-center gap-2">
-          <Send :size="20" /> Enviar Notificació
+          <Send :size="20" /> Enviar notificació
         </button>
       </div>
     </div>

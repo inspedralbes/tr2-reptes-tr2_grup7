@@ -1,13 +1,13 @@
 <template>
-  <div class="space-y-6">
-    <h1 class="text-2xl font-semibold" style="color: var(--text-primary); text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid var(--border-color); padding-bottom: 1rem; margin-bottom: 1.5rem;">Els Meus Tallers</h1>
+  <div class="space-y-6 pb-12">
+    <h1 class="text-2xl font-semibold" style="color: var(--text-primary); text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid var(--border-color); padding-bottom: 1rem; margin-bottom: 1.5rem;">Els meus tallers</h1>
 
     <div v-if="loading" class="text-center py-10">
       <p style="color: var(--text-secondary);">Carregant tallers...</p>
     </div>
 
     <div v-else-if="workshops.length === 0" class="text-center py-10 card">
-      <p style="color: var(--text-secondary);">No tens cap taller assignat actualment.</p>
+      <p style="color: var(--text-secondary);">Actualment no tens cap taller assignat.</p>
     </div>
 
     <div v-else class="grid grid-cols-1 md:grid-cols-3 gap-5">
@@ -40,12 +40,12 @@
                 @click="goToDetail(workshop.id_workshop)" 
                 class="w-full mt-3 btn-primary py-2" 
                 :style="{ backgroundColor: getCategoryColor(workshop.category).text + ' !important' }">
-          Veure Detalls
+          Veure detalls
         </button>
         <button v-else 
                 @click="goToDetail(workshop.id_workshop)" 
                 class="w-full mt-3 btn-outline py-2">
-          Veure Historial
+          Veure historial
         </button>
       </div>
     </div>
@@ -53,7 +53,7 @@
     <!-- Pròximes Sessions - Static for now but could be dynamic later -->
     <div class="card p-6">
       <h2 class="text-lg font-semibold mb-4" style="color: var(--text-primary); padding-bottom: 0.75rem; border-bottom: 1px solid var(--border-color);">
-        Pròximes Sessions
+        Pròximes sessions
       </h2>
       <div v-if="workshops.length > 0" class="space-y-3">
         <div v-for="(workshop, index) in workshops.slice(0, 2)" :key="'session-' + workshop.id_workshop" 
@@ -155,9 +155,12 @@ const getCategoryColor = (category) => {
     'Tecnologia': { bg: '#e3f2fd', text: 'var(--primary)' },
     'Ciència': { bg: '#f3e5f5', text: '#7b1fa2' },
     'Arts': { bg: '#fff3e0', text: 'var(--secondary)' },
+    'Informàtica': { bg: '#e8f5e9', text: '#2e7d32' },
+    'Fabricació': { bg: '#efebe9', text: '#5d4037' },
+    'Seguretat': { bg: '#ffebee', text: '#c62828' },
+    'IA': { bg: '#f3e5f5', text: '#6a1b9a' },
     'default': { bg: '#f5f5f5', text: '#666' }
   };
   return colors[category] || colors.default;
 };
 </script>
-

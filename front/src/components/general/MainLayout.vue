@@ -1,6 +1,6 @@
 <template>
   <div class="min-h-screen" style="background-color: var(--background-alt);">
-    <!-- Header Superior - Navegación Principal Horizontal -->
+    <!-- Capçalera Superior - Navegació Principal Horizontal -->
     <header class="header" style="position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
       <div class="flex items-center justify-between px-6 py-3">
         <!-- Logo y Título -->
@@ -14,19 +14,22 @@
 
         <!-- User Info & Logout -->
         <div class="flex items-center gap-4">
-          <div class="flex items-center gap-2" style="border-left: 1px solid rgba(255,255,255,0.3); padding-left: 1rem;">
-            <span class="text-sm text-white font-medium">{{ getRoleName() }}</span>
-            <div style="width: 32px; height: 32px; background: rgba(255,255,255,0.2); border-radius: 3px; display: flex; align-items: center; justify-content: center;">
-              <span class="text-white font-semibold text-sm">{{ getRoleInitial() }}</span>
+          <div class="flex items-center gap-3" style="border-left: 1px solid rgba(255,255,255,0.2); padding-left: 1.5rem;">
+            <div class="user-profile-badge">
+              {{ getRoleInitial() }}
+            </div>
+            <div class="flex flex-col">
+              <span class="text-xs text-white opacity-75 leading-none mb-1">Benvingut/da</span>
+              <span class="text-sm text-white font-semibold leading-none">{{ getRoleName() }}</span>
             </div>
           </div>
           <button 
             @click="handleLogout" 
-            class="flex items-center gap-2 px-3 py-1.5 rounded bg-white bg-opacity-10 hover:bg-opacity-20 text-white transition-all"
+            class="logout-button"
             title="Tancar sessió"
           >
-            <LogOut :size="18" />
-            <span class="text-xs font-medium">Sortir</span>
+            <LogOut :size="16" />
+            <span>Sortir</span>
           </button>
         </div>
       </div>
@@ -50,9 +53,9 @@
       </div>
     </header>
 
-    <!-- Layout: Sidebar Izquierdo + Contenido Principal -->
+    <!-- Disseny: Barra lateral esquerra + Contingut principal -->
     <div class="flex">
-      <!-- Sidebar Izquierdo - Submenú -->
+      <!-- Barra lateral esquerra - Submenú -->
       <aside class="sidebar" style="width: 240px; border-right: 1px solid var(--border-color); overflow-y: auto; position: fixed; top: 160px; left: 0; height: calc(100vh - 130px); z-index: 50;">
         <div class="p-4">
           <h3 class="text-xs font-semibold mb-3 px-4" style="color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px;">
@@ -71,13 +74,13 @@
               :disabled="!subsection.route"
             >
               {{ subsection.name }}
-              <span v-if="!subsection.route" class="text-xs ml-2">(próximamente)</span>
+              <span v-if="!subsection.route" class="text-xs ml-2">(pròximament)</span>
             </button>
           </nav>
         </div>
       </aside>
 
-      <!-- Contenido Principal -->
+      <!-- Contingut Principal -->
       <main class="flex-1 p-6" style="background-color: white; margin-left: 240px;">
         <router-view />
       </main>
@@ -277,7 +280,7 @@ const currentSubsections = computed(() => {
 // Métodos
 const getRoleName = () => {
   if (!user.value) return '';
-  return user.value.name || 'Usuario';
+  return user.value.name || 'Usuari';
 };
 
 const getRoleInitial = () => {
