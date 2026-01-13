@@ -7,7 +7,7 @@ const router = createRouter({
     {
       path: '/login',
       name: 'login',
-      component: () => import('../components/general/loginAll.vue'),
+      component: () => import('../components/general/login.vue'),
     },
     // Layout principal con rutas protegidas
     {
