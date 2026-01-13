@@ -1,32 +1,32 @@
 <template>
-  <div class="min-h-screen" style="background-color: var(--background-alt);">
+  <div class="min-h-screen" style="background-color: var(--background-alt)">
     <!-- Header Superior - Navbar sin funcionalidad -->
-    <header class="header" style="position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+    <header
+      class="header"
+      style="position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1)"
+    >
       <div class="flex items-center justify-between px-6 py-3">
         <!-- Logo y Título -->
         <div class="flex items-center gap-4">
-          <img :src="'/logo.png'" alt="Logo" style="height: 70px;">
+          <img src="/img/logo.jpg" alt="Logo" style="height: 70px" />
           <div>
             <h1 class="text-lg font-semibold text-white">Sistema Tallers Educatius</h1>
-            <p class="text-xs text-white" style="opacity: 0.85;">Consorci d'Educació de Barcelona</p>
+            <p class="text-xs text-white" style="opacity: 0.85">Consorci d'Educació de Barcelona</p>
           </div>
         </div>
 
         <!-- Info visual sin enlaces -->
         <div class="flex items-center gap-3">
-          <div class="flex items-center gap-2">
-          </div>
+          <div class="flex items-center gap-2"></div>
         </div>
       </div>
 
       <!-- Barra de navegación visual (sin funcionalidad) -->
-      <div style="background-color: rgba(0,0,0,0.1); border-top: 1px solid rgba(255,255,255,0.1);">
+      <div
+        style="background-color: rgba(0, 0, 0, 0.1); border-top: 1px solid rgba(255, 255, 255, 0.1)"
+      >
         <nav class="flex px-6">
-          <button
-            class="px-6 py-3 text-sm font-medium text-white"
-            style="cursor: default;"
-            disabled
-          >
+          <button class="px-6 py-3 text-sm font-medium text-white" style="cursor: default" disabled>
             Inici
           </button>
         </nav>
@@ -34,14 +34,17 @@
     </header>
 
     <!-- Contenido Principal - Formulario de Login Centrado -->
-    <div class="flex items-center justify-center" style="min-height: calc(100vh - 160px); padding: 2rem;">
-      <div class="card" style="max-width: 450px; width: 100%; padding: 3rem !important;">
+    <div
+      class="flex items-center justify-center"
+      style="min-height: calc(100vh - 160px); padding: 2rem"
+    >
+      <div class="card" style="max-width: 450px; width: 100%; padding: 3rem !important">
         <!-- Título -->
-        <div style="text-align: center; margin-bottom: 2rem;">
-          <h2 class="text-2xl font-semibold" style="color: var(--primary); margin-bottom: 0.5rem;">
+        <div style="text-align: center; margin-bottom: 2rem">
+          <h2 class="text-2xl font-semibold" style="color: var(--primary); margin-bottom: 0.5rem">
             Iniciar Sessió
           </h2>
-          <p class="text-sm" style="color: var(--text-secondary);">
+          <p class="text-sm" style="color: var(--text-secondary)">
             Introdueix les teves credencials per accedir
           </p>
         </div>
@@ -50,7 +53,11 @@
         <form @submit.prevent="handleLogin" class="space-y-5">
           <!-- Campo Email -->
           <div>
-            <label for="email" class="block text-sm font-semibold mb-2" style="color: var(--text-primary);">
+            <label
+              for="email"
+              class="block text-sm font-semibold mb-2"
+              style="color: var(--text-primary)"
+            >
               Correu Electrònic *
             </label>
             <input
@@ -60,13 +67,22 @@
               class="w-full"
               placeholder="exemple@correu.com"
               required
-              style="padding: 0.75rem; border: 1px solid var(--border-color); font-size: 0.875rem; transition: all 0.25s ease;"
+              style="
+                padding: 0.75rem;
+                border: 1px solid var(--border-color);
+                font-size: 0.875rem;
+                transition: all 0.25s ease;
+              "
             />
           </div>
 
           <!-- Campo Contraseña -->
           <div>
-            <label for="password" class="block text-sm font-semibold mb-2" style="color: var(--text-primary);">
+            <label
+              for="password"
+              class="block text-sm font-semibold mb-2"
+              style="color: var(--text-primary)"
+            >
               Contrasenya *
             </label>
             <input
@@ -76,36 +92,50 @@
               class="w-full"
               placeholder="Introdueix la teva contrasenya"
               required
-              style="padding: 0.75rem; border: 1px solid var(--border-color); font-size: 0.875rem; transition: all 0.25s ease;"
+              style="
+                padding: 0.75rem;
+                border: 1px solid var(--border-color);
+                font-size: 0.875rem;
+                transition: all 0.25s ease;
+              "
             />
           </div>
 
           <!-- Opciones adicionales -->
-          <div class="flex items-center justify-between" style="padding-top: 0.5rem;">
-            <label class="flex items-center gap-2" style="cursor: pointer;">
-              <input 
-                type="checkbox" 
+          <div class="flex items-center justify-between" style="padding-top: 0.5rem">
+            <label class="flex items-center gap-2" style="cursor: pointer">
+              <input
+                type="checkbox"
                 v-model="rememberMe"
-                style="width: 16px; height: 16px; cursor: pointer;"
+                style="width: 16px; height: 16px; cursor: pointer"
               />
-              <span class="text-sm" style="color: var(--text-secondary);">Recordar-me</span>
+              <span class="text-sm" style="color: var(--text-secondary)">Recordar-me</span>
             </label>
-            <a href="#" class="text-sm" style="color: var(--primary); text-decoration: none;">
+            <a href="#" class="text-sm" style="color: var(--primary); text-decoration: none">
               Has oblidat la contrasenya?
             </a>
           </div>
 
           <!-- Mensaje de error -->
-          <div v-if="error" style="padding: 0.75rem; background-color: #fee; border: 1px solid #fcc; border-radius: 4px; margin-top: 1rem;">
-            <p class="text-sm" style="color: #c33; text-align: center;">
+          <div
+            v-if="error"
+            style="
+              padding: 0.75rem;
+              background-color: #fee;
+              border: 1px solid #fcc;
+              border-radius: 4px;
+              margin-top: 1rem;
+            "
+          >
+            <p class="text-sm" style="color: #c33; text-align: center">
               {{ error }}
             </p>
           </div>
 
           <!-- Botón de login -->
-          <div style="padding-top: 1rem;">
-            <button 
-              type="submit" 
+          <div style="padding-top: 1rem">
+            <button
+              type="submit"
               class="btn-primary w-full py-3"
               :disabled="loading"
               :style="loading ? 'opacity: 0.7; cursor: not-allowed;' : ''"
@@ -115,9 +145,17 @@
           </div>
 
           <!-- Mensaje informativo -->
-          <div class="text-center" style="padding-top: 1rem; border-top: 1px solid var(--border-color); margin-top: 1.5rem !important;">
-            <p class="text-xs" style="color: var(--text-secondary); line-height: 1.5;">
-              El sistema detectarà automàticament el teu rol (Centre Educatiu, Professor o Administració) segons el teu correu electrònic.
+          <div
+            class="text-center"
+            style="
+              padding-top: 1rem;
+              border-top: 1px solid var(--border-color);
+              margin-top: 1.5rem !important;
+            "
+          >
+            <p class="text-xs" style="color: var(--text-secondary); line-height: 1.5">
+              El sistema detectarà automàticament el teu rol (Centre Educatiu, Professor o
+              Administració) segons el teu correu electrònic.
             </p>
           </div>
         </form>
@@ -134,7 +172,7 @@ import { login } from '../../services/authService'
 const router = useRouter()
 
 const email = ref('')
-const password = ref('') 
+const password = ref('')
 const rememberMe = ref(false)
 const error = ref('')
 const loading = ref(false)
@@ -146,12 +184,12 @@ const handleLogin = async () => {
 
   try {
     console.log('Intentando login con:', email.value, password.value)
-    
+
     // Llamar al servicio de autenticación
     const response = await login(email.value, password.value)
-    
+
     console.log('Login exitoso:', response)
-    
+
     // Redirigir según el rol del usuario
     if (response.user.role === 'ADMIN') {
       router.push('/admin/panel')
@@ -173,20 +211,20 @@ const handleLogin = async () => {
 
 <style scoped>
 /* Estilos personalizados para inputs con focus */
-input[type="email"]:focus,
-input[type="password"]:focus {
+input[type='email']:focus,
+input[type='password']:focus {
   outline: none;
   border-color: var(--primary);
   box-shadow: 0 0 0 3px rgba(0, 66, 107, 0.1);
 }
 
-input[type="email"]:hover,
-input[type="password"]:hover {
+input[type='email']:hover,
+input[type='password']:hover {
   border-color: var(--gray-300);
 }
 
 /* Ajuste para el checkbox */
-input[type="checkbox"]:checked {
+input[type='checkbox']:checked {
   accent-color: var(--primary);
 }
 

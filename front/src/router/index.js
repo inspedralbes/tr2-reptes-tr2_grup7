@@ -7,7 +7,7 @@ const router = createRouter({
     {
       path: '/login',
       name: 'login',
-      component: () => import('../components/general/login.vue')
+      component: () => import('../components/general/loginAll.vue'),
     },
     // Layout principal con rutas protegidas
     {
@@ -18,47 +18,47 @@ const router = createRouter({
         {
           path: 'centro/panel',
           name: 'centro-panel',
-          component: () => import('../components/views/centre/PanelCentro.vue')
+          component: () => import('../components/views/centre/PanelCentro.vue'),
         },
         {
           path: 'centro/catalogo',
           name: 'centro-catalogo',
-          component: () => import('../components/shared/CatalogoTalleres.vue')
+          component: () => import('../components/shared/CatalogoTalleres.vue'),
         },
         {
           path: 'centro/nueva-peticion',
           name: 'centro-nueva-peticion',
-          component: () => import('../components/views/centre/NuevaPeticion.vue')
+          component: () => import('../components/views/centre/NuevaPeticion.vue'),
         },
         // Rutas de Administración
         {
           path: 'admin/panel',
           name: 'admin-panel',
-          component: () => import('../components/views/admin/PanelAdmin.vue')
+          component: () => import('../components/views/admin/PanelAdmin.vue'),
         },
         {
           path: 'admin/peticiones',
           name: 'admin-peticiones',
-          component: () => import('../components/views/admin/GestionPeticiones.vue')
+          component: () => import('../components/views/admin/GestionPeticiones.vue'),
         },
         {
           path: 'admin/asignacion',
           name: 'admin-asignacion',
-          component: () => import('../components/views/admin/HerramientaAsignacion.vue')
+          component: () => import('../components/views/admin/HerramientaAsignacion.vue'),
         },
         // Rutas de Profesor
         {
           path: 'profesor/talleres',
           name: 'profesor-talleres',
-          component: () => import('../components/views/profesor/PanelProfesor.vue')
+          component: () => import('../components/views/profesor/PanelProfesor.vue'),
         },
         {
           path: 'profesor/detalle/:id?',
           name: 'profesor-detalle',
-          component: () => import('../components/shared/DetalleTaller.vue')
-        }
-      ]
-    }
+          component: () => import('../components/shared/DetalleTaller.vue'),
+        },
+      ],
+    },
   ],
 })
 
@@ -66,7 +66,7 @@ const router = createRouter({
 router.beforeEach((to, from, next) => {
   const token = localStorage.getItem('token')
   const user = localStorage.getItem('user')
-  
+
   // Si intenta acceder a / sin estar autenticado, ir a login
   if (to.path === '/' && !token) {
     next('/login')
@@ -87,7 +87,7 @@ router.beforeEach((to, from, next) => {
   // Si intenta acceder a una ruta protegida sin estar autenticado
   else if (to.path !== '/login' && !token) {
     next('/login')
-  } 
+  }
   // Si está autenticado e intenta ir a login, redirigir a su panel
   else if (to.path === '/login' && token && user) {
     const userData = JSON.parse(user)
@@ -100,8 +100,7 @@ router.beforeEach((to, from, next) => {
     } else {
       next()
     }
-  }
-  else {
+  } else {
     next()
   }
 })
