@@ -47,6 +47,11 @@ const router = createRouter({
           component: () => import('../components/views/admin/HerramientaAsignacion.vue')
         },
         {
+          path: 'admin/profesores',
+          name: 'admin-profesores',
+          component: () => import('../components/views/admin/GestionProfesores.vue')
+        },
+        {
           path: 'admin/talleres',
           name: 'admin-talleres',
           component: () => import('../components/views/admin/GestionTalleres.vue')

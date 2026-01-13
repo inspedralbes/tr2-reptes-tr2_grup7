@@ -162,7 +162,7 @@ const navigationStructure = {
       name: 'Dashboard',
       subsections: [
         { id: 'dashboard', name: 'Resum General', route: '/admin/panel' },
-        { id: 'estadistiques', name: 'Estadístiques', route: null }
+        { id: 'estadistiques', name: 'Estadístiques', route: '/admin/panel' }
       ]
     },
     {
@@ -170,8 +170,8 @@ const navigationStructure = {
       name: 'Peticions',
       subsections: [
         { id: 'peticions', name: 'Totes les Peticions', route: '/admin/peticiones' },
-        { id: 'pendents', name: 'Pendents', route: null },
-        { id: 'assignades', name: 'Assignades', route: null }
+        { id: 'pendents', name: 'Pendents', route: '/admin/peticiones' },
+        { id: 'assignades', name: 'Assignades', route: '/admin/peticiones' }
       ]
     },
     {
@@ -179,7 +179,7 @@ const navigationStructure = {
       name: 'Assignació',
       subsections: [
         { id: 'assignacio', name: 'Eina Assignació', route: '/admin/asignacion' },
-        { id: 'professors', name: 'Professors Disponibles', route: null }
+        { id: 'professors', name: 'Professors Disponibles', route: '/admin/profesores' }
       ]
     },
     {
@@ -195,7 +195,7 @@ const navigationStructure = {
       name: 'Centres',
       subsections: [
         { id: 'llista-centres', name: 'Llista Centres', route: '/admin/centros' },
-        { id: 'estadistiques-centres', name: 'Estadístiques', route: null }
+        { id: 'estadistiques-centres', name: 'Estadístiques', route: '/admin/centros' }
       ]
     }
   ],
