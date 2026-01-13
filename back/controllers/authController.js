@@ -6,28 +6,34 @@ export const login = async (req, res) => {
   const { email, password } = req.body;
 
   try {
+    console.log("🔐 Login attempt for email:", email);
+    
     // 1. Buscar al usuario por email
     const user = await User.findByEmail(email);
-    // const result = await db.query("SELECT * FROM users WHERE email = $1", [
-    //   email,
-    // ]);
-    // const user = result.rows[0];
+    
+    if (!user) {
+      console.log("❌ User not found:", email);
+      return res.status(401).json({ error: "Invalid credentials" });
+    }
 
-    // 2. Si no existe o la contraseña no coincide (usamos bcrypt)
-    // No decimos cuál de las dos falla por seguridad
-    if (!user || !(await bcrypt.compare(password, user.password_hash))) {
+    console.log("✅ User found:", { id: user.id, email: user.email, role: user.role });
+
+    // 2. Verificar contraseña
+    const passwordMatch = await bcrypt.compare(password, user.password_hash);
+    console.log("🔑 Password match:", passwordMatch);
+    
+    if (!passwordMatch) {
+      console.log("❌ Invalid password for:", email);
       return res.status(401).json({ error: "Invalid credentials" });
     }
 
     // 3. Generar el Token (JWT)
-    // Guardamos el id y el rol dentro del token
     const token = jwt.sign(
-      { id: user.id_user, role: user.role },
+      { id: user.id, role: user.role },
       process.env.JWT_SECRET,
-      { expiresIn: "8h" } // El token caduca en 8 horas
+      { expiresIn: "8h" }
     );
 
-    // 4. Responder al Front con lo que necesita
     // 4. Responder al Front con lo que necesita
     const userData = {
       role: user.role,
@@ -36,18 +42,22 @@ export const login = async (req, res) => {
 
     if (user.role === "CENTER") {
       userData.name = user.center_name;
-      userData.id_center = user.id; // Center's ID is the User ID
+      userData.id_center = user.id;
+    } else if (user.role === "ADMIN") {
+      userData.name = email.split('@')[0]; // Use email prefix for admin
     } else {
       userData.name = user.first_name;
       userData.id_center = user.id_center_assigned;
     }
+
+    console.log("✅ Login successful for:", email, "Role:", user.role);
 
     res.json({
       token,
       user: userData,
     });
   } catch (error) {
-    console.error("Login error:", error);
+    console.error("❌ Login error:", error);
     res.status(500).json({ error: "Internal server error" });
   }
 };
