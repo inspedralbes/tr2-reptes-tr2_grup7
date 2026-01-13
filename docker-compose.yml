@@ -39,7 +39,7 @@ services:
       dockerfile: Dockerfile.dev
     container_name: backend_dev
     # Usamos 'npm run dev' para que nodemon funcione
-    command: npm start
+    command: npm run dev
     ports:
       - "${PORT_BACKEND}:3000"
     volumes:
@@ -49,6 +49,7 @@ services:
       NODE_ENV: development
       DATABASE_URL: ${DATABASE_URL}
       JWT_SECRET: ${JWT_SECRET}
+      CHOKIDAR_USEPOLLING: true
     depends_on:
       db:
         condition: service_healthy
@@ -67,6 +68,7 @@ services:
       - /app/node_modules
     environment:
       - VITE_API_URL=${VITE_API_URL}
+      - CHOKIDAR_USEPOLLING=true
     depends_on:
       - backend
 

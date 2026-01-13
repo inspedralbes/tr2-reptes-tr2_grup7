@@ -36,6 +36,9 @@ CREATE TABLE students (
     birth_date DATE,
     phone VARCHAR(20),
     id_center_assigned INT,
+    eso_grade INT NOT NULL CHECK (eso_grade BETWEEN 1 AND 4), -- [cite: 148, 158]
+    gender CHAR(1) NOT NULL CHECK (gender IN ('M', 'F', 'O')), -- M=Masculino, F=Femenino, O=Otros 
+    is_at_risk BOOLEAN DEFAULT FALSE,
     CONSTRAINT fk_user_student FOREIGN KEY (id_user) REFERENCES users(id) ON DELETE CASCADE,
     CONSTRAINT fk_student_center FOREIGN KEY (id_center_assigned) REFERENCES centers(id_user) ON DELETE SET NULL
 );
