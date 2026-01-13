@@ -101,7 +101,7 @@ CREATE TABLE workshop_enrollments (
 -- Password: 123 (bcrypt hash with 10 rounds)
 -- Use the fix-admin-password.js script to regenerate this hash if needed
 INSERT INTO users (email, password_hash, role, is_active)
-VALUES ('admin@workshop.com', '$2b$10$N9qo8uLOickgx2ZMRZoMye7FRNpZeS2wT6W83YHVe6JwZuMzCqP8O', 'ADMIN', TRUE);
+VALUES ('admin@workshop.com', '123', 'ADMIN', TRUE);
 
 
 
@@ -237,4 +237,3 @@ INSERT INTO workshop_enrollments (id_workshop, id_student) VALUES
 (3, 14), -- Lucía inscrita en Impresión 3D
 (1, 12), -- María inscrita en Robótica
 (5, 15); -- Miguel inscrito en IA
-VALUES ('admin@workshop.com', '123', 'ADMIN', TRUE);
