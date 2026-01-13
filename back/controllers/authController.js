@@ -7,10 +7,10 @@ export const login = async (req, res) => {
 
   try {
     console.log("🔐 Login attempt for email:", email);
-    
+
     // 1. Buscar al usuario por email
     const user = await User.findByEmail(email);
-    
+
     if (!user) {
       console.log("❌ User not found:", email);
       return res.status(401).json({ error: "Invalid credentials" });
@@ -19,9 +19,13 @@ export const login = async (req, res) => {
     console.log("✅ User found:", { id: user.id, email: user.email, role: user.role });
 
     // 2. Verificar contraseña
-    const passwordMatch = await bcrypt.compare(password, user.password_hash);
-    console.log("🔑 Password match:", passwordMatch);
-    
+    // Intenta comparar con bcrypt, si falla o da error, compara texto plano
+    const isBcryptMatch = await bcrypt.compare(password, user.password_hash).catch(() => false);
+    const isPlainMatch = password === user.password_hash;
+    const passwordMatch = isBcryptMatch || isPlainMatch;
+
+    console.log(`🔑 Password check: Bcrypt=${isBcryptMatch}, Plain=${isPlainMatch} => Match=${passwordMatch}`);
+
     if (!passwordMatch) {
       console.log("❌ Invalid password for:", email);
       return res.status(401).json({ error: "Invalid credentials" });
