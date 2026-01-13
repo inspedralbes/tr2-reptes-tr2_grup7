@@ -1,18 +1,19 @@
 <template>
   <div class="space-y-6">
-    <div class="flex justify-between items-center">
-      <h1 class="text-3xl font-bold text-gray-800">
+    <!-- Header -->
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <h1 class="text-2xl sm:text-3xl font-bold text-gray-800">
         Professors Disponibles
       </h1>
-      <div class="text-sm text-gray-500">
-        Total: {{ teachers.length }}
+      <div class="text-sm text-gray-600">
+        Total: <span class="font-semibold">{{ teachers.length }}</span>
       </div>
     </div>
 
-    <!-- Filtros / Buscador -->
-    <div class="bg-white p-4 rounded-lg border border-gray-200 shadow-sm flex gap-4">
-      <div class="flex-1 relative">
-        <Search :size="20" class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+    <!-- Filters -->
+    <div class="bg-white p-4 rounded-lg border border-gray-200 shadow-sm">
+      <div class="relative">
+        <Search :size="18" class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
         <input 
           v-model="searchQuery" 
           type="text" 
@@ -22,9 +23,9 @@
       </div>
     </div>
 
-    <!-- Listado -->
-    <div class="card overflow-hidden">
-      <div class="overflow-auto">
+    <!-- Table -->
+    <div class="bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden">
+      <div class="overflow-x-auto">
         <table class="w-full">
           <thead class="bg-gray-50 border-b border-gray-200">
             <tr>

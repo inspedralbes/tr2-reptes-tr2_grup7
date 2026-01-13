@@ -1,37 +1,41 @@
 <template>
   <div class="space-y-6">
-    <div class="flex justify-between items-center">
-      <h1 class="text-3xl font-bold text-gray-800">
+    <!-- Header -->
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <h1 class="text-2xl sm:text-3xl font-bold text-gray-800">
         Gestió de Tallers
       </h1>
-      <button @click="openModal()" class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 flex items-center gap-2">
-        <Plus :size="20" /> Nou Taller
+      <button @click="openModal()" class="bg-blue-600 text-white px-4 sm:px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center gap-2 shadow-sm">
+        <Plus :size="20" /> 
+        <span>Nou Taller</span>
       </button>
     </div>
 
-    <!-- Filtros / Buscador -->
-    <div class="bg-white p-4 rounded-lg border border-gray-200 shadow-sm flex gap-4">
-      <div class="flex-1 relative">
-        <Search :size="20" class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-        <input 
-          v-model="searchQuery" 
-          type="text" 
-          placeholder="Cercar tallers per títol..." 
-          class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-        >
+    <!-- Filters -->
+    <div class="bg-white p-4 rounded-lg border border-gray-200 shadow-sm">
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div class="sm:col-span-2 relative">
+          <Search :size="18" class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+          <input 
+            v-model="searchQuery" 
+            type="text" 
+            placeholder="Cercar tallers per títol..." 
+            class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+          >
+        </div>
+        <select v-model="filterStatus" class="border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500">
+          <option value="ALL">Tots els estats</option>
+          <option value="OFFERED">Oberts</option>
+          <option value="FULL">Plens</option>
+          <option value="PENDING">Pendents</option>
+          <option value="ARCHIVED">Arxivats</option>
+        </select>
       </div>
-      <select v-model="filterStatus" class="border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500">
-        <option value="ALL">Tots els estats</option>
-        <option value="OFFERED">Oberts</option>
-        <option value="FULL">Plens</option>
-        <option value="PENDING">Pendents</option>
-        <option value="ARCHIVED">Arxivats</option>
-      </select>
     </div>
 
-    <!-- Listado -->
-    <div class="card overflow-hidden">
-      <div class="overflow-auto">
+    <!-- Table -->
+    <div class="bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden">
+      <div class="overflow-x-auto">
         <table class="w-full">
           <thead class="bg-gray-50 border-b border-gray-200">
             <tr>
