@@ -186,15 +186,15 @@ const navigationStructure = {
       id: 'tallers',
       name: 'Tallers',
       subsections: [
-        { id: 'gestio-tallers', name: 'Gestió Tallers', route: null },
-        { id: 'nou-taller', name: 'Crear Taller', route: null }
+        { id: 'gestio-tallers', name: 'Gestió Tallers', route: '/admin/talleres' },
+        { id: 'nou-taller', name: 'Crear Taller', route: '/admin/talleres' }
       ]
     },
     {
       id: 'centres',
       name: 'Centres',
       subsections: [
-        { id: 'llista-centres', name: 'Llista Centres', route: null },
+        { id: 'llista-centres', name: 'Llista Centres', route: '/admin/centros' },
         { id: 'estadistiques-centres', name: 'Estadístiques', route: null }
       ]
     }
