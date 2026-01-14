@@ -1,80 +1,89 @@
 <template>
   <div class="space-y-6">
-    <h1 class="text-2xl font-semibold" style="color: var(--text-primary); text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid var(--border-color); padding-bottom: 1rem; margin-bottom: 1.5rem;">
-      Tauler d'Administració
-    </h1>
+    <!-- Header -->
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <h1 class="text-2xl sm:text-3xl font-bold text-gray-800">
+        Tauler d'Administració
+      </h1>
+    </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-4 gap-5">
-      <div class="stat-card-blue text-white p-5">
+    <!-- Stats Cards -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-5">
+      <div class="stat-card-blue text-white p-5 rounded-lg shadow-sm">
         <div class="flex items-start justify-between">
           <div>
-            <p class="text-sm" style="opacity: 0.9; margin-bottom: 0.5rem; font-weight: 500;">Total Peticions</p>
+            <p class="text-sm opacity-90 mb-2 font-medium">Total Peticions</p>
             <p class="text-3xl font-bold">{{ stats.totalRequests }}</p>
           </div>
-          <FileText :size="32" style="opacity: 0.75;" />
+          <FileText :size="32" class="opacity-75" />
         </div>
       </div>
 
-      <div class="stat-card-green text-white p-5">
+      <div class="stat-card-green text-white p-5 rounded-lg shadow-sm">
         <div class="flex items-start justify-between">
           <div>
-            <p class="text-sm" style="opacity: 0.9; margin-bottom: 0.5rem; font-weight: 500;">Assignades</p>
+            <p class="text-sm opacity-90 mb-2 font-medium">Assignades</p>
             <p class="text-3xl font-bold">{{ stats.assignedRequests }}</p>
           </div>
-          <CheckCircle :size="32" style="opacity: 0.75;" />
+          <CheckCircle :size="32" class="opacity-75" />
         </div>
       </div>
 
-      <div class="stat-card-orange text-white p-5">
+      <div class="stat-card-orange text-white p-5 rounded-lg shadow-sm">
         <div class="flex items-start justify-between">
           <div>
-            <p class="text-sm" style="opacity: 0.9; margin-bottom: 0.5rem; font-weight: 500;">Pendents</p>
+            <p class="text-sm opacity-90 mb-2 font-medium">Pendents</p>
             <p class="text-3xl font-bold">{{ stats.pendingRequests }}</p>
           </div>
-          <Clock :size="32" style="opacity: 0.75;" />
+          <Clock :size="32" class="opacity-75" />
         </div>
       </div>
 
-      <div class="stat-card-purple text-white p-5">
+      <div class="stat-card-purple text-white p-5 rounded-lg shadow-sm">
         <div class="flex items-start justify-between">
           <div>
-            <p class="text-sm" style="opacity: 0.9; margin-bottom: 0.5rem; font-weight: 500;">Centres Actius</p>
+            <p class="text-sm opacity-90 mb-2 font-medium">Centres Actius</p>
             <p class="text-3xl font-bold">{{ stats.activeCenters }}</p>
           </div>
-          <Users :size="32" style="opacity: 0.75;" />
+          <Users :size="32" class="opacity-75" />
         </div>
       </div>
     </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-      <div class="card p-6">
-        <h2 class="text-lg font-semibold mb-4" style="color: var(--text-primary); padding-bottom: 0.75rem; border-bottom: 1px solid var(--border-color);">
+    <!-- Charts Section -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div class="bg-white rounded-lg border border-gray-200 shadow-sm p-6">
+        <h2 class="text-lg font-semibold mb-4 text-gray-800 pb-3 border-b border-gray-200">
           Peticions per Estat
         </h2>
         <div class="space-y-3">
-          <div class="flex items-center justify-between p-3" style="background-color: #e8f5e9; border-left: 4px solid var(--success);">
-            <span style="color: var(--text-primary); font-weight: 500;">Assignades</span>
-            <span class="font-bold" style="color: var(--success); font-size: 1.25rem;">
+          <div class="flex items-center justify-between p-3 bg-green-50 border-l-4 border-green-500 rounded">
+            <span class="text-gray-800 font-medium">Assignades</span>
+            <span class="font-bold text-gray-900 text-2xl">
               {{ stats.totalRequests > 0 ? Math.round((stats.assignedRequests / stats.totalRequests) * 100) : 0 }}%
             </span>
           </div>
-          <div class="flex items-center justify-between p-3" style="background-color: #fff3e0; border-left: 4px solid var(--warning);">
-            <span style="color: var(--text-primary); font-weight: 500;">Pendents</span>
-            <span class="font-bold" style="color: var(--warning); font-size: 1.25rem;">
+          <div class="flex items-center justify-between p-3 bg-orange-50 border-l-4 border-orange-500 rounded">
+            <span class="text-gray-800 font-medium">Pendents</span>
+            <span class="font-bold text-gray-900 text-2xl">
               {{ stats.totalRequests > 0 ? Math.round((stats.pendingRequests / stats.totalRequests) * 100) : 0 }}%
             </span>
           </div>
         </div>
       </div>
 
-      <div class="card p-6">
-        <h2 class="text-lg font-semibold mb-4" style="color: var(--text-primary); padding-bottom: 0.75rem; border-bottom: 1px solid var(--border-color);">
+      <div class="bg-white rounded-lg border border-gray-200 shadow-sm p-6">
+        <h2 class="text-lg font-semibold mb-4 text-gray-800 pb-3 border-b border-gray-200">
           Tallers Més Sol·licitats
         </h2>
         <div class="space-y-3">
-          <div v-for="workshop in topWorkshops.slice(0, 3)" :key="workshop.title" class="flex items-center justify-between py-2" style="border-bottom: 1px solid var(--border-color);">
-            <span style="color: var(--text-primary); font-weight: 500;">{{ workshop.title }}</span>
-            <span class="badge-info" style="min-width: 2.5rem; text-align: center;">
+          <div v-if="topWorkshops.length === 0" class="text-center py-4 text-gray-500">
+            No hi ha dades disponibles
+          </div>
+          <div v-for="workshop in topWorkshops.slice(0, 3)" :key="workshop.title" 
+               class="flex items-center justify-between py-3 border-b border-gray-100 last:border-0">
+            <span class="text-gray-800 font-medium truncate mr-2">{{ workshop.title }}</span>
+            <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-blue-100 text-blue-800 min-w-[2.5rem] justify-center">
               {{ workshop.request_count }}
             </span>
           </div>

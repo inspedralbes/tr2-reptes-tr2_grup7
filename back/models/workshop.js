@@ -1,4 +1,4 @@
-import * as db from "../data/db.js";
+import db from "../data/db.js";
 
 export const getAll = async () => {
   const result = await db.query(
@@ -21,13 +21,14 @@ export const create = async (data) => {
     short_description,
     max_slots,
     category,
-    schedule,
-    duration_hours,
-    teacher_id,
+    start_date,
+    end_date,
+    status
   } = data;
-  // available_slots nace igual a max_slots
+
+  // available_slots starts as max_slots
   const text = `
-    INSERT INTO workshops (title, short_description, max_slots, available_slots, category, schedule, duration_hours, teacher_id)
+    INSERT INTO workshops (title, short_description, max_slots, available_slots, category, start_date, end_date, status)
     VALUES ($1, $2, $3, $3, $4, $5, $6, $7)
     RETURNING *
   `;
@@ -36,9 +37,9 @@ export const create = async (data) => {
     short_description,
     max_slots,
     category,
-    schedule,
-    duration_hours,
-    teacher_id,
+    start_date,
+    end_date,
+    status || 'OFFERED'
   ];
   const result = await db.query(text, values);
   return result.rows[0];
@@ -51,29 +52,26 @@ export const update = async (id, data) => {
     max_slots,
     available_slots,
     category,
-    schedule,
-    status,
-    duration_hours,
-    is_active,
-    teacher_id,
+    start_date,
+    end_date,
+    status
   } = data;
+
   const text = `
     UPDATE workshops 
-    SET title=$1, short_description=$2, max_slots=$3, available_slots=$4, category=$5, schedule=$6, status=$7, duration_hours=$8, is_active=$9, teacher_id=$10
-    WHERE id_workshop = $11
+    SET title=$1, short_description=$2, max_slots=$3, available_slots=$4, category=$5, start_date=$6, end_date=$7, status=$8
+    WHERE id_workshop = $9
     RETURNING *
   `;
   const values = [
     title,
     short_description,
     max_slots,
-    available_slots,
+    available_slots, // If updating, we might need logic to keep sync, but basic update for now
     category,
-    schedule,
+    start_date,
+    end_date,
     status,
-    duration_hours,
-    is_active,
-    teacher_id,
     id,
   ];
   const result = await db.query(text, values);
@@ -85,16 +83,5 @@ export const remove = async (id) => {
     "DELETE FROM workshops WHERE id_workshop = $1 RETURNING *",
     [id]
   );
-  return result.rows[0];
-};
-
-export const assignTeacher = async (id_workshop, id_teacher) => {
-  const text = `
-    INSERT INTO workshop_teachers (id_workshop, id_teacher)
-    VALUES ($1, $2)
-    ON CONFLICT DO NOTHING
-    RETURNING *
-  `;
-  const result = await db.query(text, [id_workshop, id_teacher]);
   return result.rows[0];
 };

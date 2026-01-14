@@ -46,6 +46,21 @@ const router = createRouter({
           name: 'admin-asignacion',
           component: () => import('../components/views/admin/HerramientaAsignacion.vue'),
         },
+        {
+          path: 'admin/profesores',
+          name: 'admin-profesores',
+          component: () => import('../components/views/admin/GestionProfesores.vue')
+        },
+        {
+          path: 'admin/talleres',
+          name: 'admin-talleres',
+          component: () => import('../components/views/admin/GestionTalleres.vue')
+        },
+        {
+          path: 'admin/centros',
+          name: 'admin-centros',
+          component: () => import('../components/views/admin/GestionCentros.vue')
+        },
         // Rutas de Profesor
         {
           path: 'profesor/talleres',

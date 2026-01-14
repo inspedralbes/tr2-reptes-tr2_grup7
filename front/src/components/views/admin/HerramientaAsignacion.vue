@@ -1,9 +1,13 @@
 <template>
   <div class="space-y-6">
-    <h1 class="text-3xl font-bold text-gray-800">Eina d'Assignació</h1>
+    <!-- Header -->
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <h1 class="text-2xl sm:text-3xl font-bold text-gray-800">Eina d'Assignació</h1>
+    </div>
 
-    <div class="card p-6">
-      <h2 class="text-xl font-semibold text-gray-800 mb-4">
+    <!-- Form Card -->
+    <div class="bg-white rounded-lg border border-gray-200 shadow-sm p-6">
+      <h2 class="text-lg sm:text-xl font-semibold text-gray-800 mb-4 pb-3 border-b border-gray-200">
         Assignació Manual
       </h2>
 

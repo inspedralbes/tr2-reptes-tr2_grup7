@@ -1,26 +1,36 @@
-import * as db from "../data/db.js";
+import db from "../data/db.js";
 
 export const getAll = async () => {
-  const text = "SELECT * FROM centers";
+  const text = `
+    SELECT c.*, u.email, u.is_active 
+    FROM centers c 
+    JOIN users u ON c.id_user = u.id
+  `;
   const result = await db.query(text);
   return result.rows;
 };
 
 export const getById = async (id) => {
-  const text = "SELECT * FROM centers WHERE id_center = $1";
+  const text = `
+    SELECT c.*, u.email, u.is_active 
+    FROM centers c 
+    JOIN users u ON c.id_user = u.id 
+    WHERE c.id_user = $1
+  `;
   const result = await db.query(text, [id]);
   return result.rows[0];
 };
 
+// Use User.create for creating new centers (handles transaction)
+// This method is kept for specific cases where user exists but center doesn't (unlikely)
 export const create = async (centre) => {
-  //destructuring que saca las propiedades center_name etc... del parametro centre
-  const { center_name, center_code, address, phone } = centre;
+  const { id_user, center_name, center_code, address, phone } = centre;
   const text = `
-    INSERT INTO centers (center_name, center_code, address, phone)
-    VALUES ($1, $2, $3, $4)
+    INSERT INTO centers (id_user, center_name, center_code, address, phone)
+    VALUES ($1, $2, $3, $4, $5)
     RETURNING *
-    `;
-  const values = [center_name, center_code, address, phone];
+  `;
+  const values = [id_user, center_name, center_code, address, phone];
   const result = await db.query(text, values);
   return result.rows[0];
 };
@@ -30,16 +40,17 @@ export const update = async (id, centre) => {
   const text = `
     UPDATE centers
     SET center_name = $1, center_code = $2, address = $3, phone = $4
-    WHERE id_center = $5
+    WHERE id_user = $5
     RETURNING *
-    `;
+  `;
   const values = [center_name, center_code, address, phone, id];
   const result = await db.query(text, values);
   return result.rows[0];
 };
 
 export const remove = async (id) => {
-  const text = "DELETE FROM centers WHERE id_center = $1 RETURNING *";
+  // Deleting the user will cascade delete the center
+  const text = "DELETE FROM users WHERE id = $1 RETURNING *";
   const result = await db.query(text, [id]);
   return result.rows[0];
 };
