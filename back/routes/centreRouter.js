@@ -3,8 +3,9 @@ import * as centreController from "../controllers/centreController.js";
 
 const router = express.Router();
 
-router.get("/", centreController.getAllCentres);
+// router.get("/", centreController.getAllCentres);
 router.get("/:id", centreController.getCentreById);
+router.get("/:id/teachers", centreController.getTeachersByCenter);
 router.post("/", centreController.createCentre);
 router.put("/:id", centreController.updateCentre);
 router.delete("/:id", centreController.deleteCentre);
