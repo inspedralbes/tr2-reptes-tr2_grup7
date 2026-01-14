@@ -46,6 +46,21 @@ const router = createRouter({
           name: 'admin-asignacion',
           component: () => import('../components/views/admin/HerramientaAsignacion.vue')
         },
+        {
+          path: 'admin/profesores',
+          name: 'admin-profesores',
+          component: () => import('../components/views/admin/GestionProfesores.vue')
+        },
+        {
+          path: 'admin/talleres',
+          name: 'admin-talleres',
+          component: () => import('../components/views/admin/GestionTalleres.vue')
+        },
+        {
+          path: 'admin/centros',
+          name: 'admin-centros',
+          component: () => import('../components/views/admin/GestionCentros.vue')
+        },
         // Rutas de Profesor
         {
           path: 'profesor/talleres',
@@ -66,7 +81,7 @@ const router = createRouter({
 router.beforeEach((to, from, next) => {
   const token = localStorage.getItem('token')
   const user = localStorage.getItem('user')
-  
+
   // Si intenta acceder a / sin estar autenticado, ir a login
   if (to.path === '/' && !token) {
     next('/login')
@@ -87,7 +102,7 @@ router.beforeEach((to, from, next) => {
   // Si intenta acceder a una ruta protegida sin estar autenticado
   else if (to.path !== '/login' && !token) {
     next('/login')
-  } 
+  }
   // Si está autenticado e intenta ir a login, redirigir a su panel
   else if (to.path === '/login' && token && user) {
     const userData = JSON.parse(user)

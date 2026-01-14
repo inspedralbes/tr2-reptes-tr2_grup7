@@ -68,9 +68,10 @@ export const getPendingRequests = async (req, res) => {
 export const getAvailableTeachers = async (req, res) => {
   try {
     const query = `
-      SELECT t.id_user, t.first_name, t.last_name
+      SELECT t.id_user, t.first_name, t.last_name, u.email, c.center_name
       FROM teachers t
       JOIN users u ON t.id_user = u.id
+      LEFT JOIN centers c ON t.id_center_assigned = c.id_user
       WHERE u.is_active = true
     `;
     const result = await db.query(query);
@@ -154,8 +155,8 @@ export const autoAssign = async (req, res) => {
   try {
     // Lógica simple de asignación automática: aceptar todas las peticiones pendientes
     const result = await db.query("UPDATE center_requests SET status = 'ACCEPTED' WHERE status = 'PENDING'");
-    
-    res.json({ 
+
+    res.json({
       message: "Auto assignment completed successfully",
       updatedRequests: result.rowCount
     });
