@@ -89,6 +89,9 @@
 import { ref, onMounted } from 'vue';
 import { CheckCircle, Send } from 'lucide-vue-next';
 import { adminService } from '../../../services/adminService.js';
+import { useAlertStore } from '../../../stores/alert';
+
+const alertStore = useAlertStore();
 
 const pendingRequests = ref([]);
 const teachers = ref([]);
@@ -118,7 +121,7 @@ const loadTeachers = async () => {
 
 const confirmAssignment = async () => {
   if (!selectedRequest.value || !assignedSlots.value || !selectedTeacher1.value) {
-    alert('Por favor, completa todos los campos obligatorios');
+    alertStore.addAlert('warning', 'Por favor, completa todos los campos obligatorios');
     return;
   }
 
@@ -143,16 +146,16 @@ const confirmAssignment = async () => {
     // Recargar datos
     await loadPendingRequests();
     
-    alert('Asignación completada correctamente');
+    alertStore.addAlert('success', 'Asignación completada correctamente');
   } catch (error) {
     console.error('Error in assignment:', error);
-    alert('Error al realizar la asignación');
+    alertStore.addAlert('error', 'Error al realizar la asignación');
   }
 };
 
 const sendNotification = () => {
   // Aquí implementarías el envío de notificaciones
-  alert('Funcionalidad de notificación próximamente disponible');
+  alertStore.addAlert('info', 'Funcionalidad de notificación próximamente disponible');
 };
 
 onMounted(() => {

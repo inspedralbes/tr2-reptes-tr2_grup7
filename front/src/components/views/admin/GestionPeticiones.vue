@@ -140,6 +140,9 @@
 import { ref, computed, onMounted } from 'vue';
 import { Settings, Eye, CheckCircle, Trash2, X, Search } from 'lucide-vue-next';
 import { adminService } from '../../../services/adminService.js';
+import { useAlertStore } from '../../../stores/alert';
+
+const alertStore = useAlertStore();
 
 const requests = ref([]);
 const loading = ref(true);
@@ -190,10 +193,10 @@ const acceptRequest = async (requestId) => {
   try {
     await adminService.acceptRequest(requestId);
     await loadRequests();
-    alert('Petició acceptada correctament');
+    alertStore.addAlert('success', 'Petició acceptada correctament');
   } catch (error) {
     console.error('Error accepting request:', error);
-    alert('Error al acceptar la petició');
+    alertStore.addAlert('error', 'Error al acceptar la petició');
   }
 };
 
@@ -201,39 +204,39 @@ const rejectRequest = async (requestId) => {
   try {
     await adminService.rejectRequest(requestId);
     await loadRequests();
-    alert('Petició rebutjada correctament');
+    alertStore.addAlert('success', 'Petició rebutjada correctament');
   } catch (error) {
     console.error('Error rejecting request:', error);
-    alert('Error al rebutjar la petició');
+    alertStore.addAlert('error', 'Error al rebutjar la petició');
   }
 };
 
 const deleteRequest = async (requestId) => {
-  if (confirm('Estàs segur que vols eliminar aquesta petició?')) {
+  if (await alertStore.confirm('Estàs segur que vols eliminar aquesta petició?')) {
     try {
       await adminService.deleteRequest(requestId);
       await loadRequests();
-      alert('Petició eliminada correctament');
+      alertStore.addAlert('success', 'Petició eliminada correctament');
     } catch (error) {
       console.error('Error deleting request:', error);
-      alert('Error en eliminar la petició');
+      alertStore.addAlert('error', 'Error en eliminar la petició');
     }
   }
 };
 
 const viewRequest = (request) => {
-  alert(`Detalls de la petició:\nCentre: ${request.centre}\nTaller: ${request.workshop}\nAlumnes: ${request.students}\nEstat: ${request.status}\nData: ${request.date}`);
+  alertStore.addAlert('info', `Detalls de la petició:\nCentre: ${request.centre}\nTaller: ${request.workshop}\nAlumnes: ${request.students}\nEstat: ${request.status}\nData: ${request.date}`, 'Detalls');
 };
 
 const autoAssign = async () => {
-  if (confirm('Estàs segur que vols realitzar l\'assignació automàtica? Això acceptarà totes les peticions pendents.')) {
+  if (await alertStore.confirm('Estàs segur que vols realitzar l\'assignació automàtica? Això acceptarà totes les peticions pendents.')) {
     try {
       const result = await adminService.autoAssign();
       await loadRequests();
-      alert(`Assignació automàtica completada. ${result.updatedRequests} peticions assignades.`);
+      alertStore.addAlert('success', `Assignació automàtica completada. ${result.updatedRequests} peticions assignades.`);
     } catch (error) {
       console.error('Error in auto assignment:', error);
-      alert('Error en l\'assignació automàtica');
+      alertStore.addAlert('error', 'Error en l\'assignació automàtica');
     }
   }
 };
