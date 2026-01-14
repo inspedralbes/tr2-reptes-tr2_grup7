@@ -1,4 +1,4 @@
-import * as db from "../data/db.js";
+import db from "../data/db.js";
 
 //Aquí es on es fa tota la lógica de la base de dades SELECT, INSERT, UPDATE, DELETE
 
@@ -78,7 +78,7 @@ export const create = async (usuario) => {
     id_center_assigned: student_center,
   } = usuario;
 
-  const client = await db.default.connect(); // Necesitamos el cliente para acceder al pool de conexiones
+  const client = await db.connect(); // Necesitamos el cliente para acceder al pool de conexiones
 
   try {
     await client.query("BEGIN");
