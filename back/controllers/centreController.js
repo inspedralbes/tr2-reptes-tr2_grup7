@@ -28,7 +28,8 @@ export const getCentreById = async (req, res) => {
 
 export const createCentre = async (req, res) => {
   try {
-    const { email, password, center_name, center_code, address, phone } = req.body;
+    const { email, password, center_name, center_code, address, phone } =
+      req.body;
 
     if (!email || !password || !center_name || !center_code) {
       return res.status(400).json({ error: "Faltan campos obligatorios" });
@@ -40,17 +41,29 @@ export const createCentre = async (req, res) => {
     const newUser = await User.create({
       email,
       password_hash,
-      role: 'CENTER',
+      role: "CENTER",
       center_name,
       center_code,
       address,
-      phone
+      phone,
     });
 
     res.status(201).json(newUser);
   } catch (error) {
     console.error("Error creating centre:", error);
-    res.status(500).json({ error: "Error creando el centro" });
+    if (error.code === "23505") {
+      if (error.detail.includes("email")) {
+        return res.status(400).json({ error: "L'email ja està registrat." });
+      }
+      if (error.detail.includes("center_code")) {
+        return res
+          .status(400)
+          .json({ error: "El codi del centre ja existeix." });
+      }
+    }
+    res
+      .status(500)
+      .json({ error: "Error creant el centre. Revisa les dades." });
   }
 };
 
@@ -64,6 +77,16 @@ export const updateCentre = async (req, res) => {
     }
   } catch (error) {
     console.error("Error updating centre:", error);
+    if (error.code === "23505") {
+      if (error.detail.includes("email")) {
+        return res.status(400).json({ error: "L'email ja està registrat." });
+      }
+      if (error.detail.includes("center_code")) {
+        return res
+          .status(400)
+          .json({ error: "El codi del centre ja existeix." });
+      }
+    }
     res.status(500).json({ error: "Error actualizando el centro" });
   }
 };

@@ -4,14 +4,25 @@ export const create = async (
   id_center,
   id_workshop,
   requested_slots,
-  comments
+  comments,
+  referent_name,
+  referent_email,
+  student_list
 ) => {
   const text = `
-        INSERT INTO center_requests (id_center, id_workshop, requested_slots, comments, status)
-        VALUES ($1, $2, $3, $4, 'PENDING')
+        INSERT INTO center_requests (id_center, id_workshop, requested_slots, comments, referent_name, referent_email, student_list, status)
+        VALUES ($1, $2, $3, $4, $5, $6, $7, 'PENDING')
         RETURNING *
     `;
-  const values = [id_center, id_workshop, requested_slots, comments];
+  const values = [
+    id_center,
+    id_workshop,
+    requested_slots,
+    comments,
+    referent_name,
+    referent_email,
+    student_list,
+  ];
   const result = await db.query(text, values);
   return result.rows[0];
 };
