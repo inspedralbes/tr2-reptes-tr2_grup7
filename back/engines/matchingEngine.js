@@ -1,8 +1,8 @@
 import * as db from "../data/db.js";
 import { obtenerFiltrosPorModalidad } from '../services/filters/filterManager.js';
 
-export const ejecutarProcesoAsignacion = async () => {
-    console.log("⚙️ Iniciando Motor de Asignación ENGINY...");
+export const ejecutarProcesoAsignacion = async (config = {}) => {
+    console.log("⚙️ Iniciando Motor de Asignación ENGINY...", config);
 
     try {
         // 1. Obtenemos los talleres que han cerrado su plazo [cite: 36, 43]
@@ -14,7 +14,7 @@ export const ejecutarProcesoAsignacion = async () => {
 
         for (const taller of talleres.rows) {
             console.log(`\n📦 Procesando: ${taller.title} (${taller.modalidad})`);
-            await asignarAlumnosATaller(taller);
+            await asignarAlumnosATaller(taller, config);
         }
 
         console.log("\n✅ Proceso de asignación finalizado con éxito.");
@@ -23,14 +23,14 @@ export const ejecutarProcesoAsignacion = async () => {
     }
 };
 
-const asignarAlumnosATaller = async (taller) => {
+const asignarAlumnosATaller = async (taller, config) => {
     const { id_workshop, modalidad, total_capacity, max_students_per_center } = taller;
 
     // 2. LA QUERY MAESTRA: Obtenemos los alumnos y sus datos pedagógicos [cite: 41, 148]
     const result = await db.query(`
         SELECT 
             si.id_interest, si.id_student, si.has_legal_papers, si.created_at,
-            s.id_center_assigned, s.eso_grade, s.gender, s.is_at_risk
+            s.id_center_assigned, s.eso_grade, s.gender, s.risk_level, s.birth_date
         FROM student_interest si
         JOIN students s ON si.id_student = s.id_user
         WHERE si.id_workshop = $1 AND si.status = 'WAITING'
@@ -51,7 +51,7 @@ const asignarAlumnosATaller = async (taller) => {
             if (!pasaExclusiones) return { ...alumno, apto: false, score: -1 };
 
             // Calculamos puntuación (¿tiene riesgo de absentismo?) [cite: 142, 306]
-            const scoreTotal = reglas.prioridades.reduce((acc, filtro) => acc + filtro(alumno, taller), 0);
+            const scoreTotal = reglas.prioridades.reduce((acc, filtro) => acc + filtro(alumno, taller, config), 0);
             
             return { ...alumno, apto: true, score: scoreTotal };
         })
