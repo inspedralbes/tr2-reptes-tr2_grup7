@@ -170,8 +170,8 @@ const navigationStructure = {
       name: 'Taula',
       subsections: [
         { id: 'taula-centre', name: 'Taula Central', route: '/centro/panel' },
-        { id: 'info-taller', name: 'Informació Tallers', route: null },
-        { id: 'alumnes', name: 'Llista Alumnes', route: null },
+        { id: 'info-taller', name: 'Informació Tallers', route: '/centro/talleres' },
+        { id: 'alumnes', name: 'Llista Alumnes', route: '/centro/alumnos' },
       ],
     },
     {
@@ -286,13 +286,15 @@ const currentSubsections = computed(() => {
 
 // Métodos
 const getRoleName = () => {
-  if (!user.value) return ''
-  return user.value.name || 'Usuario'
+  if (!user.value) return 'Usuari'
+  return user.value.name || user.value.email || user.value.center_name || 'Usuari'
 }
 
 const getRoleInitial = () => {
-  if (!user.value || !user.value.name) return 'U'
-  return user.value.name.charAt(0).toUpperCase()
+  if (user.value && user.value.name) return user.value.name.charAt(0).toUpperCase()
+  if (user.value && user.value.center_name) return user.value.center_name.charAt(0).toUpperCase()
+  if (user.value && user.value.email) return user.value.email.charAt(0).toUpperCase()
+  return 'U'
 }
 
 const getCurrentSectionName = () => {

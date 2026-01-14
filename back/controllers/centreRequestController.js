@@ -2,7 +2,14 @@ import * as Request from "../models/centerRequest.js";
 
 export const createRequest = async (req, res) => {
   try {
-    const { id_workshop, requested_slots, comments } = req.body;
+    const {
+      id_workshop,
+      requested_slots,
+      comments,
+      student_count,
+      course_level,
+      id_teacher,
+    } = req.body;
     const id_center = req.user.id;
 
     if (requested_slots > 4) {
@@ -13,7 +20,10 @@ export const createRequest = async (req, res) => {
       id_center,
       id_workshop,
       requested_slots,
-      comments
+      comments,
+      student_count,
+      course_level,
+      id_teacher
     );
     res.status(201).json(newRequest);
   } catch (error) {

@@ -30,6 +30,16 @@ const router = createRouter({
           name: 'centro-nueva-peticion',
           component: () => import('../components/views/centre/NuevaPeticion.vue'),
         },
+        {
+          path: 'centro/alumnos',
+          name: 'centro-alumnos',
+          component: () => import('../components/views/centre/LlistaAlumnes.vue'),
+        },
+        {
+          path: 'centro/talleres',
+          name: 'centro-talleres',
+          component: () => import('../components/views/centre/InfoTalleres.vue'),
+        },
         // Rutas de Administración
         {
           path: 'admin/panel',
@@ -49,17 +59,17 @@ const router = createRouter({
         {
           path: 'admin/profesores',
           name: 'admin-profesores',
-          component: () => import('../components/views/admin/GestionProfesores.vue')
+          component: () => import('../components/views/admin/GestionProfesores.vue'),
         },
         {
           path: 'admin/talleres',
           name: 'admin-talleres',
-          component: () => import('../components/views/admin/GestionTalleres.vue')
+          component: () => import('../components/views/admin/GestionTalleres.vue'),
         },
         {
           path: 'admin/centros',
           name: 'admin-centros',
-          component: () => import('../components/views/admin/GestionCentros.vue')
+          component: () => import('../components/views/admin/GestionCentros.vue'),
         },
         // Rutas de Profesor
         {

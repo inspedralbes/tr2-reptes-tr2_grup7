@@ -21,6 +21,67 @@ export const getById = async (id) => {
   return result.rows[0];
 };
 
+export const getTeachersByCenter = async (id_center) => {
+  const text = `
+    SELECT t.*, u.email, u.is_active
+    FROM teachers t
+    JOIN users u ON t.id_user = u.id
+    WHERE t.id_center_assigned = $1
+  `;
+  const result = await db.query(text, [id_center]);
+  return result.rows;
+};
+
+export const getStudentsByCenter = async (id_center) => {
+  const text = `
+    SELECT s.*, u.email, u.is_active
+    FROM students s
+    JOIN users u ON s.id_user = u.id
+    WHERE s.id_center_assigned = $1
+    ORDER BY s.last_name, s.first_name
+  `;
+  const result = await db.query(text, [id_center]);
+  return result.rows;
+};
+
+export const getDashboardStats = async (id_center) => {
+  const studentsQuery =
+    "SELECT COUNT(*) FROM students WHERE id_center_assigned = $1";
+  const requestsQuery =
+    "SELECT status, COUNT(*) FROM center_requests WHERE id_center = $1 GROUP BY status";
+
+  const [studentsRes, requestsRes] = await Promise.all([
+    db.query(studentsQuery, [id_center]),
+    db.query(requestsQuery, [id_center]),
+  ]);
+
+  const studentCount = parseInt(studentsRes.rows[0].count, 10);
+  const requestStats = requestsRes.rows;
+
+  // Estadístiques per a la pàgina d'assignacions del centre
+  let pending = 0;
+  let accepted = 0;
+  let rejected = 0;
+  let partial = 0;
+
+  requestStats.forEach((row) => {
+    const count = parseInt(row.count, 10);
+    if (row.status === "PENDING") pending += count;
+    else if (row.status === "ACCEPTED") accepted += count;
+    else if (row.status === "REJECTED") rejected += count;
+    else if (row.status === "PARTIAL") partial += count; // Assignacions parcialment acceptades
+  });
+
+  return {
+    student_count: studentCount,
+    requests_pending: pending,
+    requests_accepted: accepted,
+    requests_rejected: rejected,
+    requests_partial: partial,
+    requests_active: pending + accepted + partial,
+  };
+};
+
 // Use User.create for creating new centers (handles transaction)
 // This method is kept for specific cases where user exists but center doesn't (unlikely)
 export const create = async (centre) => {

@@ -72,6 +72,9 @@ CREATE TABLE center_requests (
     id_center INT REFERENCES centers(id_user),
     id_workshop INT REFERENCES workshops(id_workshop),
     requested_slots INT CHECK (requested_slots <= 4), -- El centro pide p.ej. 3 plazas
+    student_count INT,
+    course_level VARCHAR(50),
+    id_teacher INT REFERENCES teachers(id_user),
     status VARCHAR(20) DEFAULT 'PENDING' CHECK (status IN ('PENDING', 'ACCEPTED', 'REJECTED', 'PARTIAL')),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     comments TEXT

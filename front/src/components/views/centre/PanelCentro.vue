@@ -14,7 +14,7 @@
       >
         Tauler de Control
       </h1>
-      <button class="btn-primary px-6 py-2 flex items-center gap-2">
+      <button @click="goToNewRequest" class="btn-primary px-6 py-2 flex items-center gap-2">
         <Plus :size="18" /> Nova Petició
       </button>
     </div>
@@ -26,7 +26,7 @@
             <p class="text-sm" style="opacity: 0.9; margin-bottom: 0.5rem; font-weight: 500">
               Peticions Actives
             </p>
-            <p class="text-3xl font-bold">5</p>
+            <p class="text-3xl font-bold">{{ stats.requests_active }}</p>
           </div>
           <FileText :size="32" style="opacity: 0.75" />
         </div>
@@ -38,7 +38,7 @@
             <p class="text-sm" style="opacity: 0.9; margin-bottom: 0.5rem; font-weight: 500">
               Assignacions
             </p>
-            <p class="text-3xl font-bold">3</p>
+            <p class="text-3xl font-bold">{{ stats.total_assignments }}</p>
           </div>
           <CheckCircle :size="32" style="opacity: 0.75" />
         </div>
@@ -50,7 +50,7 @@
             <p class="text-sm" style="opacity: 0.9; margin-bottom: 0.5rem; font-weight: 500">
               Pendents
             </p>
-            <p class="text-3xl font-bold">2</p>
+            <p class="text-3xl font-bold">{{ stats.requests_pending }}</p>
           </div>
           <Clock :size="32" style="opacity: 0.75" />
         </div>
@@ -62,7 +62,7 @@
             <p class="text-sm" style="opacity: 0.9; margin-bottom: 0.5rem; font-weight: 500">
               Alumnes Total
             </p>
-            <p class="text-3xl font-bold">87</p>
+            <p class="text-3xl font-bold">{{ stats.student_count }}</p>
           </div>
           <Users :size="32" style="opacity: 0.75" />
         </div>
@@ -70,106 +70,6 @@
     </div>
 
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-      <div class="md:col-span-2 space-y-6">
-        <div class="card p-6">
-          <h2
-            class="text-lg font-semibold mb-4"
-            style="
-              color: var(--text-primary);
-              padding-bottom: 0.75rem;
-              border-bottom: 1px solid var(--border-color);
-            "
-          >
-            Informació del Taller
-          </h2>
-          <div class="space-y-2">
-            <div
-              class="flex justify-between py-2.5"
-              style="border-bottom: 1px solid var(--border-color)"
-            >
-              <span style="color: var(--text-secondary); font-size: 0.9rem">Centre:</span>
-              <span class="font-semibold" style="color: var(--text-primary)">IES Terrassa</span>
-            </div>
-            <div
-              class="flex justify-between py-2.5"
-              style="border-bottom: 1px solid var(--border-color)"
-            >
-              <span style="color: var(--text-secondary); font-size: 0.9rem">Curs:</span>
-              <span class="font-semibold" style="color: var(--text-primary)">3r ESO</span>
-            </div>
-            <div
-              class="flex justify-between py-2.5"
-              style="border-bottom: 1px solid var(--border-color)"
-            >
-              <span style="color: var(--text-secondary); font-size: 0.9rem">Nombre d'alumnes:</span>
-              <span class="font-semibold" style="color: var(--text-primary)">22</span>
-            </div>
-            <div class="flex justify-between py-2.5">
-              <span style="color: var(--text-secondary); font-size: 0.9rem">Sessions:</span>
-              <span class="font-semibold" style="color: var(--text-primary)">8 sessions de 2h</span>
-            </div>
-          </div>
-        </div>
-
-        <div class="card p-6">
-          <h2
-            class="text-lg font-semibold mb-4"
-            style="
-              color: var(--text-primary);
-              padding-bottom: 0.75rem;
-              border-bottom: 1px solid var(--border-color);
-            "
-          >
-            Llista d'Alumnes (22)
-          </h2>
-          <div
-            class="max-h-96 overflow-y-auto"
-            style="scroll-behavior: smooth; scrollbar-width: thin"
-          >
-            <table class="w-full">
-              <thead class="bg-gray-50 sticky top-0">
-                <tr>
-                  <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">Nom</th>
-                  <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">Email</th>
-                  <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">
-                    Assistència
-                  </th>
-                </tr>
-              </thead>
-              <tbody class="divide-y">
-                <tr class="hover:bg-gray-50">
-                  <td class="px-4 py-3 text-sm">Maria López García</td>
-                  <td class="px-4 py-3 text-sm text-gray-600">maria.lopez@ies-terrassa.cat</td>
-                  <td class="px-4 py-3">
-                    <span class="bg-green-100 text-green-700 text-xs px-2 py-1 rounded">
-                      100%
-                    </span>
-                  </td>
-                </tr>
-                <tr class="hover:bg-gray-50">
-                  <td class="px-4 py-3 text-sm">Joan Martínez Pérez</td>
-                  <td class="px-4 py-3 text-sm text-gray-600">joan.martinez@ies-terrassa.cat</td>
-                  <td class="px-4 py-3">
-                    <span class="bg-green-100 text-green-700 text-xs px-2 py-1 rounded">
-                      100%
-                    </span>
-                  </td>
-                </tr>
-                <tr class="hover:bg-gray-50">
-                  <td class="px-4 py-3 text-sm">Laura Sánchez Vila</td>
-                  <td class="px-4 py-3 text-sm text-gray-600">laura.sanchez@ies-terrassa.cat</td>
-                  <td class="px-4 py-3">
-                    <span class="bg-yellow-100 text-yellow-700 text-xs px-2 py-1 rounded">
-                      87%
-                    </span>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-
       <div class="space-y-6">
         <div class="card p-5">
           <h3
@@ -326,6 +226,9 @@
 </template>
 
 <script setup>
+import { useRouter } from 'vue-router'
+import { ref, onMounted } from 'vue'
+import * as centreService from '../../../services/centreService'
 import {
   FileText,
   CheckCircle,
@@ -336,4 +239,35 @@ import {
   AlertCircle,
   Award,
 } from 'lucide-vue-next'
+
+const router = useRouter()
+const stats = ref({
+  requests_active: 0,
+  requests_accepted: 0, // 'Assignacions' usually maps to accepted
+  requests_pending: 0,
+  student_count: 0,
+})
+
+const students = ref([])
+
+const goToNewRequest = () => {
+  router.push('/centro/nueva-peticion')
+}
+
+onMounted(async () => {
+  try {
+    const user = JSON.parse(localStorage.getItem('user') || '{}')
+    if (user.id) {
+      const statsData = await centreService.getStatistics(user.id)
+      stats.value = statsData
+      stats.value.total_assignments =
+        statsData.requests_accepted + (statsData.requests_partial || 0)
+
+      const studentsData = await centreService.getStudents(user.id)
+      students.value = studentsData
+    }
+  } catch (error) {
+    console.error('Error loading dashboard data:', error)
+  }
+})
 </script>

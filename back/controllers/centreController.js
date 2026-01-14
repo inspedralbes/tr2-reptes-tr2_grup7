@@ -1,5 +1,6 @@
 import * as Centre from "../models/centre.js";
 import * as User from "../models/user.js";
+import * as CentreRequest from "../models/centerRequest.js";
 import bcrypt from "bcrypt";
 
 export const getAllCentres = async (req, res) => {
@@ -23,6 +24,60 @@ export const getCentreById = async (req, res) => {
   } catch (error) {
     console.error("Error getting centre:", error);
     res.status(500).json({ error: "Error interno del servidor" });
+  }
+};
+
+export const getCentreTeachers = async (req, res) => {
+  try {
+    // If the user effectively asking is the center itself (via req.user.id), or an admin asking for a specific center
+    // For now, let's assume the endpoint uses the URL param :id, but we should secure it.
+    // However, if we want "getMyTeachers", we might use req.user.id.
+    // Let's implement generic "get teachers of center :id"
+    const teachers = await Centre.getTeachersByCenter(req.params.id);
+    res.json(teachers);
+  } catch (error) {
+    console.error("Error getting centre teachers:", error);
+    res.status(500).json({ error: "Error fetching teachers" });
+  }
+};
+
+export const getCentreStudents = async (req, res) => {
+  try {
+    const students = await Centre.getStudentsByCenter(req.params.id);
+    res.json(students);
+  } catch (error) {
+    console.error("Error getting centre students:", error);
+    res.status(500).json({ error: "Error fetching students" });
+  }
+};
+
+export const getCentreStats = async (req, res) => {
+  try {
+    const stats = await Centre.getDashboardStats(req.params.id);
+    res.json(stats);
+  } catch (error) {
+    console.error("Error getting centre stats:", error);
+    res.status(500).json({ error: "Error fetching stats" });
+  }
+};
+
+export const getCentreRequests = async (req, res) => {
+  try {
+    // Import dynamically or assuming it's available or move import to top.
+    // Better to use dynamic import if circular dep, but here we can just add import at top if possible.
+    // Actually, I can just use the model directly if I import it.
+    // But I need to add the import to the top of the file.
+    // Let's rely on adding the import in a separate edit or assume the user wants me to handle it.
+    // I will add the import at the top first if not present.
+    // Wait, I can't do multiple edits easily.
+    // I'll check imports.
+    // Existing imports: Centre, User, bcrypt.
+    // I need CenterRequest.
+    const requests = await CentreRequest.getByCenter(req.params.id);
+    res.json(requests);
+  } catch (error) {
+    console.error("Error getting centre requests:", error);
+    res.status(500).json({ error: "Error fetching requests" });
   }
 };
 
