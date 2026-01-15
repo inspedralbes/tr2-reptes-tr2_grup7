@@ -174,12 +174,12 @@ INSERT INTO teachers (id_user, first_name, last_name, id_center_assigned) VALUES
 -- 4. ALUMNOS (STUDENTS)
 -- ==========================================
 -- IDs de usuario 12 al 16.
-INSERT INTO students (id_user, first_name, last_name, birth_date, phone, id_center_assigned) VALUES
-(12, 'María',  'López',  '2005-01-15', '600000001', 2), -- Pedralbes
-(13, 'Pedro',  'Gómez',  '2006-03-22', '600000002', 2), -- Pedralbes
-(14, 'Lucía',  'Fern.',  '2005-07-30', '600000003', 3), -- Poblenou
-(15, 'Miguel', 'Torres', '2005-11-05', '600000004', 3), -- Poblenou
-(16, 'Elena',  'Ruiz',   '2006-02-14', '600000005', 4); -- Tecnológico
+INSERT INTO students (id_user, first_name, last_name, birth_date, phone, id_center_assigned, eso_grade, gender) VALUES
+(12, 'María',  'López',  '2005-01-15', '600000001', 2, 4, 'F'), -- Pedralbes
+(13, 'Pedro',  'Gómez',  '2006-03-22', '600000002', 2, 4, 'M'), -- Pedralbes
+(14, 'Lucía',  'Fern.',  '2005-07-30', '600000003', 3, 4, 'F'), -- Poblenou
+(15, 'Miguel', 'Torres', '2005-11-05', '600000004', 3, 4, 'M'), -- Poblenou
+(16, 'Elena',  'Ruiz',   '2006-02-14', '600000005', 4, 4, 'F'); -- Tecnológico
 
 
 -- ==========================================
