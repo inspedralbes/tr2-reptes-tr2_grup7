@@ -12,7 +12,7 @@
       Llista d'Alumnes
     </h1>
     <div style="padding-bottom: 20rem">
-      <table>
+      <table style="border: 4px solid var(--border-color)">
         <thead>
           <tr
             class="text-left text-sm font-semibold text-gray-700 bg-gray-50"
