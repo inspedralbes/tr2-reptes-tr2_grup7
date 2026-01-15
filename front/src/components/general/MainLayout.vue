@@ -170,9 +170,7 @@ const navigationStructure = {
       name: 'Peticions',
       subsections: [
         { id: 'peticions', name: 'Totes les Peticions', route: '/admin/peticiones' },
-        { id: 'pendents', name: 'Pendents', route: '/admin/peticiones' },
-        { id: 'assignades', name: 'Assignades', route: '/admin/peticiones' }
-      ]
+          ]
     },
     {
       id: 'assignacio',
@@ -187,7 +185,6 @@ const navigationStructure = {
       name: 'Tallers',
       subsections: [
         { id: 'gestio-tallers', name: 'Gestió Tallers', route: '/admin/talleres' },
-        { id: 'nou-taller', name: 'Crear Taller', route: '/admin/talleres' }
       ]
     },
     {

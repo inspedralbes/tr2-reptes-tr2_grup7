@@ -92,44 +92,39 @@
     </div>
 
     <!-- Modal Formulario -->
-    <!-- Modal Formulario -->
     <Modal :show="showModal" :title="isEditing ? 'Editar Taller' : 'Crear Nou Taller'" @close="closeModal">
-      <form id="workshopForm" @submit.prevent="saveWorkshop" class="space-y-4">
-        <div class="space-y-2">
+      <form id="workshopForm" @submit.prevent="saveWorkshop" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="space-y-2 md:col-span-2">
           <label class="block text-sm font-medium text-gray-700">Títol</label>
           <input v-model="form.title" required type="text" class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500">
         </div>
         
-        <div class="space-y-2">
+        <div class="space-y-2 md:col-span-2">
           <label class="block text-sm font-medium text-gray-700">Descripció</label>
-          <textarea v-model="form.short_description" rows="3" class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500"></textarea>
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div class="space-y-2">
-            <label class="block text-sm font-medium text-gray-700">Categoria</label>
-            <input v-model="form.category" type="text" class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500">
-          </div>
-          
-          <div class="space-y-2">
-            <label class="block text-sm font-medium text-gray-700">Places Màximes</label>
-            <input v-model="form.max_slots" required type="number" min="1" class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500">
-          </div>
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div class="space-y-2">
-            <label class="block text-sm font-medium text-gray-700">Data Inici</label>
-            <input v-model="form.start_date" required type="datetime-local" class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500">
-          </div>
-          
-          <div class="space-y-2">
-            <label class="block text-sm font-medium text-gray-700">Data Fi</label>
-            <input v-model="form.end_date" required type="datetime-local" class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500">
-          </div>
+          <textarea v-model="form.short_description" rows="2" class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500"></textarea>
         </div>
 
         <div class="space-y-2">
+          <label class="block text-sm font-medium text-gray-700">Categoria</label>
+          <input v-model="form.category" type="text" class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500">
+        </div>
+        
+        <div class="space-y-2">
+          <label class="block text-sm font-medium text-gray-700">Places Màximes</label>
+          <input v-model="form.max_slots" required type="number" min="1" class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500">
+        </div>
+
+        <div class="space-y-2">
+          <label class="block text-sm font-medium text-gray-700">Data Inici</label>
+          <input v-model="form.start_date" required type="datetime-local" class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500">
+        </div>
+        
+        <div class="space-y-2">
+          <label class="block text-sm font-medium text-gray-700">Data Fi</label>
+          <input v-model="form.end_date" required type="datetime-local" class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500">
+        </div>
+
+        <div class="space-y-2 md:col-span-2">
           <label class="block text-sm font-medium text-gray-700">Estat</label>
           <select v-model="form.status" class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500">
             <option value="OFFERED">Obert (OFFERED)</option>

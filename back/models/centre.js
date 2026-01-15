@@ -49,6 +49,9 @@ export const update = async (id, centre) => {
 };
 
 export const remove = async (id) => {
+  // Primero eliminamos las solicitudes del centro para evitar errores de FK
+  await db.query("DELETE FROM center_requests WHERE id_center = $1", [id]);
+  
   // Deleting the user will cascade delete the center
   const text = "DELETE FROM users WHERE id = $1 RETURNING *";
   const result = await db.query(text, [id]);

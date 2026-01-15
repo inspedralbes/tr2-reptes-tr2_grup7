@@ -22,13 +22,21 @@ export const getWorkshopById = async (req, res) => {
 
 export const createWorkshop = async (req, res) => {
   try {
+    console.log('Creating workshop with data:', req.body);
     const newData = await Workshop.create(req.body);
     res.status(201).json(newData);
   } catch (error) {
+    console.error('Error creating workshop:', error);
     // Si el teacher_id no existe, Postgres lanza error 23503
     if (error.code === "23503")
       return res.status(400).json({ error: "Invalid teacher_id" });
-    res.status(500).json({ error: "Error creating workshop" });
+    
+    // Devolver más información del error para debugging
+    res.status(500).json({ 
+      error: "Error creating workshop",
+      details: error.message,
+      code: error.code
+    });
   }
 };
 

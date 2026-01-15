@@ -76,40 +76,35 @@
     </div>
 
     <!-- Modal Formulario -->
-    <!-- Modal Formulario -->
     <Modal :show="showModal" :title="isEditing ? 'Editar Centre' : 'Registrar Nou Centre'" @close="closeModal">
-      <form id="centerForm" @submit.prevent="saveCentre" class="space-y-4">
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div class="space-y-2">
-            <label class="block text-sm font-medium text-gray-700">Nom del Centre</label>
-            <input v-model="form.center_name" required type="text" class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500">
-          </div>
-          
-          <div class="space-y-2">
-            <label class="block text-sm font-medium text-gray-700">Codi Centre</label>
-            <input v-model="form.center_code" required type="text" class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500">
-          </div>
+      <form id="centerForm" @submit.prevent="saveCentre" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="space-y-2">
+          <label class="block text-sm font-medium text-gray-700">Nom del Centre</label>
+          <input v-model="form.center_name" required type="text" class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500">
+        </div>
+        
+        <div class="space-y-2">
+          <label class="block text-sm font-medium text-gray-700">Codi Centre</label>
+          <input v-model="form.center_code" required type="text" class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500">
         </div>
 
-        <div class="space-y-2">
+        <div class="space-y-2 md:col-span-2">
           <label class="block text-sm font-medium text-gray-700">Adreça</label>
           <input v-model="form.address" type="text" class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500">
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div class="space-y-2">
-            <label class="block text-sm font-medium text-gray-700">Email</label>
-            <input v-if="!isEditing" v-model="form.email" required type="email" class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500">
-            <input v-else v-model="form.email" disabled type="email" class="w-full border border-gray-300 rounded-lg px-4 py-2 bg-gray-100 cursor-not-allowed" title="L'email no es pot modificar aquí">
-          </div>
-          
-          <div class="space-y-2">
-            <label class="block text-sm font-medium text-gray-700">Telèfon</label>
-            <input v-model="form.phone" type="text" class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500">
-          </div>
+        <div class="space-y-2">
+          <label class="block text-sm font-medium text-gray-700">Email</label>
+          <input v-if="!isEditing" v-model="form.email" required type="email" class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500">
+          <input v-else v-model="form.email" disabled type="email" class="w-full border border-gray-300 rounded-lg px-4 py-2 bg-gray-100 cursor-not-allowed" title="L'email no es pot modificar aquí">
+        </div>
+        
+        <div class="space-y-2">
+          <label class="block text-sm font-medium text-gray-700">Telèfon</label>
+          <input v-model="form.phone" type="text" class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500">
         </div>
 
-        <div v-if="!isEditing" class="space-y-2">
+        <div v-if="!isEditing" class="space-y-2 md:col-span-2">
           <label class="block text-sm font-medium text-gray-700">Contrasenya</label>
           <input v-model="form.password" required type="password" class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500">
         </div>

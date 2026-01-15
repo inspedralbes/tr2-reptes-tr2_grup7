@@ -26,6 +26,11 @@ export const create = async (data) => {
     status
   } = data;
 
+  // Validar campos requeridos
+  if (!title || !max_slots || !start_date || !end_date) {
+    throw new Error('Missing required fields: title, max_slots, start_date, end_date');
+  }
+
   // available_slots starts as max_slots
   const text = `
     INSERT INTO workshops (title, short_description, max_slots, available_slots, category, start_date, end_date, status)
@@ -34,9 +39,9 @@ export const create = async (data) => {
   `;
   const values = [
     title,
-    short_description,
+    short_description || null,
     max_slots,
-    category,
+    category || null,
     start_date,
     end_date,
     status || 'OFFERED'
