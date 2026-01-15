@@ -23,17 +23,47 @@ export const ejecutarProcesoAsignacion = async (config = {}) => {
     }
 };
 
+const getGlobalCenterCounts = async (modalidad) => {
+    if (modalidad !== 'C') return {};
+    
+    // Count existing enrollments per center for this modality
+    const result = await db.query(`
+        SELECT s.id_center_assigned, COUNT(*) as total
+        FROM workshop_enrollments we
+        JOIN students s ON we.id_student = s.id_user
+        JOIN workshops w ON we.id_workshop = w.id_workshop
+        WHERE w.modalidad = 'C'
+        GROUP BY s.id_center_assigned
+    `);
+    
+    const counts = {};
+    result.rows.forEach(row => {
+        counts[row.id_center_assigned] = parseInt(row.total, 10);
+    });
+    return counts;
+};
+
 const asignarAlumnosATaller = async (taller, config) => {
     const { id_workshop, modalidad, total_capacity, max_students_per_center } = taller;
+    
+    // Global tracking for Modality C
+    const globalCenterCounts = await getGlobalCenterCounts(modalidad);
+    const LIMIT_GLOBAL_C = 12;
 
     // 2. LA QUERY MAESTRA: Obtenemos los alumnos y sus datos pedagógicos [cite: 41, 148]
+    // NEW: Filter by students LINKED to a Center Request
     const result = await db.query(`
         SELECT 
             si.id_interest, si.id_student, si.has_legal_papers, si.created_at,
-            s.id_center_assigned, s.eso_grade, s.gender, s.risk_level, s.birth_date
+            s.id_center_assigned, s.eso_grade, s.gender, s.risk_level, s.birth_date,
+            cr.requested_slots -- We can use this to limit per-center if needed, or just rely on 'max_students_per_center'
         FROM student_interest si
         JOIN students s ON si.id_student = s.id_user
-        WHERE si.id_workshop = $1 AND si.status = 'WAITING'
+        JOIN center_requests cr ON si.id_request = cr.id_request -- Enforce link to request
+        WHERE si.id_workshop = $1 
+          AND si.status = 'WAITING'
+          -- Optional: Ensure request is not Rejected? User said "requests shouldn't be rejected".
+          -- So we process all valid requests.
     `, [id_workshop]);
 
     const alumnosCandidatos = result.rows;
@@ -65,15 +95,21 @@ const asignarAlumnosATaller = async (taller, config) => {
 
     for (const alumno of alumnosProcesados) {
         const centroId = alumno.id_center_assigned;
+        // Regla: Máximo 4 por centro en Modalidad C (Por taller)
         if (!contadorPorCentro[centroId]) contadorPorCentro[centroId] = 0;
+        const limiteTallerSuperado = modalidad === 'C' && contadorPorCentro[centroId] >= max_students_per_center;
 
-        // Regla: Máximo 4 por centro en Modalidad C 
-        const limiteCentroSuperado = modalidad === 'C' && contadorPorCentro[centroId] >= max_students_per_center;
+        // Regla: Máximo 12 por centro en Modalidad C (Global)
+        const currentGlobal = globalCenterCounts[centroId] || 0;
+        const limiteGlobalSuperado = modalidad === 'C' && currentGlobal >= LIMIT_GLOBAL_C;
 
-        if (plazasLibres > 0 && !limiteCentroSuperado) {
+        if (plazasLibres > 0 && !limiteTallerSuperado && !limiteGlobalSuperado) {
             // ✅ ADMITIR
             await confirmarInscripcion(alumno.id_student, id_workshop, alumno.id_interest);
             contadorPorCentro[centroId]++;
+            if (modalidad === 'C') {
+                globalCenterCounts[centroId] = currentGlobal + 1;
+            }
             plazasLibres--;
         } else {
             // ❌ RECHAZAR

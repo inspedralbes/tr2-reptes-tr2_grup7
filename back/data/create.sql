@@ -84,6 +84,7 @@ CREATE TABLE student_interest (
     id_interest SERIAL PRIMARY KEY,
     id_student INT REFERENCES students(id_user) ON DELETE CASCADE,
     id_workshop INT REFERENCES workshops(id_workshop) ON DELETE CASCADE,
+    id_request INT REFERENCES center_requests(id_request) ON DELETE CASCADE, -- Vinculación con la solicitud del centro
     has_legal_papers BOOLEAN DEFAULT FALSE,
     verified_by_teacher_id INT REFERENCES teachers(id_user),
     status VARCHAR(20) DEFAULT 'WAITING' CHECK (status IN ('WAITING', 'CONFIRMED', 'CANCELLED')),

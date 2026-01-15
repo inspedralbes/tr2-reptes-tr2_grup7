@@ -49,5 +49,10 @@ export const adminService = {
   async autoAssign() {
     const response = await apiClient.post('/admin/auto-assign')
     return response.data
+  },
+
+  async runMatching(config) {
+    const response = await apiClient.post('/assign/match', config)
+    return response.data
   }
 }
