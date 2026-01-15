@@ -91,6 +91,12 @@ CREATE TABLE student_interest (
     UNIQUE(id_student, id_workshop) -- Un alumno no puede estar "interesado" dos veces en lo mismo
 );
 
+CREATE TABLE center_request_students (
+    id_request INT REFERENCES center_requests(id_request) ON DELETE CASCADE,
+    id_student INT REFERENCES students(id_user) ON DELETE CASCADE,
+    PRIMARY KEY (id_request, id_student)
+);
+
 -- 6. INSCRIPCIONES
 CREATE TABLE workshop_enrollments (
     id_enrollment SERIAL PRIMARY KEY,

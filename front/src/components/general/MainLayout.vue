@@ -187,14 +187,6 @@ const navigationStructure = {
         { id: 'meves-peticions', name: 'Les Meves Peticions', route: '/centro/historial' },
       ],
     },
-    {
-      id: 'checklist',
-      name: 'Checklist',
-      subsections: [
-        { id: 'checklist-actual', name: 'Checklist Actual', route: null },
-        { id: 'finalitzats', name: 'Finalitzats', route: null },
-      ],
-    },
   ],
   admin: [
     {

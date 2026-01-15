@@ -93,9 +93,11 @@
                   margin-bottom: 0.25rem;
                 "
               >
-                Persona de contacte
+                Centre
               </p>
-              <p class="font-semibold" style="color: var(--text-primary)">Anna Ferrer</p>
+              <p class="font-semibold" style="color: var(--text-primary)">
+                {{ centerInfo.center_name || 'Carregant...' }}
+              </p>
             </div>
             <div>
               <p
@@ -109,7 +111,9 @@
               >
                 Email
               </p>
-              <p class="font-medium" style="color: var(--primary)">anna.ferrer@ies-terrassa.cat</p>
+              <p class="font-medium" style="color: var(--primary)">
+                {{ centerInfo.email || '-' }}
+              </p>
             </div>
             <div>
               <p
@@ -123,102 +127,14 @@
               >
                 Telèfon
               </p>
-              <p class="font-semibold" style="color: var(--text-primary)">937 123 456</p>
-            </div>
-          </div>
-          <button class="w-full mt-4 btn-primary py-2.5">Enviar Missatge</button>
-        </div>
-
-        <div class="card p-5">
-          <h3
-            class="text-base font-semibold mb-3"
-            style="
-              color: var(--text-primary);
-              padding-bottom: 0.5rem;
-              border-bottom: 1px solid var(--border-color);
-            "
-          >
-            Professor Co-Referent
-          </h3>
-          <div class="space-y-3">
-            <div>
-              <p
-                class="text-xs"
-                style="
-                  color: var(--text-secondary);
-                  text-transform: uppercase;
-                  letter-spacing: 0.5px;
-                  margin-bottom: 0.25rem;
-                "
-              >
-                Nom
+              <p class="font-semibold" style="color: var(--text-primary)">
+                {{ centerInfo.phone || '-' }}
               </p>
-              <p class="font-semibold" style="color: var(--text-primary)">Pere López</p>
-            </div>
-            <div>
-              <p
-                class="text-xs"
-                style="
-                  color: var(--text-secondary);
-                  text-transform: uppercase;
-                  letter-spacing: 0.5px;
-                  margin-bottom: 0.25rem;
-                "
-              >
-                Email
-              </p>
-              <p class="font-medium" style="color: var(--primary)">pere.lopez@edu.cat</p>
             </div>
           </div>
-        </div>
-
-        <button class="w-full btn-secondary py-3 flex items-center justify-center gap-2">
-          <Award :size="18" /> Avaluar Taller
-        </button>
-      </div>
-    </div>
-
-    <div class="card p-6">
-      <h2
-        class="text-lg font-semibold mb-4"
-        style="
-          color: var(--text-primary);
-          padding-bottom: 0.75rem;
-          border-bottom: 1px solid var(--border-color);
-        "
-      >
-        Notificacions Recents
-      </h2>
-      <div class="space-y-3">
-        <div
-          class="flex items-start gap-3 p-4"
-          style="background-color: #e3f2fd; border-left: 4px solid var(--info)"
-        >
-          <Bell style="color: var(--info)" :size="20" />
-          <div class="flex-1">
-            <p class="font-semibold" style="color: var(--text-primary); margin-bottom: 0.25rem">
-              Assignació confirmada
-            </p>
-            <p class="text-sm" style="color: var(--text-secondary)">
-              S'ha assignat el taller de Robòtica Educativa amb 22 places
-            </p>
-            <p class="text-xs mt-1" style="color: var(--gray-500)">Fa 2 hores</p>
-          </div>
-        </div>
-        <div
-          class="flex items-start gap-3 p-4"
-          style="background-color: #fff3e0; border-left: 4px solid var(--warning)"
-        >
-          <AlertCircle style="color: var(--warning)" :size="20" />
-          <div class="flex-1">
-            <p class="font-semibold" style="color: var(--text-primary); margin-bottom: 0.25rem">
-              Checklist pendent
-            </p>
-            <p class="text-sm" style="color: var(--text-secondary)">
-              Cal completar el checklist final abans del 20/12/2025
-            </p>
-            <p class="text-xs mt-1" style="color: var(--gray-500)">Fa 1 dia</p>
-          </div>
+          <button @click="sendMessage" class="w-full mt-4 btn-primary py-2.5">
+            Enviar Missatge
+          </button>
         </div>
       </div>
     </div>
@@ -248,10 +164,16 @@ const stats = ref({
   student_count: 0,
 })
 
+const centerInfo = ref({})
+const coReferent = ref(null)
 const students = ref([])
 
 const goToNewRequest = () => {
   router.push('/centro/nueva-peticion')
+}
+
+const sendMessage = () => {
+  window.location.href = 'mailto:admin@workshop.com'
 }
 
 onMounted(async () => {
@@ -265,6 +187,15 @@ onMounted(async () => {
 
       const studentsData = await centreService.getStudents(user.id)
       students.value = studentsData
+
+      // Load center info
+      centerInfo.value = await centreService.getById(user.id)
+
+      // Load teachers
+      const teachers = await centreService.getTeachers(user.id)
+      if (teachers && teachers.length > 0) {
+        coReferent.value = teachers[0]
+      }
     }
   } catch (error) {
     console.error('Error loading dashboard data:', error)

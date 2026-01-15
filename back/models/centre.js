@@ -115,3 +115,15 @@ export const remove = async (id) => {
   const result = await db.query(text, [id]);
   return result.rows[0];
 };
+
+export const checkStudentsBelongToCenter = async (id_center, studentIds) => {
+  if (!studentIds || studentIds.length === 0) return true;
+  const text = `
+    SELECT COUNT(*) 
+    FROM students 
+    WHERE id_center_assigned = $1 AND id_user = ANY($2)
+  `;
+  const result = await db.query(text, [id_center, studentIds]);
+  const count = parseInt(result.rows[0].count, 10);
+  return count === studentIds.length;
+};
