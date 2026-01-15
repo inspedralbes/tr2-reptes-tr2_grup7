@@ -14,10 +14,20 @@ export const verifyToken = (req, res, next) => {
     : token;
 
   try {
+    // DEBUG: Log verification attempt
+    // console.log("Middleware verifyToken: Verifying token...");
+    // console.log("Middleware Secret exists?", !!process.env.JWT_SECRET);
+    
     const decoded = jwt.verify(tokenString, process.env.JWT_SECRET);
     req.user = decoded; // { id, role, ... }
     next();
   } catch (err) {
-    return res.status(401).json({ error: "Unauthorized" });
+    console.error("❌ Authentication Error in verifyToken:");
+    console.error("   Error Name:", err.name);
+    console.error("   Error Message:", err.message);
+    if(err.name === 'TokenExpiredError') {
+        console.error("   Expired At:", err.expiredAt);
+    }
+    return res.status(401).json({ error: "Unauthorized", details: err.message });
   }
 };

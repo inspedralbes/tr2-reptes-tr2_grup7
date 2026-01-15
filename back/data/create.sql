@@ -57,6 +57,7 @@ CREATE TABLE workshops (
     max_students_per_center INT DEFAULT 4,
     request_deadline TIMESTAMP,
     status VARCHAR(20) NOT NULL DEFAULT 'OFFERED' CHECK (status IN ('PENDING', 'FULL', 'OFFERED', 'ARCHIVED')),
+    modalidad CHAR(1) DEFAULT 'C' CHECK (modalidad IN ('A', 'B', 'C')), -- Modalidad A, B o C
     center_id INT REFERENCES centers(id_user), -- Solo centros, EL PROFESOR NO VA AQUÍ
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT check_dates CHECK (end_date > start_date)
@@ -185,12 +186,12 @@ INSERT INTO students (id_user, first_name, last_name, birth_date, phone, id_cent
 -- 5. TALLERES (WORKSHOPS)
 -- ==========================================
 -- Suponemos que auto-increment empieza en 1 -> 5
-INSERT INTO workshops (title, short_description, max_slots, start_date, end_date, available_slots, category, center_id) VALUES
-('Robótica Básica', 'Intro a Arduino',  16, '2025-05-10 09:00', '2025-05-10 13:00', 16, 'Tecnología', 2),
-('Diseño Web',      'HTML y CSS',       20, '2025-05-11 10:00', '2025-05-11 14:00', 20, 'Informática', 2),
-('Impresión 3D',    'Modelado básico',  10, '2025-05-12 16:00', '2025-05-12 19:00', 10, 'Fabricación', 3),
-('Ciberseguridad',  'Hacking ético',    15, '2025-06-01 09:00', '2025-06-01 13:00', 15, 'Seguridad',   3),
-('IA para Todos',   'Conceptos de LLM', 25, '2025-06-02 10:00', '2025-06-02 12:00', 25, 'IA',          4);
+INSERT INTO workshops (title, short_description, max_slots, start_date, end_date, available_slots, category, center_id, modalidad) VALUES
+('Robótica Básica', 'Intro a Arduino',  16, '2025-05-10 09:00', '2025-05-10 13:00', 16, 'Tecnología', 2, 'C'),
+('Diseño Web',      'HTML y CSS',       20, '2025-05-11 10:00', '2025-05-11 14:00', 20, 'Informática', 2, 'C'),
+('Impresión 3D',    'Modelado básico',  10, '2025-05-12 16:00', '2025-05-12 19:00', 10, 'Fabricación', 3, 'C'),
+('Ciberseguridad',  'Hacking ético',    15, '2025-06-01 09:00', '2025-06-01 13:00', 15, 'Seguridad',   3, 'C'),
+('IA para Todos',   'Conceptos de LLM', 25, '2025-06-02 10:00', '2025-06-02 12:00', 25, 'IA',          4, 'C');
 
 
 -- ==========================================

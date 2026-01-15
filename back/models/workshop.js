@@ -23,13 +23,14 @@ export const create = async (data) => {
     category,
     start_date,
     end_date,
-    status
+    status,
+    modalidad
   } = data;
 
   // available_slots starts as max_slots
   const text = `
-    INSERT INTO workshops (title, short_description, max_slots, available_slots, category, start_date, end_date, status)
-    VALUES ($1, $2, $3, $3, $4, $5, $6, $7)
+    INSERT INTO workshops (title, short_description, max_slots, available_slots, category, start_date, end_date, status, modalidad)
+    VALUES ($1, $2, $3, $3, $4, $5, $6, $7, $8)
     RETURNING *
   `;
   const values = [
@@ -39,7 +40,8 @@ export const create = async (data) => {
     category,
     start_date,
     end_date,
-    status || 'OFFERED'
+    status || 'OFFERED',
+    modalidad || 'C'
   ];
   const result = await db.query(text, values);
   return result.rows[0];
@@ -54,13 +56,14 @@ export const update = async (id, data) => {
     category,
     start_date,
     end_date,
-    status
+    status,
+    modalidad
   } = data;
 
   const text = `
     UPDATE workshops 
-    SET title=$1, short_description=$2, max_slots=$3, available_slots=$4, category=$5, start_date=$6, end_date=$7, status=$8
-    WHERE id_workshop = $9
+    SET title=$1, short_description=$2, max_slots=$3, available_slots=$4, category=$5, start_date=$6, end_date=$7, status=$8, modalidad=$9
+    WHERE id_workshop = $10
     RETURNING *
   `;
   const values = [
@@ -72,6 +75,7 @@ export const update = async (id, data) => {
     start_date,
     end_date,
     status,
+    modalidad,
     id,
   ];
   const result = await db.query(text, values);

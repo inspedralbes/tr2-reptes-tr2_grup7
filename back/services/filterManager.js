@@ -1,7 +1,7 @@
 // src/services/filters/filterManager.js
-import { filtrosA } from './modalidadA.js';
-import { filtrosB } from './modalidadB.js';
-import { filtrosC } from './modalidadC.js';
+import { filtrosA } from './filters/modalidadA.js';
+import { filtrosB } from './filters/modalidadB.js';
+import { filtrosC } from './filters/modalidadC.js';
 
 const mapaFiltros = {
   'A': filtrosA,
@@ -9,6 +9,6 @@ const mapaFiltros = {
   'C': filtrosC
 };
 
-export const obtenerPipeline = (modalidad) => {
+export const obtenerFiltrosPorModalidad = (modalidad) => {
   return mapaFiltros[modalidad] || null;
 };

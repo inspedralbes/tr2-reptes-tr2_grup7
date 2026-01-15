@@ -1,5 +1,5 @@
-import * as db from "../data/db.js";
-import { obtenerFiltrosPorModalidad } from '../services/filters/filterManager.js';
+import db from "../data/db.js";
+import { obtenerFiltrosPorModalidad } from '../services/filterManager.js';
 
 export const ejecutarProcesoAsignacion = async (config = {}) => {
     console.log("⚙️ Iniciando Motor de Asignación ENGINY...", config);
@@ -20,6 +20,7 @@ export const ejecutarProcesoAsignacion = async (config = {}) => {
         console.log("\n✅ Proceso de asignación finalizado con éxito.");
     } catch (error) {
         console.error("❌ Error en el matchingEngine:", error);
+        throw error; // Rethrow to let the controller handle it
     }
 };
 
