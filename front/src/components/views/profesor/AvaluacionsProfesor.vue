@@ -32,27 +32,20 @@
         </div>
 
         <!-- Estadístiques del taller -->
-        <div class="grid grid-cols-3 gap-4 mb-6">
+        <div class="grid grid-cols-2 gap-4 mb-6">
           <div class="text-center p-4" style="background-color: var(--background); border-radius: 8px;">
             <UserCheck :size="24" class="mx-auto mb-2" style="color: var(--success);" />
             <p class="text-2xl font-bold" style="color: var(--text-primary);">
-              {{ Math.floor(Math.random() * (workshop.max_slots - workshop.available_slots)) }}
+              {{ workshop.enrolled_count || 0 }}
             </p>
-            <p class="text-xs" style="color: var(--text-secondary);">Avaluats</p>
+            <p class="text-xs" style="color: var(--text-secondary);">Alumnes Inscrits</p>
           </div>
           <div class="text-center p-4" style="background-color: var(--background); border-radius: 8px;">
             <Clock :size="24" class="mx-auto mb-2" style="color: var(--warning);" />
             <p class="text-2xl font-bold" style="color: var(--text-primary);">
-              {{ (workshop.max_slots - workshop.available_slots) - Math.floor(Math.random() * (workshop.max_slots - workshop.available_slots)) }}
+              {{ workshop.duration_hours }}
             </p>
-            <p class="text-xs" style="color: var(--text-secondary);">Pendents</p>
-          </div>
-          <div class="text-center p-4" style="background-color: var(--background); border-radius: 8px;">
-            <Star :size="24" class="mx-auto mb-2" style="color: var(--primary);" />
-            <p class="text-2xl font-bold" style="color: var(--text-primary);">
-              {{ (Math.random() * 2 + 3).toFixed(1) }}
-            </p>
-            <p class="text-xs" style="color: var(--text-secondary);">Mitjana</p>
+            <p class="text-xs" style="color: var(--text-secondary);">Hores totals</p>
           </div>
         </div>
 

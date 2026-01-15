@@ -72,7 +72,9 @@
                 :style="{ backgroundColor: getCategoryColor(session.category).text + ' !important' }">
                 Veure detalls
               </button>
-              <button class="btn-outline py-2 px-4">
+              <button 
+                @click="goToAttendance(session.id_workshop)"
+                class="btn-outline py-2 px-4">
                 Gestionar assistència
               </button>
             </div>
@@ -151,6 +153,10 @@ const pastSessions = computed(() => {
 
 const goToDetail = (id) => {
   router.push(`/profesor/detalle/${id}`);
+};
+
+const goToAttendance = (id) => {
+  router.push(`/profesor/asistencia/${id}`);
 };
 
 onMounted(() => {

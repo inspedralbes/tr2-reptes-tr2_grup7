@@ -50,13 +50,13 @@
       </div>
     </div>
 
-    <!-- Pròximes Sessions - Static for now but could be dynamic later -->
+    <!-- Pròximes Sessions -->
     <div class="card p-6">
       <h2 class="text-lg font-semibold mb-4" style="color: var(--text-primary); padding-bottom: 0.75rem; border-bottom: 1px solid var(--border-color);">
         Pròximes sessions
       </h2>
-      <div v-if="workshops.length > 0" class="space-y-3">
-        <div v-for="(workshop, index) in workshops.slice(0, 2)" :key="'session-' + workshop.id_workshop" 
+      <div v-if="upcomingWorkshops.length > 0" class="space-y-3">
+        <div v-for="(workshop, index) in upcomingWorkshops" :key="'session-' + workshop.id_workshop" 
              @click="goToDetail(workshop.id_workshop)"
              class="flex items-center gap-4 p-4 cursor-pointer hover:opacity-90 transition-opacity" 
              :style="{ backgroundColor: getCategoryColor(workshop.category).bg, borderLeft: '4px solid ' + getCategoryColor(workshop.category).text }">
@@ -69,20 +69,27 @@
               {{ formatSessionDate(workshop.start_date) }}
             </p>
           </div>
+          <button 
+            @click.stop="goToAttendance(workshop.id_workshop)"
+            class="p-2 rounded-full hover:bg-gray-100 transition-colors"
+            style="margin-right: -0.5rem;"
+            title="Gestionar Assistència">
+            <ClipboardList :size="20" :style="{ color: getCategoryColor(workshop.category).text }" />
+          </button>
           <button :style="{ color: getCategoryColor(workshop.category).text }">
             <ChevronRight :size="20" />
           </button>
         </div>
       </div>
-      <p v-else style="color: var(--text-secondary);" class="text-center py-4">No hi ha sessions programades.</p>
+      <p v-else style="color: var(--text-secondary);" class="text-center py-4">No hi ha sessions programades pròximament.</p>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import { useRouter } from 'vue-router';
-import { BookOpen, Calendar, ChevronRight } from 'lucide-vue-next';
+import { BookOpen, Calendar, ChevronRight, ClipboardList } from 'lucide-vue-next';
 import apiClient from '../../../services/apiClient';
 
 const router = useRouter();
@@ -108,8 +115,19 @@ const fetchWorkshops = async () => {
   }
 };
 
+const upcomingWorkshops = computed(() => {
+  return workshops.value
+    .filter(w => !isPast(w.end_date))
+    .sort((a, b) => new Date(a.start_date) - new Date(b.start_date))
+    .slice(0, 2);
+});
+
 const goToDetail = (id) => {
   router.push(`/profesor/detalle/${id}`);
+};
+
+const goToAttendance = (id) => {
+  router.push(`/profesor/asistencia/${id}`);
 };
 
 onMounted(() => {

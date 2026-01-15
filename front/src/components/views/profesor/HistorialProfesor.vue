@@ -103,21 +103,11 @@
                 </div>
 
                 <div class="flex items-center gap-2">
-                  <Award :size="16" style="color: var(--text-secondary);" />
-                  <div>
-                    <p class="text-xs" style="color: var(--text-secondary);">Taxa d'èxit</p>
-                    <p class="text-sm font-semibold" style="color: var(--success);">
-                      {{ Math.floor(Math.random() * 20 + 80) }}%
-                    </p>
-                  </div>
-                </div>
-
-                <div class="flex items-center gap-2">
                   <Star :size="16" style="color: var(--text-secondary);" />
                   <div>
-                    <p class="text-xs" style="color: var(--text-secondary);">Valoració</p>
+                    <p class="text-xs" style="color: var(--text-secondary);">Estat</p>
                     <p class="text-sm font-semibold" style="color: var(--primary);">
-                      {{ (Math.random() * 2 + 3).toFixed(1) }} / 5.0
+                      {{ workshop.status }}
                     </p>
                   </div>
                 </div>
@@ -210,8 +200,8 @@ const totalHours = computed(() => {
 });
 
 const averageRating = computed(() => {
-  if (completedWorkshops.value.length === 0) return '0.0';
-  return (Math.random() * 1.5 + 3.5).toFixed(1);
+  // As average rating is not in DB model, we show N/A or hide it
+  return 'N/A';
 });
 
 const categoryCounts = computed(() => {

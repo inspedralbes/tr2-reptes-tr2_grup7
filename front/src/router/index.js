@@ -134,6 +134,12 @@ const router = createRouter({
           meta: { roles: ['TEACHER', 'ADMIN'] }
         },
         {
+          path: 'profesor/asistencia/:id',
+          name: 'profesor-asistencia',
+          component: () => import('../components/views/profesor/ControlAsistencia.vue'),
+          meta: { roles: ['TEACHER', 'ADMIN'] }
+        },
+        {
           path: 'profesor/materials',
           name: 'profesor-materials',
           component: () => import('../components/views/profesor/MaterialesProfesor.vue'),
