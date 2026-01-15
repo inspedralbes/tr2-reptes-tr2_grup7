@@ -140,8 +140,8 @@ const navigationStructure = {
       name: 'Taula',
       subsections: [
         { id: 'taula-centre', name: 'Taula Central', route: '/centro/panel' },
-        { id: 'info-taller', name: 'Informació Tallers', route: null },
-        { id: 'alumnes', name: 'Llista Alumnes', route: null }
+        { id: 'info-taller', name: 'Informació Tallers', route: '/centro/info' },
+        { id: 'alumnes', name: 'Llista Alumnes', route: '/centro/alumnos' }
       ]
     },
     {
@@ -156,16 +156,16 @@ const navigationStructure = {
       name: 'Peticions',
       subsections: [
         { id: 'nova-peticio', name: 'Nova Petició', route: '/centro/nueva-peticion' },
-        { id: 'meves-peticions', name: 'Les Meves Peticions', route: null },
-        { id: 'historial', name: 'Historial', route: null }
+        { id: 'meves-peticions', name: 'Les Meves Peticions', route: '/centro/peticiones' },
+        { id: 'historial', name: 'Historial', route: '/centro/historial' }
       ]
     },
     {
       id: 'checklist',
       name: 'Checklist',
       subsections: [
-        { id: 'checklist-actual', name: 'Checklist Actual', route: null },
-        { id: 'finalitzats', name: 'Finalitzats', route: null }
+        { id: 'checklist-actual', name: 'Checklist Actual', route: '/centro/checklist' },
+        { id: 'finalitzats', name: 'Finalitzats', route: '/centro/finalizados' }
       ]
     },
     {
@@ -182,7 +182,7 @@ const navigationStructure = {
       name: 'Dashboard',
       subsections: [
         { id: 'dashboard', name: 'Resum General', route: '/admin/panel' },
-        { id: 'estadistiques', name: 'Estadístiques', route: null }
+        { id: 'estadistiques', name: 'Estadístiques', route: '/admin/estadisticas' }
       ]
     },
     {
@@ -190,8 +190,7 @@ const navigationStructure = {
       name: 'Peticions',
       subsections: [
         { id: 'peticions', name: 'Totes les Peticions', route: '/admin/peticiones' },
-        { id: 'pendents', name: 'Pendents', route: null },
-        { id: 'assignades', name: 'Assignades', route: null }
+        { id: 'pendents', name: 'Pendents', route: '/admin/peticiones' }
       ]
     },
     {
@@ -199,23 +198,14 @@ const navigationStructure = {
       name: 'Assignació',
       subsections: [
         { id: 'assignacio', name: 'Eina Assignació', route: '/admin/asignacion' },
-        { id: 'professors', name: 'Professors Disponibles', route: null }
-      ]
-    },
-    {
-      id: 'tallers',
-      name: 'Tallers',
-      subsections: [
-        { id: 'gestio-tallers', name: 'Gestió Tallers', route: null },
-        { id: 'nou-taller', name: 'Crear Taller', route: null }
+        { id: 'professors', name: 'Professors Disponibles', route: '/admin/asignacion' }
       ]
     },
     {
       id: 'centres',
       name: 'Centres',
       subsections: [
-        { id: 'llista-centres', name: 'Llista Centres', route: null },
-        { id: 'estadistiques-centres', name: 'Estadístiques', route: null }
+        { id: 'llista-centres', name: 'Llista Centres', route: '/admin/centros' }
       ]
     },
     {
@@ -232,31 +222,31 @@ const navigationStructure = {
       name: 'Els Meus Tallers',
       subsections: [
         { id: 'meus-tallers', name: 'Tallers Actius', route: '/profesor/talleres' },
-        { id: 'historial-tallers', name: 'Historial', route: null }
+        { id: 'historial-tallers', name: 'Historial', route: '/profesor/historial' }
       ]
     },
     {
       id: 'sessions',
       name: 'Sessions',
       subsections: [
-        { id: 'proximes-sessions', name: 'Pròximes Sessions', route: null },
-        { id: 'detall-taller', name: 'Detall Taller', route: '/profesor/detalle' }
+        { id: 'proximes-sessions', name: 'Pròximes Sessions', route: '/profesor/sessions' },
+        { id: 'detall-taller', name: 'Detall Taller', route: '/profesor/talleres' }
       ]
     },
     {
       id: 'avaluacions',
       name: 'Avaluacions',
       subsections: [
-        { id: 'crear-avaluacio', name: 'Crear Avaluació', route: null },
-        { id: 'avaluacions-enviades', name: 'Enviades', route: null }
+        { id: 'crear-avaluacio', name: 'Crear Avaluació', route: '/profesor/avaluacions' },
+        { id: 'avaluacions-enviades', name: 'Enviades', route: '/profesor/avaluacions' }
       ]
     },
     {
       id: 'materials',
       name: 'Materials',
       subsections: [
-        { id: 'materials-taller', name: 'Materials del Taller', route: null },
-        { id: 'recursos', name: 'Recursos Educatius', route: null }
+        { id: 'materials-taller', name: 'Materials del Taller', route: '/profesor/materials' },
+        { id: 'recursos', name: 'Recursos Educatius', route: '/profesor/materials' }
       ]
     },
     {

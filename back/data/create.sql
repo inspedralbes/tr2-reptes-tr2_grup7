@@ -50,6 +50,8 @@ CREATE TABLE workshops (
     end_date TIMESTAMP NOT NULL,
     available_slots INT,
     category VARCHAR(100),
+    schedule VARCHAR(255),
+    duration_hours INT,
     total_capacity INT DEFAULT 16,
     max_students_per_center INT DEFAULT 4,
     request_deadline TIMESTAMP,
@@ -97,8 +99,4 @@ CREATE TABLE workshop_enrollments (
     UNIQUE(id_workshop, id_student)
 );
 
--- 7. INSERT ADMIN (CORREGIDO)
--- Password: 123 (bcrypt hash with 10 rounds)
--- Use the fix-admin-password.js script to regenerate this hash if needed
-INSERT INTO users (email, password_hash, role, is_active)
-VALUES ('admin@workshop.com', '$2b$10$N9qo8uLOickgx2ZMRZoMye7FRNpZeS2wT6W83YHVe6JwZuMzCqP8O', 'ADMIN', TRUE);
+-- Fi de l'esquema

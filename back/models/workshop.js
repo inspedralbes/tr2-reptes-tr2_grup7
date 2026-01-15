@@ -105,9 +105,14 @@ export const assignTeacher = async (id_workshop, id_teacher) => {
 
 export const getByTeacherId = async (teacherId) => {
   const result = await db.query(
-    `SELECT w.* FROM workshops w
+    `SELECT 
+      w.*,
+      COALESCE(COUNT(DISTINCT we.id_enrollment), 0) AS enrolled_count
+     FROM workshops w
      JOIN workshop_teachers wt ON w.id_workshop = wt.id_workshop
+     LEFT JOIN workshop_enrollments we ON w.id_workshop = we.id_workshop
      WHERE wt.id_teacher = $1 
+     GROUP BY w.id_workshop
      ORDER BY w.created_at DESC`,
     [teacherId]
   );

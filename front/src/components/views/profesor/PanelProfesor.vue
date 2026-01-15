@@ -28,8 +28,8 @@
         </p>
         <div class="space-y-2 text-sm" style="margin-bottom: 1rem;">
           <div class="flex justify-between py-1">
-            <span style="color: var(--text-secondary);">Places:</span>
-            <span class="font-semibold" style="color: var(--text-primary);">{{ workshop.available_slots }} / {{ workshop.max_slots }}</span>
+            <span style="color: var(--text-secondary);">Inscrits:</span>
+            <span class="font-semibold" style="color: var(--text-primary);">{{ workshop.enrolled_count || 0 }} / {{ workshop.max_slots }}</span>
           </div>
           <div class="flex justify-between py-1">
             <span style="color: var(--text-secondary);">{{ isPast(workshop.end_date) ? 'Finalitzat el:' : 'Inici:' }}</span>
@@ -152,13 +152,11 @@ const getStatusLabel = (status) => {
 
 const getCategoryColor = (category) => {
   const colors = {
-    'Tecnologia': { bg: '#e3f2fd', text: 'var(--primary)' },
-    'Ciència': { bg: '#f3e5f5', text: '#7b1fa2' },
-    'Arts': { bg: '#fff3e0', text: 'var(--secondary)' },
-    'Informàtica': { bg: '#e8f5e9', text: '#2e7d32' },
-    'Fabricació': { bg: '#efebe9', text: '#5d4037' },
-    'Seguretat': { bg: '#ffebee', text: '#c62828' },
-    'IA': { bg: '#f3e5f5', text: '#6a1b9a' },
+    'Arts escèniques': { bg: '#f3e5f5', text: '#7b1fa2' },
+    'Indústria-manufactura': { bg: '#efebe9', text: '#5d4037' },
+    'Hostaleria': { bg: '#fff3e0', text: '#e65100' },
+    'Indústria 4.0': { bg: '#e3f2fd', text: '#0d47a1' },
+    'Esportiu': { bg: '#e8f5e9', text: '#2e7d32' },
     'default': { bg: '#f5f5f5', text: '#666' }
   };
   return colors[category] || colors.default;

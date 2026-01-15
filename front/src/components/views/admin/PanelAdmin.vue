@@ -69,19 +69,19 @@
         </h2>
         <div class="space-y-3">
           <div class="flex items-center justify-between py-2" style="border-bottom: 1px solid var(--border-color);">
-            <span style="color: var(--text-primary); font-weight: 500;">Robòtica Educativa</span>
+            <span style="color: var(--text-primary); font-weight: 500;">CIRC i oficis de les arts escèniques</span>
             <span class="badge-info" style="min-width: 2.5rem; text-align: center;">
               12
             </span>
           </div>
           <div class="flex items-center justify-between py-2" style="border-bottom: 1px solid var(--border-color);">
-            <span style="color: var(--text-primary); font-weight: 500;">Ciències Experimentals</span>
+            <span style="color: var(--text-primary); font-weight: 500;">Cuina comunitària</span>
             <span class="badge-info" style="min-width: 2.5rem; text-align: center;">
               8
             </span>
           </div>
           <div class="flex items-center justify-between py-2">
-            <span style="color: var(--text-primary); font-weight: 500;">Arts Plàstiques</span>
+            <span style="color: var(--text-primary); font-weight: 500;">Metall i artesania</span>
             <span class="badge-info" style="min-width: 2.5rem; text-align: center;">
               4
             </span>

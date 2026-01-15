@@ -1,24 +1,22 @@
--- Limpiar y reiniciar secuencias
+-- Netejar i reiniciar seqüències
 TRUNCATE users, centers, teachers, students, workshops, workshop_teachers, center_requests, student_interest, workshop_enrollments RESTART IDENTITY CASCADE;
 
 -- ==========================================
--- 1. USUARIOS (USERS)
+-- 1. USUARIS (USERS)
 -- ==========================================
 -- Admin (ID 1)
 INSERT INTO users (email, password_hash, role, is_active)
 VALUES ('admin@workshop.com', '$2b$10$Ni4bF4TGBudgsxtSUHKw/eRsDKYa1Hsmp/lxZzbi9M/H3oK4Xk4Pm', 'ADMIN', TRUE);
 
--- IDs 2-6: Centros
-
--- 1.1 Centros
+-- IDs 2-6: Centres
 INSERT INTO users (email, password_hash, role, is_active) VALUES
-('centro1@ejemplo.com', '$2b$10$Ni4bF4TGBudgsxtSUHKw/eRsDKYa1Hsmp/lxZzbi9M/H3oK4Xk4Pm', 'CENTER', TRUE),
-('centro2@ejemplo.com', '$2b$10$Ni4bF4TGBudgsxtSUHKw/eRsDKYa1Hsmp/lxZzbi9M/H3oK4Xk4Pm', 'CENTER', TRUE),
-('centro3@ejemplo.com', '$2b$10$Ni4bF4TGBudgsxtSUHKw/eRsDKYa1Hsmp/lxZzbi9M/H3oK4Xk4Pm', 'CENTER', TRUE),
-('centro4@ejemplo.com', '$2b$10$Ni4bF4TGBudgsxtSUHKw/eRsDKYa1Hsmp/lxZzbi9M/H3oK4Xk4Pm', 'CENTER', TRUE),
-('centro5@ejemplo.com', '$2b$10$Ni4bF4TGBudgsxtSUHKw/eRsDKYa1Hsmp/lxZzbi9M/H3oK4Xk4Pm', 'CENTER', TRUE);
+('iespedralbes@educacio.cat', '$2b$10$Ni4bF4TGBudgsxtSUHKw/eRsDKYa1Hsmp/lxZzbi9M/H3oK4Xk4Pm', 'CENTER', TRUE),
+('instpoblenou@educacio.cat', '$2b$10$Ni4bF4TGBudgsxtSUHKw/eRsDKYa1Hsmp/lxZzbi9M/H3oK4Xk4Pm', 'CENTER', TRUE),
+('coltecnologic@educacio.cat', '$2b$10$Ni4bF4TGBudgsxtSUHKw/eRsDKYa1Hsmp/lxZzbi9M/H3oK4Xk4Pm', 'CENTER', TRUE),
+('iesgracia@educacio.cat', '$2b$10$Ni4bF4TGBudgsxtSUHKw/eRsDKYa1Hsmp/lxZzbi9M/H3oK4Xk4Pm', 'CENTER', TRUE),
+('escolatreball@educacio.cat', '$2b$10$Ni4bF4TGBudgsxtSUHKw/eRsDKYa1Hsmp/lxZzbi9M/H3oK4Xk4Pm', 'CENTER', TRUE);
 
--- 1.2 Profesores
+-- IDs 7-11: Professors (Docents Referents)
 INSERT INTO users (email, password_hash, role, is_active) VALUES
 ('profe1@ejemplo.com', '$2b$10$Ni4bF4TGBudgsxtSUHKw/eRsDKYa1Hsmp/lxZzbi9M/H3oK4Xk4Pm', 'TEACHER', TRUE),
 ('profe2@ejemplo.com', '$2b$10$Ni4bF4TGBudgsxtSUHKw/eRsDKYa1Hsmp/lxZzbi9M/H3oK4Xk4Pm', 'TEACHER', TRUE),
@@ -26,108 +24,94 @@ INSERT INTO users (email, password_hash, role, is_active) VALUES
 ('profe4@ejemplo.com', '$2b$10$Ni4bF4TGBudgsxtSUHKw/eRsDKYa1Hsmp/lxZzbi9M/H3oK4Xk4Pm', 'TEACHER', TRUE),
 ('profe5@ejemplo.com', '$2b$10$Ni4bF4TGBudgsxtSUHKw/eRsDKYa1Hsmp/lxZzbi9M/H3oK4Xk4Pm', 'TEACHER', TRUE);
 
--- 1.3 Alumnos
+-- IDs 12-16: Alumnes
 INSERT INTO users (email, password_hash, role, is_active) VALUES
-('alumno1@ejemplo.com', '$2b$10$Ni4bF4TGBudgsxtSUHKw/eRsDKYa1Hsmp/lxZzbi9M/H3oK4Xk4Pm', 'STUDENT', TRUE),
-('alumno2@ejemplo.com', '$2b$10$Ni4bF4TGBudgsxtSUHKw/eRsDKYa1Hsmp/lxZzbi9M/H3oK4Xk4Pm', 'STUDENT', TRUE),
-('alumno3@ejemplo.com', '$2b$10$Ni4bF4TGBudgsxtSUHKw/eRsDKYa1Hsmp/lxZzbi9M/H3oK4Xk4Pm', 'STUDENT', TRUE),
-('alumno4@ejemplo.com', '$2b$10$Ni4bF4TGBudgsxtSUHKw/eRsDKYa1Hsmp/lxZzbi9M/H3oK4Xk4Pm', 'STUDENT', TRUE),
-('alumno5@ejemplo.com', '$2b$10$Ni4bF4TGBudgsxtSUHKw/eRsDKYa1Hsmp/lxZzbi9M/H3oK4Xk4Pm', 'STUDENT', TRUE);
+('alumne1@ejemplo.com', '$2b$10$Ni4bF4TGBudgsxtSUHKw/eRsDKYa1Hsmp/lxZzbi9M/H3oK4Xk4Pm', 'STUDENT', TRUE),
+('alumne2@ejemplo.com', '$2b$10$Ni4bF4TGBudgsxtSUHKw/eRsDKYa1Hsmp/lxZzbi9M/H3oK4Xk4Pm', 'STUDENT', TRUE),
+('alumne3@ejemplo.com', '$2b$10$Ni4bF4TGBudgsxtSUHKw/eRsDKYa1Hsmp/lxZzbi9M/H3oK4Xk4Pm', 'STUDENT', TRUE),
+('alumne4@ejemplo.com', '$2b$10$Ni4bF4TGBudgsxtSUHKw/eRsDKYa1Hsmp/lxZzbi9M/H3oK4Xk4Pm', 'STUDENT', TRUE),
+('alumne5@ejemplo.com', '$2b$10$Ni4bF4TGBudgsxtSUHKw/eRsDKYa1Hsmp/lxZzbi9M/H3oK4Xk4Pm', 'STUDENT', TRUE);
 
 
 -- ==========================================
--- 2. CENTROS (CENTERS)
+-- 2. CENTRES (CENTERS)
 -- ==========================================
--- IDs de usuario 2 al 6
 INSERT INTO centers (id_user, center_name, center_code, address, phone) VALUES
 (2, 'IES Pedralbes',      '080001', 'Av. Esplugues 36, BCN', '930000001'),
-(3, 'Institut Poblenou',  '080002', 'Carrer bilbao 20, BCN', '930000002'),
-(4, 'Colegio Tecnológico','080003', 'Gran Via 123, BCN',     '930000003'),
-(5, 'IES Gracia',         '080004', 'Carrer Verdi 50, BCN',  '930000004'),
+(3, 'Institut Poblenou',  '080002', 'Carrer Bilbao 20, BCN', '930000002'),
+(4, 'Col·legi Tecnològic','080003', 'Gran Via 123, BCN',     '930000003'),
+(5, 'IES Gràcia',         '080004', 'Carrer Verdi 50, BCN',  '930000004'),
 (6, 'Escola del Treball', '080005', 'Carrer Urgell 187, BCN','930000005');
 
 
 -- ==========================================
--- 3. PROFESORES (TEACHERS)
+-- 3. PROFESORS (TEACHERS)
 -- ==========================================
--- IDs de usuario 7 al 11. Asignados a distintos centros.
 INSERT INTO teachers (id_user, first_name, last_name, id_center_assigned) VALUES
-(7,  'Juan',    'Pérez',     2), -- En IES Pedralbes
-(8,  'Laura',   'García',    2), -- En IES Pedralbes
-(9,  'Carlos',  'Sánchez',   3), -- En Poblenou
-(10, 'Ana',     'Martínez',  4), -- En Col. Tecnológico
-(11, 'Roberto', 'Rodríguez', 5); -- En IES Gracia
+(7,  'Joan',    'Pérez',     2), -- En IES Pedralbes
+(8,  'Laura',   'Gras',      2), -- En IES Pedralbes
+(9,  'Carles',  'Sánchez',   3), -- En Poblenou
+(10, 'Anna',     'Martínez',  4), -- En Col. Tecnològic
+(11, 'Robert', 'Rodríguez', 5); -- En IES Gràcia
 
 
 -- ==========================================
--- 4. ALUMNOS (STUDENTS)
+-- 4. ALUMNES (STUDENTS)
 -- ==========================================
--- IDs de usuario 12 al 16.
 INSERT INTO students (id_user, first_name, last_name, birth_date, phone, id_center_assigned) VALUES
-(12, 'María',  'López',  '2005-01-15', '600000001', 2), -- Pedralbes
-(13, 'Pedro',  'Gómez',  '2006-03-22', '600000002', 2), -- Pedralbes
-(14, 'Lucía',  'Fern.',  '2005-07-30', '600000003', 3), -- Poblenou
-(15, 'Miguel', 'Torres', '2005-11-05', '600000004', 3), -- Poblenou
-(16, 'Elena',  'Ruiz',   '2006-02-14', '600000005', 4); -- Tecnológico
+(12, 'Marc',    'López',  '2005-01-15', '600000001', 2),
+(13, 'Pol',     'Gómez',  '2006-03-22', '600000002', 2),
+(14, 'Lucia',   'Fern.',  '2005-07-30', '600000003', 3),
+(15, 'Miquel',  'Torres', '2005-11-05', '600000004', 3),
+(16, 'Elena',   'Ruiz',   '2006-02-14', '600000005', 4);
 
 
 -- ==========================================
--- 5. TALLERES (WORKSHOPS)
+-- 5. TALLERS ENGINY (WORKSHOPS)
 -- ==========================================
--- Suponemos que auto-increment empieza en 1 -> 5
-INSERT INTO workshops (title, short_description, max_slots, start_date, end_date, available_slots, category, center_id) VALUES
-('Robòtica bàsica', 'Introducció a Arduino',  16, '2025-05-10 09:00', '2025-05-10 13:00', 16, 'Tecnologia', 2),
-('Disseny Web',      'HTML i CSS',          20, '2025-05-11 10:00', '2025-05-11 14:00', 20, 'Informàtica', 2),
-('Impressió 3D',    'Modelatge bàsic',      10, '2025-05-12 16:00', '2025-05-12 19:00', 10, 'Fabricació', 3),
-('Ciberseguretat',  'Hacking ètic',        15, '2025-06-01 09:00', '2025-06-01 13:00', 15, 'Seguretat',   3),
-('IA per a tots',   'Conceptes de LLM',     25, '2025-06-02 10:00', '2025-06-02 12:00', 25, 'IA',          4);
+INSERT INTO workshops (title, short_description, max_slots, start_date, end_date, available_slots, category, schedule, duration_hours, center_id) VALUES
+('CIRC i oficis de les arts escèniques', 'Descobrim el món del circ i les arts escèniques.', 16, '2025-10-10 09:00', '2025-12-10 13:00', 16, 'Arts escèniques', 'Dimarts i dijous 9:00-13:00', 40, 2),
+('Fusta', 'Taller de fusteria i fabricació sostenible.', 16, '2025-10-11 10:00', '2025-12-11 14:00', 16, 'Indústria-manufactura', 'Dimecres 10:00-14:00', 32, 2),
+('Cuina comunitària', 'Aprenem cuina i indústries alimentàries.', 16, '2025-10-12 16:00', '2025-12-12 19:00', 16, 'Hostaleria', 'Dijous 16:00-19:00', 24, 3),
+('Metall i artesania', 'Introducció a la metal·lúrgia i artesania.', 16, '2026-01-10 09:00', '2026-03-10 13:00', 16, 'Indústria 4.0', 'Divendres 9:00-13:00', 48, 3),
+('Serigrafia', 'Tècniques de serigrafia i disseny gràfic.', 16, '2025-11-02 10:00', '2025-12-02 12:00', 16, 'Indústria-manufactura', 'Dilluns 10:00-12:00', 16, 4),
+('Vela', 'Aprenem a navegar en vela lleugera.', 16, '2025-04-15 09:00', '2025-06-15 13:00', 16, 'Esportiu', 'Dissabtes 9:00-13:00', 36, 5);
 
 
 -- ==========================================
--- 6. TALLER_PROFESORES (WORKSHOP_TEACHERS)
+-- 6. TALLER_PROFESORS (WORKSHOP_TEACHERS)
 -- ==========================================
--- Asignamos profesores a los talleres recién creados
--- IDs workshop 1..5 estáticos supuestos (al ser fresh insert)
--- Profesores IDs 7..11
 INSERT INTO workshop_teachers (id_workshop, id_teacher) VALUES
-(1, 7), -- Juan da Robótica
-(1, 8), -- Laura también ayuda en Robótica
-(2, 7), -- Juan da Diseño Web
-(3, 9), -- Carlos da Impresión 3D
-(4, 9); -- Carlos da Ciberseguridad
+(1, 7),
+(2, 8),
+(3, 9),
+(4, 9),
+(5, 10),
+(6, 11);
 
 
 -- ==========================================
--- 7. SOLICITUDES DE CENTROS (CENTER_REQUESTS)
+-- 7. SOL·LICITUDS (CENTER_REQUESTS)
 -- ==========================================
--- Centros solicitan plazas para talleres
 INSERT INTO center_requests (id_center, id_workshop, requested_slots, status, comments) VALUES
-(3, 1, 4, 'PENDING',  'Interés alto'),         -- Poblenou pide Robótica
-(4, 2, 2, 'ACCEPTED', 'Confirmado'),           -- Tecnológico pide Diseño Web
-(5, 1, 3, 'REJECTED', 'Fuera de plazo'),       -- Gracia pide Robótica
-(2, 3, 4, 'PENDING',  'Alumnos motivados'),    -- Pedralbes pide Impresión 3D (aunque es "su competencia" o colaboración)
-(6, 5, 4, 'PARTIAL',  'Solo hay 2 huecos');    -- Treball pide IA
+(3, 1, 4, 'PENDING',  'Interès alt'),
+(4, 2, 2, 'ACCEPTED', 'Confirmat'),
+(5, 1, 3, 'REJECTED', 'Fora de termini');
 
 
 -- ==========================================
--- 8. INTERÉS DE ALUMNOS (STUDENT_INTEREST)
+-- 8. INTERÈS ALUMNES (STUDENT_INTEREST)
 -- ==========================================
--- Alumnos (12..16) interesados en talleres (1..5)
 INSERT INTO student_interest (id_student, id_workshop, status, verified_by_teacher_id) VALUES
 (12, 1, 'WAITING',   7),
 (13, 1, 'CONFIRMED', 7),
-(14, 3, 'WAITING',   9),
-(15, 4, 'CANCELLED', 9),
-(16, 5, 'WAITING',   10);
+(14, 3, 'WAITING',   9);
 
 
 -- ==========================================
--- 9. INSCRIPCIONES (WORKSHOP_ENROLLMENTS)
+-- 9. INSCRIPCIONS (WORKSHOP_ENROLLMENTS)
 -- ==========================================
--- Alumnos inscritos
 INSERT INTO workshop_enrollments (id_workshop, id_student) VALUES
-(1, 13), -- Pedro inscrito en Robótica
-(2, 16), -- Elena inscrita en Diseño Web
-(3, 14), -- Lucía inscrita en Impresión 3D
-(1, 12), -- María inscrita en Robótica
-(5, 15); -- Miguel inscrito en IA
+(1, 13),
+(2, 16),
+(3, 14);
