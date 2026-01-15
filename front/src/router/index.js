@@ -40,6 +40,11 @@ const router = createRouter({
           name: 'centro-talleres',
           component: () => import('../components/views/centre/InfoTalleres.vue'),
         },
+        {
+          path: 'centro/historial',
+          name: 'centro-historial',
+          component: () => import('../components/views/centre/HistorialPeticiones.vue'),
+        },
         // Rutas de Administración
         {
           path: 'admin/panel',

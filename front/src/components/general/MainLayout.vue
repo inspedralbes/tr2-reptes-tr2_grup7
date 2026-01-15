@@ -184,8 +184,7 @@ const navigationStructure = {
       name: 'Peticions',
       subsections: [
         { id: 'nova-peticio', name: 'Nova Petició', route: '/centro/nueva-peticion' },
-        { id: 'meves-peticions', name: 'Les Meves Peticions', route: null },
-        { id: 'historial', name: 'Historial', route: null },
+        { id: 'meves-peticions', name: 'Les Meves Peticions', route: '/centro/historial' },
       ],
     },
     {
