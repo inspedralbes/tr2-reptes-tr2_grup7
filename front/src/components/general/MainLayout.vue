@@ -1,6 +1,6 @@
 <template>
   <div class="min-h-screen" style="background-color: var(--background-alt);">
-    <!-- Header Superior - Navegación Principal Horizontal -->
+    <!-- Capçalera Superior - Navegació Principal Horizontal -->
     <header class="header" style="position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
       <div class="flex items-center justify-between px-6 py-3">
         <!-- Logo y Título -->
@@ -12,14 +12,25 @@
           </div>
         </div>
 
-        <!-- User Info -->
-        <div class="flex items-center gap-3">
-          <div class="flex items-center gap-2" style="border-left: 1px solid rgba(255,255,255,0.3); padding-left: 1rem;">
-            <span class="text-sm text-white font-medium">{{ getRoleName() }}</span>
-            <div style="width: 32px; height: 32px; background: rgba(255,255,255,0.2); border-radius: 3px; display: flex; align-items: center; justify-content: center;">
-              <span class="text-white font-semibold text-sm">{{ getRoleInitial() }}</span>
+        <!-- User Info & Logout -->
+        <div class="flex items-center gap-4">
+          <div class="flex items-center gap-3" style="border-left: 1px solid rgba(255,255,255,0.2); padding-left: 1.5rem;">
+            <div class="user-profile-badge">
+              {{ getRoleInitial() }}
+            </div>
+            <div class="flex flex-col">
+              <span class="text-xs text-white opacity-75 leading-none mb-1">Benvingut/da</span>
+              <span class="text-sm text-white font-semibold leading-none">{{ getRoleName() }}</span>
             </div>
           </div>
+          <button 
+            @click="handleLogout" 
+            class="logout-button"
+            title="Tancar sessió"
+          >
+            <LogOut :size="16" />
+            <span>Sortir</span>
+          </button>
         </div>
       </div>
 
@@ -42,9 +53,9 @@
       </div>
     </header>
 
-    <!-- Layout: Sidebar Izquierdo + Contenido Principal -->
+    <!-- Disseny: Barra lateral esquerra + Contingut principal -->
     <div class="flex">
-      <!-- Sidebar Izquierdo - Submenú -->
+      <!-- Barra lateral esquerra - Submenú -->
       <aside class="sidebar" style="width: 240px; border-right: 1px solid var(--border-color); overflow-y: auto; position: fixed; top: 160px; left: 0; height: calc(100vh - 130px); z-index: 50;">
         <div class="p-4">
           <h3 class="text-xs font-semibold mb-3 px-4" style="color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px;">
@@ -63,13 +74,13 @@
               :disabled="!subsection.route"
             >
               {{ subsection.name }}
-              <span v-if="!subsection.route" class="text-xs ml-2">(próximamente)</span>
+              <span v-if="!subsection.route" class="text-xs ml-2">(pròximament)</span>
             </button>
           </nav>
         </div>
       </aside>
 
-      <!-- Contenido Principal -->
+      <!-- Contingut Principal -->
       <main class="flex-1 p-6" style="background-color: white; margin-left: 240px;">
         <router-view />
       </main>
@@ -80,7 +91,9 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
-import { BookOpen } from 'lucide-vue-next';
+import { BookOpen, LogOut } from 'lucide-vue-next';
+import { logout } from '../../services/authService';
+import logo from '../../img/logo.jpg';
 
 const router = useRouter();
 
@@ -127,8 +140,8 @@ const navigationStructure = {
       name: 'Taula',
       subsections: [
         { id: 'taula-centre', name: 'Taula Central', route: '/centro/panel' },
-        { id: 'info-taller', name: 'Informació Tallers', route: null },
-        { id: 'alumnes', name: 'Llista Alumnes', route: null }
+        { id: 'info-taller', name: 'Informació Tallers', route: '/centro/info' },
+        { id: 'alumnes', name: 'Llista Alumnes', route: '/centro/alumnos' }
       ]
     },
     {
@@ -143,16 +156,23 @@ const navigationStructure = {
       name: 'Peticions',
       subsections: [
         { id: 'nova-peticio', name: 'Nova Petició', route: '/centro/nueva-peticion' },
-        { id: 'meves-peticions', name: 'Les Meves Peticions', route: null },
-        { id: 'historial', name: 'Historial', route: null }
+        { id: 'meves-peticions', name: 'Les Meves Peticions', route: '/centro/peticiones' },
+        { id: 'historial', name: 'Historial', route: '/centro/historial' }
       ]
     },
     {
       id: 'checklist',
       name: 'Checklist',
       subsections: [
-        { id: 'checklist-actual', name: 'Checklist Actual', route: null },
-        { id: 'finalitzats', name: 'Finalitzats', route: null }
+        { id: 'checklist-actual', name: 'Checklist Actual', route: '/centro/checklist' },
+        { id: 'finalitzats', name: 'Finalitzats', route: '/centro/finalizados' }
+      ]
+    },
+    {
+      id: 'sessio',
+      name: 'Sessió',
+      subsections: [
+        { id: 'logout', name: 'Tancar Sessió', route: '/login' }
       ]
     }
   ],
@@ -162,7 +182,7 @@ const navigationStructure = {
       name: 'Dashboard',
       subsections: [
         { id: 'dashboard', name: 'Resum General', route: '/admin/panel' },
-        { id: 'estadistiques', name: 'Estadístiques', route: '/admin/panel' }
+        { id: 'estadistiques', name: 'Estadístiques', route: '/admin/estadisticas' }
       ]
     },
     {
@@ -170,29 +190,29 @@ const navigationStructure = {
       name: 'Peticions',
       subsections: [
         { id: 'peticions', name: 'Totes les Peticions', route: '/admin/peticiones' },
-          ]
+        { id: 'pendents', name: 'Pendents', route: '/admin/peticiones' }
+      ]
     },
     {
       id: 'assignacio',
       name: 'Assignació',
       subsections: [
         { id: 'assignacio', name: 'Eina Assignació', route: '/admin/asignacion' },
-        { id: 'professors', name: 'Professors Disponibles', route: '/admin/profesores' }
-      ]
-    },
-    {
-      id: 'tallers',
-      name: 'Tallers',
-      subsections: [
-        { id: 'gestio-tallers', name: 'Gestió Tallers', route: '/admin/talleres' },
+        { id: 'professors', name: 'Professors Disponibles', route: '/admin/asignacion' }
       ]
     },
     {
       id: 'centres',
       name: 'Centres',
       subsections: [
-        { id: 'llista-centres', name: 'Llista Centres', route: '/admin/centros' },
-        { id: 'estadistiques-centres', name: 'Estadístiques', route: '/admin/centros' }
+        { id: 'llista-centres', name: 'Llista Centres', route: '/admin/centros' }
+      ]
+    },
+    {
+      id: 'sessio',
+      name: 'Sessió',
+      subsections: [
+        { id: 'logout', name: 'Tancar Sessió', route: '/login' }
       ]
     }
   ],
@@ -202,31 +222,38 @@ const navigationStructure = {
       name: 'Els Meus Tallers',
       subsections: [
         { id: 'meus-tallers', name: 'Tallers Actius', route: '/profesor/talleres' },
-        { id: 'historial-tallers', name: 'Historial', route: null }
+        { id: 'historial-tallers', name: 'Historial', route: '/profesor/historial' }
       ]
     },
     {
       id: 'sessions',
       name: 'Sessions',
       subsections: [
-        { id: 'proximes-sessions', name: 'Pròximes Sessions', route: null },
-        { id: 'detall-taller', name: 'Detall Taller', route: '/profesor/detalle' }
+        { id: 'proximes-sessions', name: 'Pròximes Sessions', route: '/profesor/sessions' },
+        { id: 'detall-taller', name: 'Detall Taller', route: '/profesor/talleres' }
       ]
     },
     {
       id: 'avaluacions',
       name: 'Avaluacions',
       subsections: [
-        { id: 'crear-avaluacio', name: 'Crear Avaluació', route: null },
-        { id: 'avaluacions-enviades', name: 'Enviades', route: null }
+        { id: 'crear-avaluacio', name: 'Crear Avaluació', route: '/profesor/avaluacions' },
+        { id: 'avaluacions-enviades', name: 'Enviades', route: '/profesor/avaluacions' }
       ]
     },
     {
       id: 'materials',
       name: 'Materials',
       subsections: [
-        { id: 'materials-taller', name: 'Materials del Taller', route: null },
-        { id: 'recursos', name: 'Recursos Educatius', route: null }
+        { id: 'materials-taller', name: 'Materials del Taller', route: '/profesor/materials' },
+        { id: 'recursos', name: 'Recursos Educatius', route: '/profesor/materials' }
+      ]
+    },
+    {
+      id: 'sessio',
+      name: 'Sessió',
+      subsections: [
+        { id: 'logout', name: 'Tancar Sessió', route: '/login' }
       ]
     }
   ]
@@ -243,7 +270,7 @@ const currentSubsections = computed(() => {
 // Métodos
 const getRoleName = () => {
   if (!user.value) return '';
-  return user.value.name || 'Usuario';
+  return user.value.name || 'Usuari';
 };
 
 const getRoleInitial = () => {
@@ -276,6 +303,10 @@ const navigateToSection = (section) => {
 
 const navigateToSubsection = (subsection) => {
   console.log('Navigating to subsection:', subsection);
+  if (subsection.id === 'logout') {
+    handleLogout();
+    return;
+  }
   if (subsection.route) {
     currentSubsection.value = subsection.id;
     console.log('Pushing route:', subsection.route);
@@ -289,5 +320,11 @@ const handleRoleChange = () => {
   console.log('Role changed to:', currentRole.value);
   const firstSection = navigationStructure[currentRole.value][0];
   navigateToSection(firstSection);
+};
+
+const handleLogout = () => {
+  if (confirm('Estàs segur que vols sortir?')) {
+    logout();
+  }
 };
 </script>

@@ -1,14 +1,14 @@
 <template>
   <div class="max-w-3xl mx-auto">
     <h1 class="text-2xl font-semibold mb-6" style="color: var(--text-primary); text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid var(--border-color); padding-bottom: 1rem;">
-      Nova Petició de Taller
+      Nova petició de taller
     </h1>
 
     <div class="card p-8">
       <div class="space-y-5">
         <div>
           <label class="block text-sm font-semibold mb-2" style="color: var(--text-primary);">
-            Selecciona Taller *
+            Selecciona taller *
           </label>
           <select class="w-full">
             <option>Selecciona un taller...</option>
@@ -20,7 +20,7 @@
 
         <div>
           <label class="block text-sm font-semibold mb-2" style="color: var(--text-primary);">
-            Nombre d'Alumnes *
+            Nombre d'alumnes *
           </label>
           <input
             type="number"
@@ -42,7 +42,7 @@
 
         <div>
           <label class="block text-sm font-semibold mb-2" style="color: var(--text-primary);">
-            Preferències de Dates
+            Preferències de dates
           </label>
           <textarea
             class="w-full"
@@ -53,7 +53,7 @@
 
         <div>
           <label class="block text-sm font-semibold mb-2" style="color: var(--text-primary);">
-            Comentaris Addicionals
+            Comentaris addicionals
           </label>
           <textarea
             class="w-full"
@@ -64,7 +64,7 @@
 
         <div class="flex gap-4" style="padding-top: 1.5rem; border-top: 1px solid var(--border-color);">
           <button class="flex-1 btn-primary py-3">
-            Enviar Petició
+            Enviar petició
           </button>
           <button class="px-8 btn-outline py-3">
             Cancel·lar

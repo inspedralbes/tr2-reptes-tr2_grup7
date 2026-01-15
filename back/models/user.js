@@ -12,7 +12,7 @@ export const findByEmail = async (email) => {
   const text = `
       SELECT u.id, u.email, u.password_hash, u.role, u.is_active,
              c.center_name, c.center_code, c.address, c.phone as center_phone,
-             t.first_name as t_first, t.last_name as t_last, t.id_center_assigned as t_center,
+             t.id_user as teacher_id, t.first_name as t_first, t.last_name as t_last, t.id_center_assigned as t_center,
              s.first_name as s_first, s.last_name as s_last, s.birth_date, s.id_center_assigned as s_center
       FROM users u
       LEFT JOIN centers c ON u.id = c.id_user AND u.role = 'CENTER'
@@ -39,6 +39,7 @@ export const findByEmail = async (email) => {
     user.address = raw.address;
     user.phone = raw.center_phone;
   } else if (raw.role === "TEACHER") {
+    user.teacher_id = raw.teacher_id;
     user.first_name = raw.t_first;
     user.last_name = raw.t_last;
     user.id_center_assigned = raw.t_center;

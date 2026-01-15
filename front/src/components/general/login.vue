@@ -1,6 +1,6 @@
 <template>
   <div class="min-h-screen" style="background-color: var(--background-alt);">
-    <!-- Header Superior - Navbar sin funcionalidad -->
+    <!-- Capçalera Superior - Navbar sense funcionalitat -->
     <header class="header" style="position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
       <div class="flex items-center justify-between px-6 py-3">
         <!-- Logo y Título -->
@@ -12,14 +12,14 @@
           </div>
         </div>
 
-        <!-- Info visual sin enlaces -->
+        <!-- Info visual sense enllaços -->
         <div class="flex items-center gap-3">
           <div class="flex items-center gap-2">
           </div>
         </div>
       </div>
 
-      <!-- Barra de navegación visual (sin funcionalidad) -->
+      <!-- Barra de navegació visual (sense funcionalitat) -->
       <div style="background-color: rgba(0,0,0,0.1); border-top: 1px solid rgba(255,255,255,0.1);">
         <nav class="flex px-6">
           <button
@@ -33,10 +33,10 @@
       </div>
     </header>
 
-    <!-- Contenido Principal - Formulario de Login Centrado -->
+    <!-- Contingut Principal - Formulari de Login Centrat -->
     <div class="flex items-center justify-center" style="min-height: calc(100vh - 160px); padding: 2rem;">
-      <div class="card" style="max-width: 450px; width: 100%; padding: 3rem !important;">
-        <!-- Título -->
+      <div class="card login-card" style="max-width: 450px; width: 100%; padding: 3rem !important;">
+        <!-- Títol -->
         <div style="text-align: center; margin-bottom: 2rem;">
           <h2 class="text-2xl font-semibold" style="color: var(--primary); margin-bottom: 0.5rem;">
             Iniciar Sessió
@@ -46,9 +46,9 @@
           </p>
         </div>
 
-        <!-- Formulario -->
+        <!-- Formulari -->
         <form @submit.prevent="handleLogin" class="space-y-5">
-          <!-- Campo Email -->
+          <!-- Camp Email -->
           <div>
             <label for="email" class="block text-sm font-semibold mb-2" style="color: var(--text-primary);">
               Correu Electrònic *
@@ -64,7 +64,7 @@
             />
           </div>
 
-          <!-- Campo Contraseña -->
+          <!-- Camp Contrasenya -->
           <div>
             <label for="password" class="block text-sm font-semibold mb-2" style="color: var(--text-primary);">
               Contrasenya *
@@ -110,7 +110,7 @@
               :disabled="loading"
               :style="loading ? 'opacity: 0.7; cursor: not-allowed;' : ''"
             >
-              {{ loading ? 'Iniciant sessió...' : 'Iniciar Sessió' }}
+              {{ loading ? 'Iniciant sessió...' : 'Iniciar sessió' }}
             </button>
           </div>
 
@@ -140,19 +140,19 @@ const error = ref('')
 const loading = ref(false)
 
 const handleLogin = async () => {
-  // Limpiar errores previos
+  // Netejar errors previs
   error.value = ''
   loading.value = true
 
   try {
-    console.log('Intentando login con:', email.value, password.value)
+    console.log('Intentant login amb:', email.value, password.value)
     
-    // Llamar al servicio de autenticación
+    // Cridar al servei d'autenticació
     const response = await login(email.value, password.value)
     
-    console.log('Login exitoso:', response)
+    console.log('Login correcte:', response)
     
-    // Redirigir según el rol del usuario
+    // Redirigir segons el rol de l'usuari
     if (response.user.role === 'ADMIN') {
       router.push('/admin/panel')
     } else if (response.user.role === 'CENTER') {
@@ -160,11 +160,11 @@ const handleLogin = async () => {
     } else if (response.user.role === 'TEACHER') {
       router.push('/profesor/talleres')
     } else {
-      error.value = 'Rol de usuario no reconocido'
+      error.value = 'Rol d\'usuari no reconegut'
     }
   } catch (err) {
     console.error('Error en login:', err)
-    error.value = err.error || 'Error al iniciar sesión. Verifica tus credenciales.'
+    error.value = err.error || 'Error en iniciar la sessió. Verifica les teves credencials.'
   } finally {
     loading.value = false
   }
@@ -172,12 +172,21 @@ const handleLogin = async () => {
 </script>
 
 <style scoped>
-/* Estilos personalizados para inputs con focus */
 input[type="email"]:focus,
 input[type="password"]:focus {
   outline: none;
   border-color: var(--primary);
-  box-shadow: 0 0 0 3px rgba(0, 66, 107, 0.1);
+  box-shadow: 0 0 0 4px rgba(0, 66, 107, 0.15);
+  background-color: white !important;
+}
+
+.login-card {
+  transition: transform 0.3s ease, box-shadow 0.3s ease !important;
+}
+
+.login-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 25px rgba(0,0,0,0.05) !important;
 }
 
 input[type="email"]:hover,

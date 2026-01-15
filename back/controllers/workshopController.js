@@ -61,3 +61,17 @@ export const deleteWorkshop = async (req, res) => {
     res.status(500).json({ error: "Error deleting workshop" });
   }
 };
+
+export const getMyWorkshops = async (req, res) => {
+  try {
+    const teacher_id = req.query.teacher_id;
+    if (!teacher_id) {
+      return res.status(400).json({ error: "teacher_id is required" });
+    }
+    const data = await Workshop.getByTeacherId(teacher_id);
+    res.json(data);
+  } catch (error) {
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
