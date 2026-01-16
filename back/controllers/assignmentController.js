@@ -109,6 +109,7 @@ export const runMatching = async (req, res) => {
     // Real-time progress would require socket emission inside matchingEngine.
 
     const report = await ejecutarProcesoAsignacion();
+    console.log("DEBUG: Report length:", report ? report.length : "null"); // Verify report exists
     res.status(200).json({
         message: "Matching process executed successfully",
         report: report

@@ -11,6 +11,7 @@ import workshopRouter from "./routes/workshopRouter.js";
 import authRouter from "./routes/authRouter.js";
 import assignRouter from "./routes/assignRouter.js";
 import adminRouter from "./routes/adminRouter.js";
+import schoolApplicationRouter from "./routes/schoolApplicationRouter.js";
 import "dotenv/config";
 
 // 1. Inicialización del Servidor

@@ -19,6 +19,9 @@ export const ejecutarProcesoAsignacion = async (config = {}) => {
         }
 
         console.log("\n✅ Proceso de asignación finalizado con éxito.");
+        
+        // 7. GENERAR RESUMEN FINAL
+        return await generateAssignmentReportHtml();
     } catch (error) {
         console.error("❌ Error en el matchingEngine:", error);
         throw error; // Rethrow to let the controller handle it
@@ -57,7 +60,7 @@ const asignarAlumnosATaller = async (taller, config) => {
     const result = await db.query(`
         SELECT 
             si.id_interest, si.id_student, si.has_legal_papers, si.created_at, si.id_request,
-            s.id_center_assigned, s.eso_grade, s.gender, s.risk_level, s.birth_date,
+            s.id_center_assigned, s.eso_grade, s.gender, s.risk_level, s.birth_date, s.first_name, s.last_name,
             cr.requested_slots -- We can use this to limit per-center if needed, or just rely on 'max_students_per_center'
         FROM student_interest si
         JOIN students s ON si.id_student = s.id_user
@@ -78,7 +81,11 @@ const asignarAlumnosATaller = async (taller, config) => {
     const alumnosProcesados = alumnosCandidatos
         .map(alumno => {
             // Comprobamos exclusiones (¿cumple edad, papeles, género?) [cite: 32, 158]
-            const pasaExclusiones = reglas.exclusiones.every(filtro => filtro(alumno, taller));
+            const pasaExclusiones = reglas.exclusiones.every((filtro, index) => {
+                const pass = filtro(alumno, taller);
+                if (!pass) console.log(`   ⛔ RECHAZO INICIAL: ${alumno.first_name} ${alumno.last_name} falló filtro #${index}`);
+                return pass;
+            });
             
             if (!pasaExclusiones) return { ...alumno, apto: false, score: -1 };
 
@@ -108,6 +115,7 @@ const asignarAlumnosATaller = async (taller, config) => {
         if (plazasLibres > 0 && !limiteTallerSuperado && !limiteGlobalSuperado) {
             // ✅ ADMITIR
             await confirmarInscripcion(alumno.id_student, id_workshop, alumno.id_interest);
+            console.log(`   👉 🟢 ASIGNADO: ${alumno.first_name} ${alumno.last_name} (Score: ${alumno.score.toFixed(2)})`);
             contadorPorCentro[centroId]++;
             if (modalidad === 'C') {
                 globalCenterCounts[centroId] = currentGlobal + 1;
@@ -116,6 +124,7 @@ const asignarAlumnosATaller = async (taller, config) => {
         } else {
             // ❌ RECHAZAR
             await db.query(`UPDATE student_interest SET status = 'CANCELLED' WHERE id_interest = $1`, [alumno.id_interest]);
+            console.log(`   👉 🔴 EXCLUIDO: ${alumno.first_name} ${alumno.last_name} (Score: ${alumno.score.toFixed(2)}) - Sin plaza o límites excedidos`);
         }
     }
 
@@ -155,9 +164,10 @@ const asignarAlumnosATaller = async (taller, config) => {
         console.log(`📝 Solicitud ${idRequest} actualizada a ${newStatus} (${confirmedInt}/${totalInt})`);
     }
 
-// 7. GENERAR RESUMEN FINAL
-    return await generateAssignmentReportHtml();
+// End of function
 };
+
+// ... (existing confirmarInscripcion)
 
 const confirmarInscripcion = async (studentId, workshopId, interestId) => {
     await db.query(`INSERT INTO workshop_enrollments (id_workshop, id_student) VALUES ($1, $2)`, [workshopId, studentId]);

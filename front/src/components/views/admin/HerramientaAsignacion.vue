@@ -246,6 +246,7 @@ const runMatchingProcess = async () => {
 
   try {
     const result = await adminService.runMatching(filters.value);
+    console.log("DEBUG: Result from matching:", result);
     
     clearInterval(interval);
     progress.value = 100;
