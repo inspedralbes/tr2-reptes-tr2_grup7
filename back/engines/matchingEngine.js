@@ -1,5 +1,6 @@
 import db from "../data/db.js";
 import { obtenerFiltrosPorModalidad } from '../services/filterManager.js';
+import { generateAssignmentReportHtml } from '../reports/assignmentReport.js';
 
 export const ejecutarProcesoAsignacion = async (config = {}) => {
     console.log("⚙️ Iniciando Motor de Asignación ENGINY...", config);
@@ -55,7 +56,7 @@ const asignarAlumnosATaller = async (taller, config) => {
     // NEW: Filter by students LINKED to a Center Request
     const result = await db.query(`
         SELECT 
-            si.id_interest, si.id_student, si.has_legal_papers, si.created_at,
+            si.id_interest, si.id_student, si.has_legal_papers, si.created_at, si.id_request,
             s.id_center_assigned, s.eso_grade, s.gender, s.risk_level, s.birth_date,
             cr.requested_slots -- We can use this to limit per-center if needed, or just rely on 'max_students_per_center'
         FROM student_interest si
@@ -122,6 +123,40 @@ const asignarAlumnosATaller = async (taller, config) => {
     if (plazasLibres === 0) {
         await db.query(`UPDATE workshops SET status = 'FULL' WHERE id_workshop = $1`, [id_workshop]);
     }
+
+    // 6. ACTUALIZAR ESTADO DE LAS SOLICITUDES (CENTER_REQUESTS)
+    // Recopilamos los IDs de solicitud afectados
+    const solicitudesAfectadas = new Set(alumnosCandidatos.map(a => a.id_request)); // Note: make sure id_request is in SELECT
+
+    for (const idRequest of solicitudesAfectadas) {
+        // Contamos cuántos estudiantes tiene esa solicitud y cuántos han entrado
+        const stats = await db.query(`
+            SELECT 
+                COUNT(*) as total,
+                SUM(CASE WHEN status = 'CONFIRMED' THEN 1 ELSE 0 END) as confirmed
+            FROM student_interest
+            WHERE id_request = $1
+        `, [idRequest]);
+
+        const { total, confirmed } = stats.rows[0];
+        const totalInt = parseInt(total);
+        const confirmedInt = parseInt(confirmed);
+
+        let newStatus = 'PENDING';
+        if (confirmedInt === totalInt && totalInt > 0) {
+            newStatus = 'ACCEPTED';
+        } else if (confirmedInt === 0) {
+            newStatus = 'REJECTED';
+        } else {
+            newStatus = 'PARTIAL';
+        }
+
+        await db.query(`UPDATE center_requests SET status = $1 WHERE id_request = $2`, [newStatus, idRequest]);
+        console.log(`📝 Solicitud ${idRequest} actualizada a ${newStatus} (${confirmedInt}/${totalInt})`);
+    }
+
+// 7. GENERAR RESUMEN FINAL
+    return await generateAssignmentReportHtml();
 };
 
 const confirmarInscripcion = async (studentId, workshopId, interestId) => {

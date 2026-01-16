@@ -245,7 +245,7 @@ const runMatchingProcess = async () => {
   }, 200);
 
   try {
-    await adminService.runMatching(filters.value);
+    const result = await adminService.runMatching(filters.value);
     
     clearInterval(interval);
     progress.value = 100;
@@ -253,7 +253,24 @@ const runMatchingProcess = async () => {
     // Small delay to show 100%
     setTimeout(() => {
       isMatching.value = false;
-      alert('Procés de matching finalitzat correctament!');
+      
+      // DOWNLOAD REPORT IF AVAILABLE
+      if (result.report) {
+        const blob = new Blob([result.report], { type: 'text/html' });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `informe_assignacio_${new Date().toISOString().slice(0,10)}.html`;
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(url);
+        document.body.removeChild(a);
+        
+        alert('Procés de matching finalitzat correctament! L\'informe HTML s\'ha descarregat.');
+      } else {
+        alert('Procés de matching finalitzat correctament!');
+      }
+
       // Reload whatever data needs reloading (maybe requests or enrollments view, but this page is for manual requests)
     }, 500);
     

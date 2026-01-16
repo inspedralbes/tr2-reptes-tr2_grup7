@@ -101,19 +101,20 @@ export const triggerAssignment = async (req, res) => {
 import { ejecutarProcesoAsignacion } from "../engines/matchingEngine.js";
 
 export const runMatching = async (req, res) => {
-    try {
-        const config = req.body; // { risk_enabled, etc. }
-        // Use a 0ms timeout to run in background if we want async, 
-        // OR await it if we want to block until done. 
-        // User asked for progress bar, implying it takes time.
-        // For MVP, I'll await it and return success for now.
-        // Real-time progress would require socket emission inside matchingEngine.
-        
-        await ejecutarProcesoAsignacion(config);
-        
-        res.json({ message: "Matching process completed successfully." });
-    } catch (error) {
-        console.error("Error running matching engine:", error);
-        res.status(500).json({ error: "Matching process failed." });
-    }
+  try {
+    // Use a 0ms timeout to run in background if we want async,
+    // OR await it if we want to block until done.
+    // User asked for progress bar, implying it takes time.
+    // For MVP, I'll await it and return success for now.
+    // Real-time progress would require socket emission inside matchingEngine.
+
+    const report = await ejecutarProcesoAsignacion();
+    res.status(200).json({
+        message: "Matching process executed successfully",
+        report: report
+    });
+  } catch (error) {
+    console.error("Matching error:", error);
+    res.status(500).json({ error: error.message });
+  }
 };

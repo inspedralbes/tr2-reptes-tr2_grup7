@@ -57,6 +57,7 @@ app.use("/api/workshops", workshopRouter);
 app.use("/api/auth", authRouter);
 app.use("/api/assign", assignRouter);
 app.use("/api/admin", adminRouter);
+app.use("/api/applications", schoolApplicationRouter);
 
 // 6. Lógica de Socket.io (Tiempo Real)
 io.on("connection", (socket) => {

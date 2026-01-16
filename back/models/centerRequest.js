@@ -1,68 +1,14 @@
 import db from "../data/db.js";
 
-export const create = async (
-  id_center,
-  id_workshop,
-  requested_slots,
-  comments,
-  student_count,
-  course_level,
-  id_teacher,
-  students = []
-) => {
-  const client = await db.connect();
-  try {
-    await client.query("BEGIN");
 
-    // 1. Create Request
-    const textRequest = `
-        INSERT INTO center_requests (
-            id_center, id_workshop, requested_slots, comments, 
-            student_count, course_level, id_teacher, 
-            status
-        )
-        VALUES ($1, $2, $3, $4, $5, $6, $7, 'PENDING')
-        RETURNING *
-    `;
-    const valuesRequest = [
-      id_center,
-      id_workshop,
-      requested_slots,
-      comments,
-      student_count,
-      course_level,
-      id_teacher,
-    ];
-    const resRequest = await client.query(textRequest, valuesRequest);
-    const newRequest = resRequest.rows[0];
-
-    // 2. Insert Students
-    if (students && students.length > 0) {
-      const textStudent = `
-        INSERT INTO center_request_students (id_request, id_student)
-        VALUES ($1, $2)
-      `;
-      for (const studentId of students) {
-        await client.query(textStudent, [newRequest.id_request, studentId]);
-      }
-    }
-
-    await client.query("COMMIT");
-    return newRequest;
-  } catch (e) {
-    await client.query("ROLLBACK");
-    throw e;
-  } finally {
-    client.release();
-  }
-};
 
 export const getByCenter = async (id_center) => {
   const text = `
-        SELECT cr.*, w.title as workshop_title
+        SELECT cr.*, w.title as workshop_title, sa.status as app_status, sa.year_period
         FROM center_requests cr
+        JOIN school_applications sa ON cr.id_application = sa.id_application
         JOIN workshops w ON cr.id_workshop = w.id_workshop
-        WHERE cr.id_center = $1
+        WHERE sa.id_center = $1
     `;
   const result = await db.query(text, [id_center]);
   return result.rows;
@@ -73,10 +19,12 @@ export const getAllPending = async () => {
         SELECT cr.*, 
                w.title as workshop_title, 
                w.available_slots,
-               c.center_name
+               c.center_name,
+               sa.id_application
         FROM center_requests cr
+        JOIN school_applications sa ON cr.id_application = sa.id_application
         JOIN workshops w ON cr.id_workshop = w.id_workshop
-        JOIN centers c ON cr.id_center = c.id_user
+        JOIN centers c ON sa.id_center = c.id_user
         WHERE cr.status = 'PENDING'
         ORDER BY cr.created_at ASC
     `;

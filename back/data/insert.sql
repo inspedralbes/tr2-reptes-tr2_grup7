@@ -98,13 +98,31 @@ INSERT INTO workshop_teachers (id_workshop, id_teacher) VALUES
 -- ==========================================
 -- 7. SOLICITUDES DE CENTROS (CENTER_REQUESTS)
 -- ==========================================
--- Centros solicitan plazas para talleres
-INSERT INTO center_requests (id_center, id_workshop, requested_slots, status, comments) VALUES
-(3, 1, 4, 'PENDING',  'Interés alto'),         -- Poblenou pide Robótica
-(4, 2, 2, 'ACCEPTED', 'Confirmado'),           -- Tecnológico pide Diseño Web
-(5, 1, 3, 'REJECTED', 'Fuera de plazo'),       -- Gracia pide Robótica
-(2, 3, 4, 'PENDING',  'Alumnos motivados'),    -- Pedralbes pide Impresión 3D (aunque es "su competencia" o colaboración)
-(6, 5, 4, 'PARTIAL',  'Solo hay 2 huecos');    -- Treball pide IA
+-- ==========================================
+-- 7. SOLICITUDES DE CENTROS (SCHOOL_APPLICATIONS & CENTER_REQUESTS)
+-- ==========================================
+
+-- 7.1 APLICACIONES (Una por centro)
+-- ID 1 -> Centro 2 (Pedralbes)
+-- ID 2 -> Centro 3 (Poblenou)
+-- ID 3 -> Centro 4 (Tecnológico)
+-- ID 4 -> Centro 5 (Gracia)
+-- ID 5 -> Centro 6 (Treball)
+INSERT INTO school_applications (id_center, year_period, status, global_comments) VALUES
+(2, '2025-2026', 'SUBMITTED', 'Solicitud anual global'),
+(3, '2025-2026', 'SUBMITTED', 'Interés en tecnología'),
+(4, '2025-2026', 'SUBMITTED', 'Prioridad informática'),
+(5, '2025-2026', 'DRAFT',     'Borrador inicial'),
+(6, '2025-2026', 'SUBMITTED', 'Alumnos de FP');
+
+-- 7.2 PETICIONES DE TALLERES (Items de la aplicación)
+-- Requests vinculadas a su Application ID (1..5)
+INSERT INTO center_requests (id_application, id_workshop, requested_slots, status, comments) VALUES
+(2, 1, 4, 'PENDING',  'Interés alto - Poblenou'),         -- App 2 (Poblenou) pide Robótica
+(3, 2, 2, 'ACCEPTED', 'Confirmado - Tecnológico'),        -- App 3 (Tecnológico) pide Diseño Web
+(4, 1, 3, 'REJECTED', 'Fuera de plazo - Gracia'),         -- App 4 (Gracia) pide Robótica
+(1, 3, 4, 'PENDING',  'Alumnos motivados - Pedralbes'),   -- App 1 (Pedralbes) pide Impresión 3D
+(5, 5, 4, 'PARTIAL',  'Solo hay 2 huecos - Treball');     -- App 5 (Treball) pide IA
 
 
 -- ==========================================
