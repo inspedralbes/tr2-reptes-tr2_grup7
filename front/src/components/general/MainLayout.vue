@@ -122,7 +122,6 @@ import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { BookOpen, LogOut } from 'lucide-vue-next'
 import { logout } from '../../services/authService'
-import logo from '../../img/logo.jpg'
 
 const router = useRouter()
 
@@ -183,22 +182,8 @@ const navigationStructure = {
       name: 'Peticions',
       subsections: [
         { id: 'nova-peticio', name: 'Nova Petició', route: '/centro/nueva-peticion' },
-        { id: 'meves-peticions', name: 'Les Meves Peticions', route: '/centro/peticiones' },
-        { id: 'historial', name: 'Historial', route: '/centro/historial' },
+        { id: 'meves-peticions', name: 'Les Meves Peticions', route: '/centro/historial' },
       ],
-    },
-    {
-      id: 'checklist',
-      name: 'Checklist',
-      subsections: [
-        { id: 'checklist-actual', name: 'Checklist Actual', route: '/centro/checklist' },
-        { id: 'finalitzats', name: 'Finalitzats', route: '/centro/finalizados' },
-      ],
-    },
-    {
-      id: 'sessio',
-      name: 'Sessió',
-      subsections: [{ id: 'logout', name: 'Tancar Sessió', route: '/login' }],
     },
   ],
   admin: [

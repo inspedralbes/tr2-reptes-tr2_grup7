@@ -54,36 +54,6 @@ const router = createRouter({
           component: () => import('../components/shared/SotaConstruccio.vue'),
           meta: { roles: ['CENTER', 'ADMIN'] },
         },
-        {
-          path: 'centro/alumnos',
-          name: 'centro-alumnos',
-          component: () => import('../components/shared/SotaConstruccio.vue'),
-          meta: { roles: ['CENTER', 'ADMIN'] },
-        },
-        {
-          path: 'centro/peticiones',
-          name: 'centro-mis-peticiones',
-          component: () => import('../components/shared/SotaConstruccio.vue'),
-          meta: { roles: ['CENTER', 'ADMIN'] },
-        },
-        {
-          path: 'centro/historial',
-          name: 'centro-historial',
-          component: () => import('../components/shared/SotaConstruccio.vue'),
-          meta: { roles: ['CENTER', 'ADMIN'] },
-        },
-        {
-          path: 'centro/checklist',
-          name: 'centro-checklist',
-          component: () => import('../components/shared/SotaConstruccio.vue'),
-          meta: { roles: ['CENTER', 'ADMIN'] },
-        },
-        {
-          path: 'centro/finalizados',
-          name: 'centro-finalizados',
-          component: () => import('../components/shared/SotaConstruccio.vue'),
-          meta: { roles: ['CENTER', 'ADMIN'] },
-        },
 
         // Rutas de Administración
         {

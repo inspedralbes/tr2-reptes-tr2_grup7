@@ -1,6 +1,7 @@
 import * as Centre from "../models/centre.js";
 import * as User from "../models/user.js";
 import * as CentreRequest from "../models/centerRequest.js";
+import * as Student from "../models/student.js";
 import bcrypt from "bcrypt";
 
 export const getAllCentres = async (req, res) => {
@@ -158,12 +159,52 @@ export const deleteCentre = async (req, res) => {
   } catch (error) {
     console.error("Error deleting centre:", error);
     // Si hay restricciones de clave foránea que impiden el borrado
-    if (error.code === '23503') {
-      return res.status(400).json({ 
-        error: "No se puede eliminar el centro porque tiene elementos asociados (profesores, alumnos, etc.)",
-        details: error.constraint
+    if (error.code === "23503") {
+      return res.status(400).json({
+        error:
+          "No se puede eliminar el centro porque tiene elementos asociados (profesores, alumnos, etc.)",
+        details: error.constraint,
       });
     }
-    res.status(500).json({ error: "Error eliminando el centro", details: error.message });
+    res
+      .status(500)
+      .json({ error: "Error eliminando el centro", details: error.message });
+  }
+};
+
+// Student CRUD operations
+export const updateStudent = async (req, res) => {
+  try {
+    const { studentId } = req.params;
+    const updatedStudent = await Student.updateStudent(studentId, req.body);
+    if (updatedStudent) {
+      res.json(updatedStudent);
+    } else {
+      res.status(404).json({ error: "Alumne no trobat" });
+    }
+  } catch (error) {
+    console.error("Error updating student:", error);
+    res.status(500).json({ error: "Error actualitzant l'alumne" });
+  }
+};
+
+export const deleteStudent = async (req, res) => {
+  try {
+    const { studentId } = req.params;
+    const deletedStudent = await Student.deleteStudent(studentId);
+    if (deletedStudent) {
+      res.json({ message: "Alumne eliminat correctament" });
+    } else {
+      res.status(404).json({ error: "Alumne no trobat" });
+    }
+  } catch (error) {
+    console.error("Error deleting student:", error);
+    if (error.code === "23503") {
+      return res.status(400).json({
+        error: "No es pot eliminar l'alumne perquè té elements associats",
+        details: error.constraint,
+      });
+    }
+    res.status(500).json({ error: "Error eliminant l'alumne" });
   }
 };
