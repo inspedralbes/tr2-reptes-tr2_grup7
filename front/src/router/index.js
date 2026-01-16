@@ -44,14 +44,14 @@ const router = createRouter({
         },
         {
           path: 'centro/historial',
-          name: 'centro-historial',
+          name: 'centro-peticiones',
           component: () => import('../components/views/centre/HistorialPeticiones.vue'),
           meta: { roles: ['CENTER', 'ADMIN'] },
         },
         {
           path: 'centro/info',
           name: 'centro-info',
-          component: () => import('../components/shared/SotaConstruccio.vue'),
+          component: () => import('../components/views/centre/InfoTalleres.vue'),
           meta: { roles: ['CENTER', 'ADMIN'] },
         },
 

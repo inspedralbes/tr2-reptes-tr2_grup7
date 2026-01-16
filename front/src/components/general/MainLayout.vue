@@ -182,16 +182,7 @@ const navigationStructure = {
       name: 'Peticions',
       subsections: [
         { id: 'nova-peticio', name: 'Nova Petició', route: '/centro/nueva-peticion' },
-        { id: 'meves-peticions', name: 'Les Meves Peticions', route: '/centro/peticiones' },
-        { id: 'historial', name: 'Historial', route: '/centro/historial' },
-      ],
-    },
-    {
-      id: 'checklist',
-      name: 'Checklist',
-      subsections: [
-        { id: 'checklist-actual', name: 'Checklist Actual', route: '/centro/checklist' },
-        { id: 'finalitzats', name: 'Finalitzats', route: '/centro/finalizados' },
+        { id: 'meves-peticions', name: 'Les Meves Peticions', route: '/centro/historial' },
       ],
     },
   ],

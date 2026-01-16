@@ -12,7 +12,7 @@
         class="text-2xl font-semibold"
         style="color: var(--text-primary); text-transform: uppercase; letter-spacing: 0.5px"
       >
-        Historial de Peticions
+        Les Meves Peticions
       </h1>
     </div>
 
@@ -59,8 +59,11 @@
               </span>
             </td>
             <td class="px-6 py-4 text-sm text-gray-500">
-              <!-- If id_teacher is available, we could fetch their name, but usually it's just ID in the list unless queried with JOIN -->
-              {{ req.id_teacher || '-' }}
+              {{
+                req.teacher_first_name
+                  ? `${req.teacher_first_name} ${req.teacher_last_name}`
+                  : req.id_teacher || '-'
+              }}
             </td>
           </tr>
         </tbody>

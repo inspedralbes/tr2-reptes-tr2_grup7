@@ -59,9 +59,11 @@ export const create = async (
 
 export const getByCenter = async (id_center) => {
   const text = `
-        SELECT cr.*, w.title as workshop_title
+        SELECT cr.*, w.title as workshop_title,
+               t.first_name as teacher_first_name, t.last_name as teacher_last_name
         FROM center_requests cr
         JOIN workshops w ON cr.id_workshop = w.id_workshop
+        LEFT JOIN teachers t ON cr.id_teacher = t.id_user
         WHERE cr.id_center = $1
     `;
   const result = await db.query(text, [id_center]);
