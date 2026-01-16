@@ -1,20 +1,26 @@
 <template>
-  <div class="min-h-screen" style="background-color: var(--background-alt);">
+  <div class="min-h-screen" style="background-color: var(--background-alt)">
     <!-- Capçalera Superior - Navegació Principal Horizontal -->
-    <header class="header" style="position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+    <header
+      class="header"
+      style="position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1)"
+    >
       <div class="flex items-center justify-between px-6 py-3">
         <!-- Logo y Título -->
         <div class="flex items-center gap-4">
-          <img :src="'/logo.png'" alt="Logo" style="height: 70px;">
+          <img src="/img/logo.jpg" alt="Logo" style="height: 70px" />
           <div>
             <h1 class="text-lg font-semibold text-white">Sistema Tallers Educatius</h1>
-            <p class="text-xs text-white" style="opacity: 0.85;">Consorci d'Educació de Barcelona</p>
+            <p class="text-xs text-white" style="opacity: 0.85">Consorci d'Educació de Barcelona</p>
           </div>
         </div>
 
         <!-- User Info & Logout -->
         <div class="flex items-center gap-4">
-          <div class="flex items-center gap-3" style="border-left: 1px solid rgba(255,255,255,0.2); padding-left: 1.5rem;">
+          <div
+            class="flex items-center gap-3"
+            style="border-left: 1px solid rgba(255, 255, 255, 0.2); padding-left: 1.5rem"
+          >
             <div class="user-profile-badge">
               {{ getRoleInitial() }}
             </div>
@@ -23,11 +29,7 @@
               <span class="text-sm text-white font-semibold leading-none">{{ getRoleName() }}</span>
             </div>
           </div>
-          <button 
-            @click="handleLogout" 
-            class="logout-button"
-            title="Tancar sessió"
-          >
+          <button @click="handleLogout" class="logout-button" title="Tancar sessió">
             <LogOut :size="16" />
             <span>Sortir</span>
           </button>
@@ -35,17 +37,25 @@
       </div>
 
       <!-- Navegación Principal Horizontal -->
-      <div style="background-color: rgba(0,0,0,0.1); border-top: 1px solid rgba(255,255,255,0.1);">
+      <div
+        style="background-color: rgba(0, 0, 0, 0.1); border-top: 1px solid rgba(255, 255, 255, 0.1)"
+      >
         <nav class="flex px-6">
           <button
             v-for="section in mainSections"
             :key="section.id"
             @click="navigateToSection(section)"
-            :class="['px-6 py-3 text-sm font-medium transition-colors', 
-              currentSection === section.id 
-                ? 'text-white border-b-3' 
-                : 'text-white hover:bg-white hover:bg-opacity-10']"
-            :style="currentSection === section.id ? 'border-bottom: 3px solid white; background: rgba(255,255,255,0.15);' : ''"
+            :class="[
+              'px-6 py-3 text-sm font-medium transition-colors',
+              currentSection === section.id
+                ? 'text-white border-b-3'
+                : 'text-white hover:bg-white hover:bg-opacity-10',
+            ]"
+            :style="
+              currentSection === section.id
+                ? 'border-bottom: 3px solid white; background: rgba(255,255,255,0.15);'
+                : ''
+            "
           >
             {{ section.name }}
           </button>
@@ -56,9 +66,24 @@
     <!-- Disseny: Barra lateral esquerra + Contingut principal -->
     <div class="flex">
       <!-- Barra lateral esquerra - Submenú -->
-      <aside class="sidebar" style="width: 240px; border-right: 1px solid var(--border-color); overflow-y: auto; position: fixed; top: 160px; left: 0; height: calc(100vh - 130px); z-index: 50;">
+      <aside
+        class="sidebar"
+        style="
+          width: 240px;
+          border-right: 1px solid var(--border-color);
+          overflow-y: auto;
+          position: fixed;
+          top: 160px;
+          left: 0;
+          height: calc(100vh - 130px);
+          z-index: 50;
+        "
+      >
         <div class="p-4">
-          <h3 class="text-xs font-semibold mb-3 px-4" style="color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px;">
+          <h3
+            class="text-xs font-semibold mb-3 px-4"
+            style="color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px"
+          >
             {{ getCurrentSectionName() }}
           </h3>
           <nav class="space-y-1">
@@ -66,10 +91,14 @@
               v-for="subsection in currentSubsections"
               :key="subsection.id"
               @click="navigateToSubsection(subsection)"
-              :class="['w-full text-left px-4 py-2.5 text-sm font-medium transition-colors',
-                currentSubsection === subsection.id 
-                  ? 'sidebar-item-active' 
-                  : subsection.route ? 'hover:bg-gray-100' : 'opacity-50 cursor-not-allowed']"
+              :class="[
+                'w-full text-left px-4 py-2.5 text-sm font-medium transition-colors',
+                currentSubsection === subsection.id
+                  ? 'sidebar-item-active'
+                  : subsection.route
+                    ? 'hover:bg-gray-100'
+                    : 'opacity-50 cursor-not-allowed',
+              ]"
               :style="currentSubsection === subsection.id ? '' : 'color: var(--text-primary);'"
               :disabled="!subsection.route"
             >
@@ -81,7 +110,7 @@
       </aside>
 
       <!-- Contingut Principal -->
-      <main class="flex-1 p-6" style="background-color: white; margin-left: 240px;">
+      <main class="flex-1 p-6" style="background-color: white; margin-left: 240px">
         <router-view />
       </main>
     </div>
@@ -89,47 +118,47 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue';
-import { useRouter } from 'vue-router';
-import { BookOpen, LogOut } from 'lucide-vue-next';
-import { logout } from '../../services/authService';
+import { ref, computed, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
+import { BookOpen, LogOut } from 'lucide-vue-next'
+import { logout } from '../../services/authService'
 
-const router = useRouter();
+const router = useRouter()
 
 // Estado
-const currentRole = ref('centre');
-const currentSection = ref('taula');
-const currentSubsection = ref('taula-centre');
-const user = ref(null);
+const currentRole = ref('centre')
+const currentSection = ref('taula')
+const currentSubsection = ref('taula-centre')
+const user = ref(null)
 
 // Función para obtener el usuario actual
 const loadUser = () => {
-  const userData = localStorage.getItem('user');
+  const userData = localStorage.getItem('user')
   if (userData) {
-    user.value = JSON.parse(userData);
+    user.value = JSON.parse(userData)
     // Mapear rol a currentRole
     if (user.value.role === 'ADMIN') {
-      currentRole.value = 'admin';
+      currentRole.value = 'admin'
     } else if (user.value.role === 'CENTER') {
-      currentRole.value = 'centre';
+      currentRole.value = 'centre'
     } else if (user.value.role === 'TEACHER') {
-      currentRole.value = 'teacher';
+      currentRole.value = 'teacher'
     }
   }
-};
+}
 
 onMounted(() => {
-  loadUser();
+  loadUser()
   // Inicializar sección y subsección por defecto
-  const sections = navigationStructure[currentRole.value];
+  const sections = navigationStructure[currentRole.value]
   if (sections && sections.length > 0) {
-    currentSection.value = sections[0].id;
-    const subsections = sections[0].subsections;
+    currentSection.value = sections[0].id
+    const subsections = sections[0].subsections
     if (subsections && subsections.length > 0) {
-      currentSubsection.value = subsections[0].id;
+      currentSubsection.value = subsections[0].id
     }
   }
-});
+})
 
 // Estructura de navegación por rol
 const navigationStructure = {
@@ -140,15 +169,13 @@ const navigationStructure = {
       subsections: [
         { id: 'taula-centre', name: 'Taula Central', route: '/centro/panel' },
         { id: 'info-taller', name: 'Informació Tallers', route: '/centro/info' },
-        { id: 'alumnes', name: 'Llista Alumnes', route: '/centro/alumnos' }
-      ]
+        { id: 'alumnes', name: 'Llista Alumnes', route: '/centro/alumnos' },
+      ],
     },
     {
       id: 'catalog',
       name: 'Catàleg',
-      subsections: [
-        { id: 'catalog', name: 'Veure Catàleg', route: '/centro/catalogo' }
-      ]
+      subsections: [{ id: 'catalog', name: 'Veure Catàleg', route: '/centro/catalogo' }],
     },
     {
       id: 'peticions',
@@ -156,17 +183,17 @@ const navigationStructure = {
       subsections: [
         { id: 'nova-peticio', name: 'Nova Petició', route: '/centro/nueva-peticion' },
         { id: 'meves-peticions', name: 'Les Meves Peticions', route: '/centro/peticiones' },
-        { id: 'historial', name: 'Historial', route: '/centro/historial' }
-      ]
+        { id: 'historial', name: 'Historial', route: '/centro/historial' },
+      ],
     },
     {
       id: 'checklist',
       name: 'Checklist',
       subsections: [
         { id: 'checklist-actual', name: 'Checklist Actual', route: '/centro/checklist' },
-        { id: 'finalitzats', name: 'Finalitzats', route: '/centro/finalizados' }
-      ]
-    }
+        { id: 'finalitzats', name: 'Finalitzats', route: '/centro/finalizados' },
+      ],
+    },
   ],
   admin: [
     {
@@ -174,32 +201,30 @@ const navigationStructure = {
       name: 'Dashboard',
       subsections: [
         { id: 'dashboard', name: 'Resum General', route: '/admin/panel' },
-        { id: 'estadistiques', name: 'Estadístiques', route: '/admin/estadisticas' }
-      ]
+        { id: 'estadistiques', name: 'Estadístiques', route: '/admin/estadisticas' },
+      ],
     },
     {
       id: 'peticions',
       name: 'Peticions',
       subsections: [
         { id: 'peticions', name: 'Totes les Peticions', route: '/admin/peticiones' },
-        { id: 'pendents', name: 'Pendents', route: '/admin/peticiones' }
-      ]
+        { id: 'pendents', name: 'Pendents', route: '/admin/peticiones' },
+      ],
     },
     {
       id: 'assignacio',
       name: 'Assignació',
       subsections: [
         { id: 'assignacio', name: 'Eina Assignació', route: '/admin/asignacion' },
-        { id: 'professors', name: 'Professors Disponibles', route: '/admin/profesores' }
-      ]
+        { id: 'professors', name: 'Professors Disponibles', route: '/admin/profesores' },
+      ],
     },
     {
       id: 'centres',
       name: 'Centres',
-      subsections: [
-        { id: 'llista-centres', name: 'Llista Centres', route: '/admin/centros' }
-      ]
-    }
+      subsections: [{ id: 'llista-centres', name: 'Llista Centres', route: '/admin/centros' }],
+    },
   ],
   teacher: [
     {
@@ -207,102 +232,102 @@ const navigationStructure = {
       name: 'Els Meus Tallers',
       subsections: [
         { id: 'meus-tallers', name: 'Tallers Actius', route: '/profesor/talleres' },
-        { id: 'historial-tallers', name: 'Historial', route: '/profesor/historial' }
-      ]
+        { id: 'historial-tallers', name: 'Historial', route: '/profesor/historial' },
+      ],
     },
     {
       id: 'sessions',
       name: 'Sessions',
       subsections: [
         { id: 'proximes-sessions', name: 'Pròximes Sessions', route: '/profesor/sessions' },
-        { id: 'detall-taller', name: 'Detall Taller', route: '/profesor/talleres' }
-      ]
+        { id: 'detall-taller', name: 'Detall Taller', route: '/profesor/talleres' },
+      ],
     },
     {
       id: 'avaluacions',
       name: 'Avaluacions',
       subsections: [
         { id: 'crear-avaluacio', name: 'Crear Avaluació', route: '/profesor/avaluacions' },
-        { id: 'avaluacions-enviades', name: 'Enviades', route: '/profesor/avaluacions' }
-      ]
+        { id: 'avaluacions-enviades', name: 'Enviades', route: '/profesor/avaluacions' },
+      ],
     },
     {
       id: 'materials',
       name: 'Materials',
       subsections: [
         { id: 'materials-taller', name: 'Materials del Taller', route: '/profesor/materials' },
-        { id: 'recursos', name: 'Recursos Educatius', route: '/profesor/materials' }
-      ]
-    }
-  ]
-};
+        { id: 'recursos', name: 'Recursos Educatius', route: '/profesor/materials' },
+      ],
+    },
+  ],
+}
 
 // Computed
-const mainSections = computed(() => navigationStructure[currentRole.value] || []);
+const mainSections = computed(() => navigationStructure[currentRole.value] || [])
 
 const currentSubsections = computed(() => {
-  const section = mainSections.value.find(s => s.id === currentSection.value);
-  return section?.subsections || [];
-});
+  const section = mainSections.value.find((s) => s.id === currentSection.value)
+  return section?.subsections || []
+})
 
 // Métodos
 const getRoleName = () => {
-  if (!user.value) return '';
-  return user.value.name || 'Usuari';
-};
+  if (!user.value) return ''
+  return user.value.name || 'Usuari'
+}
 
 const getRoleInitial = () => {
-  if (!user.value || !user.value.name) return 'U';
-  return user.value.name.charAt(0).toUpperCase();
-};
+  if (!user.value || !user.value.name) return 'U'
+  return user.value.name.charAt(0).toUpperCase()
+}
 
 const getCurrentSectionName = () => {
-  const section = mainSections.value.find(s => s.id === currentSection.value);
-  return section?.name || '';
-};
+  const section = mainSections.value.find((s) => s.id === currentSection.value)
+  return section?.name || ''
+}
 
 const getCurrentSubsectionName = () => {
-  const section = mainSections.value.find(s => s.id === currentSection.value);
-  const subsection = section?.subsections.find(ss => ss.id === currentSubsection.value);
-  return subsection?.name || '';
-};
+  const section = mainSections.value.find((s) => s.id === currentSection.value)
+  const subsection = section?.subsections.find((ss) => ss.id === currentSubsection.value)
+  return subsection?.name || ''
+}
 
 const navigateToSection = (section) => {
-  console.log('Navigating to section:', section);
-  currentSection.value = section.id;
-  const firstSubsection = section.subsections[0];
-  currentSubsection.value = firstSubsection?.id || null;
-  
+  console.log('Navigating to section:', section)
+  currentSection.value = section.id
+  const firstSubsection = section.subsections[0]
+  currentSubsection.value = firstSubsection?.id || null
+
   if (firstSubsection?.route) {
-    console.log('Pushing route:', firstSubsection.route);
-    router.push(firstSubsection.route);
+    console.log('Pushing route:', firstSubsection.route)
+    router.push(firstSubsection.route)
   }
-};
+}
 
 const navigateToSubsection = (subsection) => {
-  console.log('Navigating to subsection:', subsection);
+  console.log('Navigating to subsection:', subsection)
   if (subsection.id === 'logout') {
-    handleLogout();
-    return;
+    handleLogout()
+    return
   }
   if (subsection.route) {
-    currentSubsection.value = subsection.id;
-    console.log('Pushing route:', subsection.route);
-    router.push(subsection.route);
+    currentSubsection.value = subsection.id
+    console.log('Pushing route:', subsection.route)
+    router.push(subsection.route)
   } else {
-    console.log('No route defined for this subsection');
+    console.log('No route defined for this subsection')
   }
-};
+}
 
 const handleRoleChange = () => {
-  console.log('Role changed to:', currentRole.value);
-  const firstSection = navigationStructure[currentRole.value][0];
-  navigateToSection(firstSection);
-};
+  console.log('Role changed to:', currentRole.value)
+  const firstSection = navigationStructure[currentRole.value][0]
+  navigateToSection(firstSection)
+}
 
 const handleLogout = () => {
   if (confirm('Estàs segur que vols sortir?')) {
-    logout();
+    logout()
   }
-};
+}
 </script>
