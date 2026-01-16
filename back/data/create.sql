@@ -108,6 +108,17 @@ CREATE TABLE workshop_enrollments (
     UNIQUE(id_workshop, id_student)
 );
 
+-- 6.5 AVALUACIONS (EVALUATIONS)
+CREATE TABLE evaluations (
+    id_evaluation SERIAL PRIMARY KEY,
+    id_workshop INT REFERENCES workshops(id_workshop) ON DELETE CASCADE,
+    id_student INT REFERENCES students(id_user) ON DELETE CASCADE,
+    grade INT CHECK (grade BETWEEN 1 AND 5),
+    comments TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE(id_workshop, id_student)
+);
+
 -- 7. INSERT ADMIN (CORREGIDO)
 -- Password: 123 (bcrypt hash with 10 rounds)
 -- Use the fix-admin-password.js script to regenerate this hash if needed
