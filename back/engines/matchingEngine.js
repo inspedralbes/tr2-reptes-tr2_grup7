@@ -83,7 +83,10 @@ const asignarAlumnosATaller = async (taller, config) => {
             // Comprobamos exclusiones (¿cumple edad, papeles, género?) [cite: 32, 158]
             const pasaExclusiones = reglas.exclusiones.every((filtro, index) => {
                 const pass = filtro(alumno, taller);
-                if (!pass) console.log(`   ⛔ RECHAZO INICIAL: ${alumno.first_name} ${alumno.last_name} falló filtro #${index}`);
+                if (!pass) {
+                    console.log(`   ⛔ RECHAZO INICIAL: ${alumno.first_name} ${alumno.last_name} falló filtro #${index}`);
+                    console.log(`      Valor has_legal_papers: ${alumno.has_legal_papers} (Type: ${typeof alumno.has_legal_papers})`);
+                }
                 return pass;
             });
             
