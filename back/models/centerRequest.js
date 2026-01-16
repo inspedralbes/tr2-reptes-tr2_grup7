@@ -1,7 +1,5 @@
 import db from "../data/db.js";
 
-
-
 export const getByCenter = async (id_center) => {
   const text = `
         SELECT cr.*, w.title as workshop_title, sa.status as app_status, sa.year_period

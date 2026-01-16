@@ -45,3 +45,14 @@ export const getRequests = async (id) => {
   const response = await apiClient.get(`/centres/${id}/requests`)
   return response.data
 }
+
+// Student CRUD
+export const updateStudent = async (centreId, studentId, data) => {
+  const response = await apiClient.put(`/centres/${centreId}/students/${studentId}`, data)
+  return response.data
+}
+
+export const deleteStudent = async (centreId, studentId) => {
+  const response = await apiClient.delete(`/centres/${centreId}/students/${studentId}`)
+  return response.data
+}

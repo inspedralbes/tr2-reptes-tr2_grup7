@@ -19,11 +19,13 @@ const router = createRouter({
           path: 'centro/panel',
           name: 'centro-panel',
           component: () => import('../components/views/centre/PanelCentro.vue'),
+          meta: { roles: ['CENTER', 'ADMIN'] },
         },
         {
           path: 'centro/catalogo',
           name: 'centro-catalogo',
           component: () => import('../components/shared/CatalogoTalleres.vue'),
+          meta: { roles: ['CENTER', 'ADMIN', 'TEACHER'] },
         },
         {
           path: 'centro/nueva-peticion',
@@ -42,19 +44,29 @@ const router = createRouter({
         },
         {
           path: 'centro/historial',
-          name: 'centro-historial',
+          name: 'centro-peticiones',
           component: () => import('../components/views/centre/HistorialPeticiones.vue'),
+          meta: { roles: ['CENTER', 'ADMIN'] },
         },
+        {
+          path: 'centro/info',
+          name: 'centro-info',
+          component: () => import('../components/views/centre/InfoTalleres.vue'),
+          meta: { roles: ['CENTER', 'ADMIN'] },
+        },
+
         // Rutas de Administración
         {
           path: 'admin/panel',
           name: 'admin-panel',
           component: () => import('../components/views/admin/PanelAdmin.vue'),
+          meta: { roles: ['ADMIN'] },
         },
         {
           path: 'admin/peticiones',
           name: 'admin-peticiones',
           component: () => import('../components/views/admin/GestionPeticiones.vue'),
+          meta: { roles: ['ADMIN'] },
         },
         {
           path: 'admin/asignacion',
@@ -81,18 +93,50 @@ const router = createRouter({
           path: 'profesor/talleres',
           name: 'profesor-talleres',
           component: () => import('../components/views/profesor/PanelProfesor.vue'),
+          meta: { roles: ['TEACHER', 'ADMIN'] },
         },
         {
           path: 'profesor/detalle/:id?',
           name: 'profesor-detalle',
           component: () => import('../components/shared/DetalleTaller.vue'),
+          meta: { roles: ['TEACHER', 'ADMIN', 'CENTER'] },
+        },
+        {
+          path: 'profesor/historial',
+          name: 'profesor-historial',
+          component: () => import('../components/views/profesor/HistorialProfesor.vue'),
+          meta: { roles: ['TEACHER', 'ADMIN'] },
+        },
+        {
+          path: 'profesor/sessions',
+          name: 'profesor-sessions',
+          component: () => import('../components/views/profesor/SessionsProfesor.vue'),
+          meta: { roles: ['TEACHER', 'ADMIN'] },
+        },
+        {
+          path: 'profesor/avaluacions',
+          name: 'profesor-avaluacions',
+          component: () => import('../components/views/profesor/AvaluacionsProfesor.vue'),
+          meta: { roles: ['TEACHER', 'ADMIN'] },
+        },
+        {
+          path: 'profesor/asistencia/:id',
+          name: 'profesor-asistencia',
+          component: () => import('../components/views/profesor/ControlAsistencia.vue'),
+          meta: { roles: ['TEACHER', 'ADMIN'] },
+        },
+        {
+          path: 'profesor/materials',
+          name: 'profesor-materials',
+          component: () => import('../components/views/profesor/MaterialesProfesor.vue'),
+          meta: { roles: ['TEACHER', 'ADMIN'] },
         },
       ],
     },
   ],
 })
 
-// Navigation Guard - Protege las rutas según autenticación
+// Navigation Guard - Protege las rutas según autenticación y roles
 router.beforeEach((to, from, next) => {
   const token = localStorage.getItem('token')
   const user = localStorage.getItem('user')

@@ -15,3 +15,12 @@ export const getMyRequests = async (req, res) => {
     res.status(500).json({ error: "Error fetching requests" });
   }
 };
+export const getAllRequests = async (req, res) => {
+  try {
+    const requests = await Request.getAllPending(); // O una función que traiga todas
+    res.json(requests);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Error fetching all requests" });
+  }
+};

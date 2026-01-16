@@ -1,6 +1,6 @@
 <template>
   <div class="min-h-screen" style="background-color: var(--background-alt)">
-    <!-- Header Superior - Navegación Principal Horizontal -->
+    <!-- Capçalera Superior - Navegació Principal Horizontal -->
     <header
       class="header"
       style="position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1)"
@@ -8,34 +8,31 @@
       <div class="flex items-center justify-between px-6 py-3">
         <!-- Logo y Título -->
         <div class="flex items-center gap-4">
-          <img :src="'/img/logo.jpg'" alt="Logo" style="height: 70px" />
+          <img src="/img/logo.jpg" alt="Logo" style="height: 70px" />
           <div>
             <h1 class="text-lg font-semibold text-white">Sistema Tallers Educatius</h1>
             <p class="text-xs text-white" style="opacity: 0.85">Consorci d'Educació de Barcelona</p>
           </div>
         </div>
 
-        <!-- User Info -->
-        <div class="flex items-center gap-3">
+        <!-- User Info & Logout -->
+        <div class="flex items-center gap-4">
           <div
-            class="flex items-center gap-2"
-            style="border-left: 1px solid rgba(255, 255, 255, 0.3); padding-left: 1rem"
+            class="flex items-center gap-3"
+            style="border-left: 1px solid rgba(255, 255, 255, 0.2); padding-left: 1.5rem"
           >
-            <span class="text-sm text-white font-medium">{{ getRoleName() }}</span>
-            <div
-              style="
-                width: 32px;
-                height: 32px;
-                background: rgba(255, 255, 255, 0.2);
-                border-radius: 3px;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-              "
-            >
-              <span class="text-white font-semibold text-sm">{{ getRoleInitial() }}</span>
+            <div class="user-profile-badge">
+              {{ getRoleInitial() }}
+            </div>
+            <div class="flex flex-col">
+              <span class="text-xs text-white opacity-75 leading-none mb-1">Benvingut/da</span>
+              <span class="text-sm text-white font-semibold leading-none">{{ getRoleName() }}</span>
             </div>
           </div>
+          <button @click="handleLogout" class="logout-button" title="Tancar sessió">
+            <LogOut :size="16" />
+            <span>Sortir</span>
+          </button>
         </div>
       </div>
 
@@ -66,9 +63,9 @@
       </div>
     </header>
 
-    <!-- Layout: Sidebar Izquierdo + Contenido Principal -->
+    <!-- Disseny: Barra lateral esquerra + Contingut principal -->
     <div class="flex">
-      <!-- Sidebar Izquierdo - Submenú -->
+      <!-- Barra lateral esquerra - Submenú -->
       <aside
         class="sidebar"
         style="
@@ -106,26 +103,33 @@
               :disabled="!subsection.route"
             >
               {{ subsection.name }}
-              <span v-if="!subsection.route" class="text-xs ml-2">(próximamente)</span>
+              <span v-if="!subsection.route" class="text-xs ml-2">(pròximament)</span>
             </button>
           </nav>
         </div>
       </aside>
 
-      <!-- Contenido Principal -->
+      <!-- Contingut Principal -->
       <main class="flex-1 p-6" style="background-color: white; margin-left: 240px">
         <router-view />
       </main>
     </div>
+
+    <!-- Alert Container -->
+    <VAlertContainer />
   </div>
 </template>
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import { BookOpen } from 'lucide-vue-next'
+import { BookOpen, LogOut } from 'lucide-vue-next'
+import { logout } from '../../services/authService'
+import { useAlertStore } from '../../stores/alert'
+import VAlertContainer from '../shared/VAlertContainer.vue'
 
 const router = useRouter()
+const alertStore = useAlertStore()
 
 // Estado
 const currentRole = ref('centre')
@@ -170,7 +174,7 @@ const navigationStructure = {
       name: 'Taula',
       subsections: [
         { id: 'taula-centre', name: 'Taula Central', route: '/centro/panel' },
-        { id: 'info-taller', name: 'Informació Tallers', route: '/centro/talleres' },
+        { id: 'info-taller', name: 'Informació Tallers', route: '/centro/info' },
         { id: 'alumnes', name: 'Llista Alumnes', route: '/centro/alumnos' },
       ],
     },
@@ -194,7 +198,7 @@ const navigationStructure = {
       name: 'Dashboard',
       subsections: [
         { id: 'dashboard', name: 'Resum General', route: '/admin/panel' },
-        { id: 'estadistiques', name: 'Estadístiques', route: '/admin/panel' },
+        { id: 'estadistiques', name: 'Estadístiques', route: '/admin/estadisticas' },
       ],
     },
     {
@@ -203,7 +207,6 @@ const navigationStructure = {
       subsections: [
         { id: 'peticions', name: 'Totes les Peticions', route: '/admin/peticiones' },
         { id: 'pendents', name: 'Pendents', route: '/admin/peticiones' },
-        { id: 'assignades', name: 'Assignades', route: '/admin/peticiones' },
       ],
     },
     {
@@ -215,20 +218,9 @@ const navigationStructure = {
       ],
     },
     {
-      id: 'tallers',
-      name: 'Tallers',
-      subsections: [
-        { id: 'gestio-tallers', name: 'Gestió Tallers', route: '/admin/talleres' },
-        { id: 'nou-taller', name: 'Crear Taller', route: '/admin/talleres' },
-      ],
-    },
-    {
       id: 'centres',
       name: 'Centres',
-      subsections: [
-        { id: 'llista-centres', name: 'Llista Centres', route: '/admin/centros' },
-        { id: 'estadistiques-centres', name: 'Estadístiques', route: '/admin/centros' },
-      ],
+      subsections: [{ id: 'llista-centres', name: 'Llista Centres', route: '/admin/centros' }],
     },
   ],
   teacher: [
@@ -237,31 +229,31 @@ const navigationStructure = {
       name: 'Els Meus Tallers',
       subsections: [
         { id: 'meus-tallers', name: 'Tallers Actius', route: '/profesor/talleres' },
-        { id: 'historial-tallers', name: 'Historial', route: null },
+        { id: 'historial-tallers', name: 'Historial', route: '/profesor/historial' },
       ],
     },
     {
       id: 'sessions',
       name: 'Sessions',
       subsections: [
-        { id: 'proximes-sessions', name: 'Pròximes Sessions', route: null },
-        { id: 'detall-taller', name: 'Detall Taller', route: '/profesor/detalle' },
+        { id: 'proximes-sessions', name: 'Pròximes Sessions', route: '/profesor/sessions' },
+        { id: 'detall-taller', name: 'Detall Taller', route: '/profesor/talleres' },
       ],
     },
     {
       id: 'avaluacions',
       name: 'Avaluacions',
       subsections: [
-        { id: 'crear-avaluacio', name: 'Crear Avaluació', route: null },
-        { id: 'avaluacions-enviades', name: 'Enviades', route: null },
+        { id: 'crear-avaluacio', name: 'Crear Avaluació', route: '/profesor/avaluacions' },
+        { id: 'avaluacions-enviades', name: 'Enviades', route: '/profesor/avaluacions' },
       ],
     },
     {
       id: 'materials',
       name: 'Materials',
       subsections: [
-        { id: 'materials-taller', name: 'Materials del Taller', route: null },
-        { id: 'recursos', name: 'Recursos Educatius', route: null },
+        { id: 'materials-taller', name: 'Materials del Taller', route: '/profesor/materials' },
+        { id: 'recursos', name: 'Recursos Educatius', route: '/profesor/materials' },
       ],
     },
   ],
@@ -277,15 +269,13 @@ const currentSubsections = computed(() => {
 
 // Métodos
 const getRoleName = () => {
-  if (!user.value) return 'Usuari'
-  return user.value.name || user.value.email || user.value.center_name || 'Usuari'
+  if (!user.value) return ''
+  return user.value.name || 'Usuari'
 }
 
 const getRoleInitial = () => {
-  if (user.value && user.value.name) return user.value.name.charAt(0).toUpperCase()
-  if (user.value && user.value.center_name) return user.value.center_name.charAt(0).toUpperCase()
-  if (user.value && user.value.email) return user.value.email.charAt(0).toUpperCase()
-  return 'U'
+  if (!user.value || !user.value.name) return 'U'
+  return user.value.name.charAt(0).toUpperCase()
 }
 
 const getCurrentSectionName = () => {
@@ -313,6 +303,10 @@ const navigateToSection = (section) => {
 
 const navigateToSubsection = (subsection) => {
   console.log('Navigating to subsection:', subsection)
+  if (subsection.id === 'logout') {
+    handleLogout()
+    return
+  }
   if (subsection.route) {
     currentSubsection.value = subsection.id
     console.log('Pushing route:', subsection.route)
@@ -327,4 +321,232 @@ const handleRoleChange = () => {
   const firstSection = navigationStructure[currentRole.value][0]
   navigateToSection(firstSection)
 }
+
+const handleLogout = async () => {
+  if (
+    await alertStore.confirm('Aquesta acció tancarà la teva sessió actual.', 'Tancar Sessió', {
+      confirmText: 'Sortir',
+      cancelText: 'Cancel·lar',
+      type: 'warning',
+    })
+  ) {
+    logout()
+  }
+}
 </script>
+
+<style scoped>
+/* ========================================
+   MEJORAS DE UX - MainLayout
+   ======================================== */
+
+/* Fix para el hover "loco" en los botones del sidebar */
+.sidebar button {
+  position: relative;
+  display: block;
+  width: 100%;
+  text-align: left;
+  border-radius: 0;
+  font-size: 0.9rem;
+  padding: 0.875rem 1.5rem;
+  margin: 0;
+  transition:
+    background-color 0.2s ease,
+    border-left-color 0.2s ease;
+  border-left: 4px solid transparent;
+  font-weight: 300;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+}
+
+.sidebar button:not(.sidebar-item-active):hover {
+  background-color: var(--gray-50);
+  color: var(--primary);
+  border-left-color: var(--border-color);
+  /* NO cambiar padding en hover para evitar el efecto "loco" */
+}
+
+.sidebar button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.sidebar button:disabled:hover {
+  background-color: transparent;
+  border-left-color: transparent;
+}
+
+/* Botones de navegación principal - hover suave */
+.header nav button {
+  padding: 1rem 1.75rem;
+  margin: 0;
+  border: none;
+  border-radius: 0;
+  font-size: 0.875rem;
+  font-weight: 300;
+  transition: background-color 0.2s ease;
+  background: transparent;
+  text-transform: none;
+  letter-spacing: normal;
+  border-bottom: 3px solid transparent;
+  cursor: pointer;
+}
+
+.header nav button:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+/* Scrollbar mejorado y responsivo */
+.sidebar {
+  scrollbar-width: thin;
+  scrollbar-color: var(--gray-300) var(--gray-100);
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.sidebar::-webkit-scrollbar {
+  width: 8px;
+}
+
+.sidebar::-webkit-scrollbar-track {
+  background: var(--gray-100);
+  border-radius: 0;
+}
+
+.sidebar::-webkit-scrollbar-thumb {
+  background: var(--gray-300);
+  border-radius: 4px;
+  transition: background 0.2s ease;
+}
+
+.sidebar::-webkit-scrollbar-thumb:hover {
+  background: var(--primary-light);
+}
+
+/* Contenido principal - scroll suave */
+main {
+  scrollbar-width: thin;
+  scrollbar-color: var(--gray-300) var(--gray-100);
+  overflow-y: auto;
+  overflow-x: hidden;
+  height: calc(100vh - 160px);
+}
+
+main::-webkit-scrollbar {
+  width: 10px;
+}
+
+main::-webkit-scrollbar-track {
+  background: var(--gray-100);
+}
+
+main::-webkit-scrollbar-thumb {
+  background: var(--gray-300);
+  border-radius: 5px;
+  transition: background 0.2s ease;
+}
+
+main::-webkit-scrollbar-thumb:hover {
+  background: var(--primary-light);
+}
+
+/* Botón de logout mejorado */
+.logout-button {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 0;
+  color: white;
+  font-size: 0.875rem;
+  font-weight: 300;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.logout-button:hover {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.logout-button:active {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+/* Badge de perfil de usuario */
+.user-profile-badge {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 500;
+  font-size: 0.875rem;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  transition: all 0.2s ease;
+}
+
+.user-profile-badge:hover {
+  background: rgba(255, 255, 255, 0.3);
+  border-color: rgba(255, 255, 255, 0.5);
+}
+
+/* Mejoras responsive */
+@media (max-width: 1024px) {
+  .sidebar {
+    width: 200px !important;
+  }
+
+  main {
+    margin-left: 200px !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .sidebar {
+    position: fixed;
+    left: -240px;
+    transition: left 0.3s ease;
+    z-index: 1000;
+  }
+
+  .sidebar.open {
+    left: 0;
+  }
+
+  main {
+    margin-left: 0 !important;
+  }
+}
+
+/* Animaciones suaves */
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.sidebar button {
+  animation: slideIn 0.3s ease;
+}
+
+/* Prevenir selección de texto en botones */
+.sidebar button,
+.header nav button,
+.logout-button {
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+}
+</style>

@@ -76,71 +76,60 @@
     </div>
 
     <!-- Modal Formulario -->
-    <div v-if="showModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div class="bg-white rounded-xl shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-        <div class="p-6 border-b border-gray-200 flex justify-between items-center">
-          <h2 class="text-xl font-bold text-gray-800">
-            {{ isEditing ? 'Editar Centre' : 'Registrar Nou Centre' }}
-          </h2>
-          <button @click="closeModal" class="text-gray-500 hover:text-gray-700">
-            <X :size="24" />
-          </button>
+    <Modal :show="showModal" :title="isEditing ? 'Editar Centre' : 'Registrar Nou Centre'" @close="closeModal">
+      <form id="centerForm" @submit.prevent="saveCentre" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="space-y-2">
+          <label class="block text-sm font-medium text-gray-700">Nom del Centre</label>
+          <input v-model="form.center_name" required type="text" class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500">
         </div>
         
-        <form @submit.prevent="saveCentre" class="p-6 space-y-4">
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div class="space-y-2">
-              <label class="block text-sm font-medium text-gray-700">Nom del Centre</label>
-              <input v-model="form.center_name" required type="text" class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500">
-            </div>
-            
-            <div class="space-y-2">
-              <label class="block text-sm font-medium text-gray-700">Codi Centre</label>
-              <input v-model="form.center_code" required type="text" class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500">
-            </div>
-          </div>
+        <div class="space-y-2">
+          <label class="block text-sm font-medium text-gray-700">Codi Centre</label>
+          <input v-model="form.center_code" required type="text" class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500">
+        </div>
 
-          <div class="space-y-2">
-            <label class="block text-sm font-medium text-gray-700">Adreça</label>
-            <input v-model="form.address" type="text" class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500">
-          </div>
+        <div class="space-y-2 md:col-span-2">
+          <label class="block text-sm font-medium text-gray-700">Adreça</label>
+          <input v-model="form.address" type="text" class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500">
+        </div>
 
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div class="space-y-2">
-              <label class="block text-sm font-medium text-gray-700">Email</label>
-              <input v-if="!isEditing" v-model="form.email" required type="email" class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500">
-              <input v-else v-model="form.email" disabled type="email" class="w-full border border-gray-300 rounded-lg px-4 py-2 bg-gray-100 cursor-not-allowed" title="L'email no es pot modificar aquí">
-            </div>
-            
-            <div class="space-y-2">
-              <label class="block text-sm font-medium text-gray-700">Telèfon</label>
-              <input v-model="form.phone" type="text" class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500">
-            </div>
-          </div>
+        <div class="space-y-2">
+          <label class="block text-sm font-medium text-gray-700">Email</label>
+          <input v-if="!isEditing" v-model="form.email" required type="email" class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500">
+          <input v-else v-model="form.email" disabled type="email" class="w-full border border-gray-300 rounded-lg px-4 py-2 bg-gray-100 cursor-not-allowed" title="L'email no es pot modificar aquí">
+        </div>
+        
+        <div class="space-y-2">
+          <label class="block text-sm font-medium text-gray-700">Telèfon</label>
+          <input v-model="form.phone" type="text" class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500">
+        </div>
 
-          <div v-if="!isEditing" class="space-y-2">
-            <label class="block text-sm font-medium text-gray-700">Contrasenya</label>
-            <input v-model="form.password" required type="password" class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500">
-          </div>
+        <div v-if="!isEditing" class="space-y-2 md:col-span-2">
+          <label class="block text-sm font-medium text-gray-700">Contrasenya</label>
+          <input v-model="form.password" required type="password" class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500">
+        </div>
+      </form>
 
-          <div class="flex justify-end gap-3 pt-4">
-            <button type="button" @click="closeModal" class="px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200">
-              Cancel·lar
-            </button>
-            <button type="submit" class="px-4 py-2 text-white bg-blue-600 rounded-lg hover:bg-blue-700 flex items-center gap-2">
-              <Save :size="18" /> {{ isEditing ? 'Actualitzar' : 'Crear' }}
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
+      <template #footer>
+        <button type="button" @click="closeModal" class="px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors">
+          Cancel·lar
+        </button>
+        <button type="submit" form="centerForm" class="px-4 py-2 text-white bg-blue-600 rounded-lg hover:bg-blue-700 flex items-center gap-2 transition-colors">
+          <Save :size="18" /> {{ isEditing ? 'Actualitzar' : 'Crear' }}
+        </button>
+      </template>
+    </Modal>
   </div>
 </template>
 
 <script setup>
 import { ref, computed, onMounted } from 'vue';
-import { Plus, Search, Edit, Trash2, X, Save } from 'lucide-vue-next';
+import { Plus, Search, Edit, Trash2, Save } from 'lucide-vue-next';
 import * as centreService from '../../../services/centreService.js';
+import Modal from '../../shared/Modal.vue';
+import { useAlertStore } from '../../../stores/alert';
+
+const alertStore = useAlertStore();
 
 const centers = ref([]);
 const loading = ref(true);
@@ -164,7 +153,7 @@ const loadCenters = async () => {
     centers.value = await centreService.getAll();
   } catch (error) {
     console.error('Error loading centers:', error);
-    alert('Error al carregar els centres');
+    alertStore.addAlert('error', 'Error al carregar els centres');
   } finally {
     loading.value = false;
   }
@@ -220,28 +209,28 @@ const saveCentre = async () => {
         address: form.value.address,
         phone: form.value.phone
       });
-      alert('Centre actualitzat correctament');
+      alertStore.addAlert('success', 'Centre actualitzat correctament');
     } else {
       await centreService.create(form.value);
-      alert('Centre creat correctament');
+      alertStore.addAlert('success', 'Centre creat correctament');
     }
     closeModal();
     loadCenters();
   } catch (error) {
     console.error('Error saving center:', error);
-    alert('Error al guardar el centre');
+    alertStore.addAlert('error', 'Error al guardar el centre');
   }
 };
 
 const confirmDelete = async (center) => {
-  if (confirm(`Estàs segur que vols eliminar el centre "${center.center_name}"? Aquesta acció també eliminarà l'usuari associat.`)) {
+  if (await alertStore.confirm(`Estàs segur que vols eliminar el centre "${center.center_name}"? Aquesta acció també eliminarà l'usuari associat.`)) {
     try {
       await centreService.remove(center.id_user);
-      alert('Centre eliminat correctament');
+      alertStore.addAlert('success', 'Centre eliminat correctament');
       loadCenters();
     } catch (error) {
       console.error('Error deleting center:', error);
-      alert('Error en eliminar el centre');
+      alertStore.addAlert('error', 'Error en eliminar el centre');
     }
   }
 };

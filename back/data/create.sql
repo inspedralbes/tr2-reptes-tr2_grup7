@@ -1,4 +1,21 @@
--- 1. La tabla de IDENTIDAD (Login)
+-- ==========================================
+-- LIMPIEZA INICIAL (Opcional, para reiniciar)
+-- ==========================================
+DROP TABLE IF EXISTS evaluations CASCADE;
+DROP TABLE IF EXISTS workshop_enrollments CASCADE;
+DROP TABLE IF EXISTS center_request_students CASCADE;
+DROP TABLE IF EXISTS student_interest CASCADE;
+DROP TABLE IF EXISTS center_requests CASCADE;
+DROP TABLE IF EXISTS workshop_teachers CASCADE;
+DROP TABLE IF EXISTS workshops CASCADE;
+DROP TABLE IF EXISTS students CASCADE;
+DROP TABLE IF EXISTS teachers CASCADE;
+DROP TABLE IF EXISTS centers CASCADE;
+DROP TABLE IF EXISTS users CASCADE;
+
+-- ==========================================
+-- 1. LA TABLA DE IDENTIDAD (Login)
+-- ==========================================
 CREATE TABLE users (
     id SERIAL PRIMARY KEY,
     email VARCHAR(255) UNIQUE NOT NULL,
@@ -8,7 +25,9 @@ CREATE TABLE users (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+-- ==========================================
 -- 2. CENTROS
+-- ==========================================
 CREATE TABLE centers (
     id_user INT PRIMARY KEY, 
     center_name VARCHAR(255) NOT NULL,
@@ -18,7 +37,9 @@ CREATE TABLE centers (
     CONSTRAINT fk_user_center FOREIGN KEY (id_user) REFERENCES users(id) ON DELETE CASCADE
 );
 
+-- ==========================================
 -- 3. PROFESORES
+-- ==========================================
 CREATE TABLE teachers (
     id_user INT PRIMARY KEY,
     first_name VARCHAR(100) NOT NULL,
@@ -28,7 +49,9 @@ CREATE TABLE teachers (
     CONSTRAINT fk_teacher_center FOREIGN KEY (id_center_assigned) REFERENCES centers(id_user) ON DELETE SET NULL
 );
 
+-- ==========================================
 -- 4. ALUMNOS
+-- ==========================================
 CREATE TABLE students (
     id_user INT PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,
     first_name VARCHAR(100) NOT NULL,
@@ -43,7 +66,9 @@ CREATE TABLE students (
     CONSTRAINT fk_student_center FOREIGN KEY (id_center_assigned) REFERENCES centers(id_user) ON DELETE SET NULL
 );
 
--- 5. TALLERES (Relaciones blindadas)
+-- ==========================================
+-- 5. TALLERES
+-- ==========================================
 CREATE TABLE workshops (
     id_workshop SERIAL PRIMARY KEY,
     title VARCHAR(255) NOT NULL,
@@ -53,12 +78,13 @@ CREATE TABLE workshops (
     end_date TIMESTAMP NOT NULL,
     available_slots INT,
     category VARCHAR(100),
+    schedule VARCHAR(255),
+    duration_hours INT,
     total_capacity INT DEFAULT 16,
     max_students_per_center INT DEFAULT 4,
     request_deadline TIMESTAMP,
-    status VARCHAR(20) NOT NULL DEFAULT 'OFFERED' CHECK (status IN ('PENDING', 'FULL', 'OFFERED', 'ARCHIVED')),
-    modalidad CHAR(1) DEFAULT 'C' CHECK (modalidad IN ('A', 'B', 'C')), -- Modalidad A, B o C
-    center_id INT REFERENCES centers(id_user), -- Solo centros, EL PROFESOR NO VA AQUÍ
+    status VARCHAR(20) NOT NULL DEFAULT 'OFFERED' CHECK (status IN ('PENDING', 'FULL', 'OFFERED', 'ARCHIVED', 'CANCELLED')),
+    center_id INT REFERENCES centers(id_user), 
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT check_dates CHECK (end_date > start_date)
 );
@@ -81,22 +107,21 @@ CREATE TABLE school_applications (
     UNIQUE(id_center, year_period) -- Only one application per year per center
 );
 
+-- SOLICITUDES DE CENTROS (Para pedir plazas en bloque)
 CREATE TABLE center_requests (
     id_request SERIAL PRIMARY KEY,
     id_application INT REFERENCES school_applications(id_application) ON DELETE CASCADE,
     id_workshop INT REFERENCES workshops(id_workshop),
-    requested_slots INT, -- Max per request?
+    requested_slots INT CHECK (requested_slots <= 4),
     student_count INT,
     course_level VARCHAR(50),
-    id_teacher INT REFERENCES teachers(id_user),
+    id_teacher INT REFERENCES teachers(id_user), -- Profesor responsable del grupo visitante
     status VARCHAR(20) DEFAULT 'PENDING' CHECK (status IN ('PENDING', 'ACCEPTED', 'REJECTED', 'PARTIAL')),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     comments TEXT
 );
 
-
-
-
+-- INTERÉS INDIVIDUAL DE ALUMNOS (Pre-inscripción / Validación legal)
 CREATE TABLE student_interest (
     id_interest SERIAL PRIMARY KEY,
     id_student INT REFERENCES students(id_user) ON DELETE CASCADE,
@@ -109,7 +134,16 @@ CREATE TABLE student_interest (
     UNIQUE(id_student, id_workshop)
 );
 
--- 6. INSCRIPCIONES
+-- RELACIÓN SOLICITUD - ALUMNOS (Qué alumnos van en esa solicitud del centro)
+CREATE TABLE center_request_students (
+    id_request INT REFERENCES center_requests(id_request) ON DELETE CASCADE,
+    id_student INT REFERENCES students(id_user) ON DELETE CASCADE,
+    PRIMARY KEY (id_request, id_student)
+);
+
+-- ==========================================
+-- 6. INSCRIPCIONES (Matrícula final firme)
+-- ==========================================
 CREATE TABLE workshop_enrollments (
     id_enrollment SERIAL PRIMARY KEY,
     id_workshop INT REFERENCES workshops(id_workshop) ON DELETE CASCADE,
@@ -118,8 +152,19 @@ CREATE TABLE workshop_enrollments (
     UNIQUE(id_workshop, id_student)
 );
 
--- 7. INSERT ADMIN (CORREGIDO)
--- Password: 123 (bcrypt hash with 10 rounds)
--- Use the fix-admin-password.js script to regenerate this hash if needed
+-- ==========================================
+-- 6.5 EVALUACIONES (Feedback post-taller)
+-- ==========================================
+CREATE TABLE evaluations (
+    id_evaluation SERIAL PRIMARY KEY,
+    id_workshop INT REFERENCES workshops(id_workshop) ON DELETE CASCADE,
+    id_student INT REFERENCES students(id_user) ON DELETE CASCADE,
+    grade INT CHECK (grade BETWEEN 1 AND 5),
+    comments TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE(id_workshop, id_student)
+);
+
+-- INSERT ADMIN INICIAL
 INSERT INTO users (email, password_hash, role, is_active)
 VALUES ('admin@workshop.com', '123', 'ADMIN', TRUE);

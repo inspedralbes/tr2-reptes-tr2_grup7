@@ -92,80 +92,69 @@
     </div>
 
     <!-- Modal Formulario -->
-    <div v-if="showModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div class="bg-white rounded-xl shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-        <div class="p-6 border-b border-gray-200 flex justify-between items-center">
-          <h2 class="text-xl font-bold text-gray-800">
-            {{ isEditing ? 'Editar Taller' : 'Crear Nou Taller' }}
-          </h2>
-          <button @click="closeModal" class="text-gray-500 hover:text-gray-700">
-            <X :size="24" />
-          </button>
+    <Modal :show="showModal" :title="isEditing ? 'Editar Taller' : 'Crear Nou Taller'" @close="closeModal">
+      <form id="workshopForm" @submit.prevent="saveWorkshop" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="space-y-2 md:col-span-2">
+          <label class="block text-sm font-medium text-gray-700">Títol</label>
+          <input v-model="form.title" required type="text" class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500">
         </div>
         
-        <form @submit.prevent="saveWorkshop" class="p-6 space-y-4">
-          <div class="space-y-2">
-            <label class="block text-sm font-medium text-gray-700">Títol</label>
-            <input v-model="form.title" required type="text" class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500">
-          </div>
-          
-          <div class="space-y-2">
-            <label class="block text-sm font-medium text-gray-700">Descripció</label>
-            <textarea v-model="form.short_description" rows="3" class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500"></textarea>
-          </div>
+        <div class="space-y-2 md:col-span-2">
+          <label class="block text-sm font-medium text-gray-700">Descripció</label>
+          <textarea v-model="form.short_description" rows="2" class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500"></textarea>
+        </div>
 
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div class="space-y-2">
-              <label class="block text-sm font-medium text-gray-700">Categoria</label>
-              <input v-model="form.category" type="text" class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500">
-            </div>
-            
-            <div class="space-y-2">
-              <label class="block text-sm font-medium text-gray-700">Places Màximes</label>
-              <input v-model="form.max_slots" required type="number" min="1" class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500">
-            </div>
-          </div>
+        <div class="space-y-2">
+          <label class="block text-sm font-medium text-gray-700">Categoria</label>
+          <input v-model="form.category" type="text" class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500">
+        </div>
+        
+        <div class="space-y-2">
+          <label class="block text-sm font-medium text-gray-700">Places Màximes</label>
+          <input v-model="form.max_slots" required type="number" min="1" class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500">
+        </div>
 
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div class="space-y-2">
-              <label class="block text-sm font-medium text-gray-700">Data Inici</label>
-              <input v-model="form.start_date" required type="datetime-local" class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500">
-            </div>
-            
-            <div class="space-y-2">
-              <label class="block text-sm font-medium text-gray-700">Data Fi</label>
-              <input v-model="form.end_date" required type="datetime-local" class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500">
-            </div>
-          </div>
+        <div class="space-y-2">
+          <label class="block text-sm font-medium text-gray-700">Data Inici</label>
+          <input v-model="form.start_date" required type="datetime-local" class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500">
+        </div>
+        
+        <div class="space-y-2">
+          <label class="block text-sm font-medium text-gray-700">Data Fi</label>
+          <input v-model="form.end_date" required type="datetime-local" class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500">
+        </div>
 
-          <div class="space-y-2">
-            <label class="block text-sm font-medium text-gray-700">Estat</label>
-            <select v-model="form.status" class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500">
-              <option value="OFFERED">Obert (OFFERED)</option>
-              <option value="FULL">Ple (FULL)</option>
-              <option value="PENDING">Pendent (PENDING)</option>
-              <option value="ARCHIVED">Arxivat (ARCHIVED)</option>
-            </select>
-          </div>
+        <div class="space-y-2 md:col-span-2">
+          <label class="block text-sm font-medium text-gray-700">Estat</label>
+          <select v-model="form.status" class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500">
+            <option value="OFFERED">Obert (OFFERED)</option>
+            <option value="FULL">Ple (FULL)</option>
+            <option value="PENDING">Pendent (PENDING)</option>
+            <option value="ARCHIVED">Arxivat (ARCHIVED)</option>
+          </select>
+        </div>
+      </form>
 
-          <div class="flex justify-end gap-3 pt-4">
-            <button type="button" @click="closeModal" class="px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200">
-              Cancel·lar
-            </button>
-            <button type="submit" class="px-4 py-2 text-white bg-blue-600 rounded-lg hover:bg-blue-700 flex items-center gap-2">
-              <Save :size="18" /> {{ isEditing ? 'Actualitzar' : 'Crear' }}
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
+      <template #footer>
+        <button type="button" @click="closeModal" class="px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors">
+          Cancel·lar
+        </button>
+        <button type="submit" form="workshopForm" class="px-4 py-2 text-white bg-blue-600 rounded-lg hover:bg-blue-700 flex items-center gap-2 transition-colors">
+          <Save :size="18" /> {{ isEditing ? 'Actualitzar' : 'Crear' }}
+        </button>
+      </template>
+    </Modal>
   </div>
 </template>
 
 <script setup>
 import { ref, computed, onMounted } from 'vue';
-import { Plus, Search, Edit, Trash2, X, Save } from 'lucide-vue-next';
+import { Plus, Search, Edit, Trash2, Save } from 'lucide-vue-next';
 import * as workshopService from '../../../services/workshopService.js';
+import Modal from '../../shared/Modal.vue';
+import { useAlertStore } from '../../../stores/alert';
+
+const alertStore = useAlertStore();
 
 const workshops = ref([]);
 const loading = ref(true);
@@ -191,7 +180,7 @@ const loadWorkshops = async () => {
     workshops.value = await workshopService.getAll();
   } catch (error) {
     console.error('Error loading workshops:', error);
-    alert('Error al carregar els tallers');
+    alertStore.addAlert('error', 'Error al carregar els tallers');
   } finally {
     loading.value = false;
   }
@@ -269,28 +258,28 @@ const saveWorkshop = async () => {
   try {
     if (isEditing.value) {
       await workshopService.update(editingId.value, form.value);
-      alert('Taller actualitzat correctament');
+      alertStore.addAlert('success', 'Taller actualitzat correctament');
     } else {
       await workshopService.create(form.value);
-      alert('Taller creat correctament');
+      alertStore.addAlert('success', 'Taller creat correctament');
     }
     closeModal();
     loadWorkshops();
   } catch (error) {
     console.error('Error saving workshop:', error);
-    alert('Error al guardar el taller');
+    alertStore.addAlert('error', 'Error al guardar el taller');
   }
 };
 
 const confirmDelete = async (workshop) => {
-  if (confirm(`Estàs segur que vols eliminar el taller "${workshop.title}"?`)) {
+  if (await alertStore.confirm(`Estàs segur que vols eliminar el taller "${workshop.title}"?`)) {
     try {
       await workshopService.remove(workshop.id_workshop);
-      alert('Taller eliminat correctament');
+      alertStore.addAlert('success', 'Taller eliminat correctament');
       loadWorkshops();
     } catch (error) {
       console.error('Error deleting workshop:', error);
-      alert('Error en eliminar el taller');
+      alertStore.addAlert('error', 'Error en eliminar el taller');
     }
   }
 };
