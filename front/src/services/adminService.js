@@ -26,6 +26,12 @@ export const adminService = {
     return response.data
   },
 
+  async getAllCenters() {
+    const response = await apiClient.get('/admin/centers')
+    return response.data
+  },
+
+
   async acceptRequest(requestId) {
     const response = await apiClient.put(`/admin/requests/${requestId}/accept`)
     return response.data
@@ -41,6 +47,11 @@ export const adminService = {
     return response.data
   },
 
+  async updateRequest(requestId, requestData) {
+    const response = await apiClient.put(`/admin/requests/${requestId}`, requestData)
+    return response.data
+  },
+
   async manualAssign(assignmentData) {
     const response = await apiClient.post('/admin/assign', assignmentData)
     return response.data
@@ -48,6 +59,27 @@ export const adminService = {
 
   async autoAssign() {
     const response = await apiClient.post('/admin/auto-assign')
+    return response.data
+  },
+
+  // Teacher management
+  async getTeacherById(teacherId) {
+    const response = await apiClient.get(`/admin/teachers/${teacherId}`)
+    return response.data
+  },
+
+  async updateTeacher(teacherId, teacherData) {
+    const response = await apiClient.put(`/admin/teachers/${teacherId}`, teacherData)
+    return response.data
+  },
+
+  async assignCenterToTeacher(teacherId, centerId) {
+    const response = await apiClient.put(`/admin/teachers/${teacherId}/assign-center`, { centerId })
+    return response.data
+  },
+
+  async toggleTeacherActive(teacherId) {
+    const response = await apiClient.put(`/admin/teachers/${teacherId}/toggle-active`)
     return response.data
   }
 }

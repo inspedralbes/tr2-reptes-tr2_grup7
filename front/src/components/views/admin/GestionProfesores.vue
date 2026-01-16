@@ -32,15 +32,16 @@
               <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700">Nom</th>
               <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700">Email</th>
               <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700">Centre Assignat</th>
+              <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700">Estat</th>
               <th class="px-6 py-4 text-right text-sm font-semibold text-gray-700">Accions</th>
             </tr>
           </thead>
           <tbody class="divide-y divide-gray-200">
             <tr v-if="loading" class="animate-pulse">
-              <td colspan="4" class="px-6 py-8 text-center text-gray-500">Carregant professors...</td>
+              <td colspan="5" class="px-6 py-8 text-center text-gray-500">Carregant professors...</td>
             </tr>
             <tr v-else-if="filteredTeachers.length === 0">
-              <td colspan="4" class="px-6 py-8 text-center text-gray-500">No s'han trobat professors</td>
+              <td colspan="5" class="px-6 py-8 text-center text-gray-500">No s'han trobat professors</td>
             </tr>
             <tr v-for="teacher in filteredTeachers" :key="teacher.id_user" class="hover:bg-gray-50 transition-colors">
               <td class="px-6 py-4">
@@ -60,9 +61,23 @@
                 </span>
                 <span v-else class="text-gray-400 italic">Sense assignar</span>
               </td>
-              <td class="px-6 py-4 text-right">
-                <button class="text-blue-600 hover:text-blue-800" title="Ver detalle (Próximamente)">
-                  <MoreHorizontal :size="18" />
+              <td class="px-6 py-4">
+                <span :class="['px-2 py-1 rounded-full text-xs font-medium', teacher.is_active ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800']">
+                  {{ teacher.is_active ? 'Actiu' : 'Inactiu' }}
+                </span>
+              </td>
+              <td class="px-6 py-4 text-right space-x-2">
+                <button @click="openDetailsModal(teacher)" class="text-blue-600 hover:text-blue-800" title="Veure Detalls">
+                  <Eye :size="18" />
+                </button>
+                <button @click="openEditModal(teacher)" class="text-blue-600 hover:text-blue-800" title="Editar">
+                  <Edit :size="18" />
+                </button>
+                <button @click="openAssignCenterModal(teacher)" class="text-purple-600 hover:text-purple-800" title="Assignar Centre">
+                  <Building :size="18" />
+                </button>
+                <button @click="toggleTeacherStatus(teacher)" :class="teacher.is_active ? 'text-red-600 hover:text-red-800' : 'text-green-600 hover:text-green-800'" :title="teacher.is_active ? 'Desactivar' : 'Activar'">
+                  <component :is="teacher.is_active ? UserX : UserCheck" :size="18" />
                 </button>
               </td>
             </tr>
@@ -70,17 +85,51 @@
         </table>
       </div>
     </div>
+
+    <!-- Modals -->
+    <TeacherDetailsModal 
+      :isOpen="modals.details" 
+      :teacherId="selectedTeacher?.id_user"
+      @close="modals.details = false"
+    />
+    
+    <TeacherEditModal 
+      :isOpen="modals.edit" 
+      :teacher="selectedTeacher"
+      @close="modals.edit = false"
+      @updated="handleTeacherUpdated"
+    />
+    
+    <AssignCenterModal 
+      :isOpen="modals.assignCenter" 
+      :teacher="selectedTeacher"
+      @close="modals.assignCenter = false"
+      @assigned="handleCenterAssigned"
+    />
   </div>
 </template>
 
 <script setup>
 import { ref, computed, onMounted } from 'vue';
-import { Search, MoreHorizontal } from 'lucide-vue-next';
+import { Search, Eye, Edit, Building, UserX, UserCheck } from 'lucide-vue-next';
 import { adminService } from '../../../services/adminService.js';
+import TeacherDetailsModal from '../../modals/TeacherDetailsModal.vue';
+import TeacherEditModal from '../../modals/TeacherEditModal.vue';
+import AssignCenterModal from '../../modals/AssignCenterModal.vue';
+import { useAlertStore } from '../../../stores/alert';
+
+const alertStore = useAlertStore();
 
 const teachers = ref([]);
 const loading = ref(true);
 const searchQuery = ref('');
+const selectedTeacher = ref(null);
+
+const modals = ref({
+  details: false,
+  edit: false,
+  assignCenter: false
+});
 
 const loadTeachers = async () => {
   loading.value = true;
@@ -89,6 +138,7 @@ const loadTeachers = async () => {
     teachers.value = data;
   } catch (error) {
     console.error('Error loading teachers:', error);
+    alertStore.addAlert('error', 'Error al carregar els professors');
   } finally {
     loading.value = false;
   }
@@ -103,6 +153,45 @@ const filteredTeachers = computed(() => {
     return fullName.includes(query) || center.includes(query);
   });
 });
+
+const openDetailsModal = (teacher) => {
+  selectedTeacher.value = teacher;
+  modals.value.details = true;
+};
+
+const openEditModal = (teacher) => {
+  selectedTeacher.value = teacher;
+  modals.value.edit = true;
+};
+
+const openAssignCenterModal = (teacher) => {
+  selectedTeacher.value = teacher;
+  modals.value.assignCenter = true;
+};
+
+const toggleTeacherStatus = async (teacher) => {
+  const action = teacher.is_active ? 'desactivar' : 'activar';
+  if (await alertStore.confirm(`Estàs segur que vols ${action} aquest professor?`)) {
+    try {
+      await adminService.toggleTeacherActive(teacher.id_user);
+      alertStore.addAlert('success', `Professor ${action === 'activar' ? 'activat' : 'desactivat'} correctament`);
+      await loadTeachers();
+    } catch (error) {
+      console.error('Error toggling teacher status:', error);
+      alertStore.addAlert('error', 'Error al canviar l\'estat del professor');
+    }
+  }
+};
+
+const handleTeacherUpdated = () => {
+  alertStore.addAlert('success', 'Professor actualitzat correctament');
+  loadTeachers();
+};
+
+const handleCenterAssigned = () => {
+  alertStore.addAlert('success', 'Centre assignat correctament');
+  loadTeachers();
+};
 
 onMounted(() => {
   loadTeachers();

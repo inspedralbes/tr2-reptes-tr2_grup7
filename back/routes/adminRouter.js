@@ -20,7 +20,19 @@ router.get("/teachers", verifyToken, isAdmin, adminController.getAvailableTeache
 // Talleres más solicitados
 router.get("/top-workshops", verifyToken, isAdmin, adminController.getTopWorkshops);
 
+// Centros disponibles
+router.get("/centers", verifyToken, isAdmin, adminController.getAllCenters);
+
+
+// Teacher management routes
+router.get("/teachers/:id", verifyToken, isAdmin, adminController.getTeacherById);
+router.put("/teachers/:id", verifyToken, isAdmin, adminController.updateTeacher);
+router.put("/teachers/:id/assign-center", verifyToken, isAdmin, adminController.assignCenterToTeacher);
+router.put("/teachers/:id/toggle-active", verifyToken, isAdmin, adminController.toggleTeacherActive);
+
+
 // Operaciones CRUD de peticiones
+router.put("/requests/:id", verifyToken, isAdmin, adminController.updateRequest);
 router.put("/requests/:id/accept", verifyToken, isAdmin, adminController.acceptRequest);
 router.put("/requests/:id/reject", verifyToken, isAdmin, adminController.rejectRequest);
 router.delete("/requests/:id", verifyToken, isAdmin, adminController.deleteRequest);

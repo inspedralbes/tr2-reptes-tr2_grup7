@@ -157,6 +157,13 @@ export const deleteCentre = async (req, res) => {
     }
   } catch (error) {
     console.error("Error deleting centre:", error);
-    res.status(500).json({ error: "Error eliminando el centro" });
+    // Si hay restricciones de clave foránea que impiden el borrado
+    if (error.code === '23503') {
+      return res.status(400).json({ 
+        error: "No se puede eliminar el centro porque tiene elementos asociados (profesores, alumnos, etc.)",
+        details: error.constraint
+      });
+    }
+    res.status(500).json({ error: "Error eliminando el centro", details: error.message });
   }
 };

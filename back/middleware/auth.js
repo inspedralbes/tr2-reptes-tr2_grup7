@@ -21,3 +21,19 @@ export const verifyToken = (req, res, next) => {
     return res.status(401).json({ error: "Unauthorized" });
   }
 };
+
+// Middleware para autorizar roles específicos
+export const authorizeRoles = (...allowedRoles) => {
+  return (req, res, next) => {
+    if (!req.user || !req.user.role) {
+      return res.status(403).json({ error: "No role found in token" });
+    }
+
+    if (!allowedRoles.includes(req.user.role)) {
+      console.warn(`Acceso denegado: El rol ${req.user.role} no tiene permiso para esta ruta.`);
+      return res.status(403).json({ error: "Acceso denegado: Permisos insuficientes" });
+    }
+
+    next();
+  };
+};

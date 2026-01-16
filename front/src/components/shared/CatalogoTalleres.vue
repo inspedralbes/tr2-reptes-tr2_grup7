@@ -1,3 +1,39 @@
+<script setup>
+import { Filter, Search } from 'lucide-vue-next'
+import { ref, onMounted } from 'vue'
+import apiClient from '../../services/apiClient'
+
+const workshops = ref([])
+const loading = ref(true)
+
+const fetchWorkshops = async () => {
+  try {
+    const response = await apiClient.get('/workshops')
+    workshops.value = response.data
+  } catch (error) {
+    console.error('Error carregant tallers:', error)
+  } finally {
+    loading.value = false
+  }
+}
+
+const getCategoryColor = (category) => {
+  const colors = {
+    'Arts escèniques': { bg: '#f3e5f5', text: '#7b1fa2' },
+    'Indústria-manufactura': { bg: '#efebe9', text: '#5d4037' },
+    Hostaleria: { bg: '#fff3e0', text: '#e65100' },
+    'Indústria 4.0': { bg: '#e3f2fd', text: '#0d47a1' },
+    Esportiu: { bg: '#e8f5e9', text: '#2e7d32' },
+    default: { bg: '#f5f5f5', text: '#666' },
+  }
+  return colors[category] || colors.default
+}
+
+onMounted(() => {
+  fetchWorkshops()
+})
+</script>
+
 <template>
   <div class="space-y-6">
     <div

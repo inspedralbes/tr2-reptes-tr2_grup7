@@ -1,15 +1,17 @@
 import express from "express";
 import * as userController from "../controllers/userController.js";
-import { verifyToken } from "../middleware/auth.js";
-
-//Aquí es posa tota les rutes que tinguem per a la gestió dels usuaris
+import { verifyToken, authorizeRoles } from "../middleware/auth.js";
 
 const router = express.Router();
 
-router.get("/", verifyToken, userController.getAllUsers);
-router.get("/:id", verifyToken, userController.getUserById);
+// Todas las rutas de usuarios requieren token y son solo para ADMIN
+router.use(verifyToken);
+router.use(authorizeRoles("ADMIN"));
+
+router.get("/", userController.getAllUsers);
+router.get("/:id", userController.getUserById);
 router.post("/", userController.createUser);
-router.put("/:id", verifyToken, userController.updateUser);
-router.delete("/:id", verifyToken, userController.deleteUser);
+router.put("/:id", userController.updateUser);
+router.delete("/:id", userController.deleteUser);
 
 export default router;

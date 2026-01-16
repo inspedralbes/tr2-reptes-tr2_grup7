@@ -94,9 +94,10 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
 import { FileText, CheckCircle, Clock, Users } from 'lucide-vue-next'
 import { adminService } from '../../../services/adminService.js'
+import socketService from '../../../services/socketService.js'
 
 const stats = ref({
   totalRequests: 0,
@@ -125,8 +126,27 @@ const loadTopWorkshops = async () => {
   }
 }
 
-onMounted(() => {
+// Función para actualizar datos cuando llega evento de Socket.io
+const handleStatsUpdate = () => {
+  console.log('📊 Actualizando estadísticas en tiempo real...')
   loadStats()
   loadTopWorkshops()
+}
+
+onMounted(() => {
+  // Cargar datos iniciales
+  loadStats()
+  loadTopWorkshops()
+  
+  // Conectar a Socket.io
+  socketService.connect()
+  
+  // Escuchar eventos de actualización
+  socketService.on('stats_updated', handleStatsUpdate)
+})
+
+onUnmounted(() => {
+  // Limpiar listener cuando se desmonta el componente
+  socketService.off('stats_updated', handleStatsUpdate)
 })
 </script>

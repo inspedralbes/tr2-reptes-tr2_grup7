@@ -50,6 +50,8 @@ CREATE TABLE workshops (
     end_date TIMESTAMP NOT NULL,
     available_slots INT,
     category VARCHAR(100),
+    schedule VARCHAR(255),
+    duration_hours INT,
     total_capacity INT DEFAULT 16,
     max_students_per_center INT DEFAULT 4,
     request_deadline TIMESTAMP,
