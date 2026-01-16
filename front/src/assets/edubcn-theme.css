@@ -340,7 +340,7 @@ aside.bg-white {
   font-size: 0.9rem !important;
   padding: 0.875rem 1.5rem !important;
   margin: 0 !important;
-  transition: all 0.25s ease !important;
+  transition: background-color 0.2s ease, border-left-color 0.2s ease !important;
   border-left: 4px solid transparent !important;
   font-weight: 300 !important;
 }
@@ -349,7 +349,7 @@ aside.bg-white {
   background-color: var(--gray-50) !important;
   color: var(--primary) !important;
   border-left-color: var(--border-color) !important;
-  padding-left: 1.5rem !important;
+  /* Removed padding-left change to prevent jittery effect */
 }
 
 /* Scrollbar institucional - Estil modern i minimalista */

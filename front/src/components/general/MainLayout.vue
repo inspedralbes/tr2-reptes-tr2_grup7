@@ -5,7 +5,7 @@
       <div class="flex items-center justify-between px-6 py-3">
         <!-- Logo y Título -->
         <div class="flex items-center gap-4">
-          <img :src="'/logo.png'" alt="Logo" style="height: 70px;">
+          <img src="/img/logo.jpg" alt="Logo" style="height: 70px;">
           <div>
             <h1 class="text-lg font-semibold text-white">Sistema Tallers Educatius</h1>
             <p class="text-xs text-white" style="opacity: 0.85;">Consorci d'Educació de Barcelona</p>
@@ -85,6 +85,9 @@
         <router-view />
       </main>
     </div>
+
+    <!-- Alert Container -->
+    <VAlertContainer />
   </div>
 </template>
 
@@ -93,8 +96,11 @@ import { ref, computed, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { BookOpen, LogOut } from 'lucide-vue-next';
 import { logout } from '../../services/authService';
+import { useAlertStore } from '../../stores/alert';
+import VAlertContainer from '../shared/VAlertContainer.vue';
 
 const router = useRouter();
+const alertStore = useAlertStore();
 
 // Estado
 const currentRole = ref('centre');
@@ -300,9 +306,231 @@ const handleRoleChange = () => {
   navigateToSection(firstSection);
 };
 
-const handleLogout = () => {
-  if (confirm('Estàs segur que vols sortir?')) {
+const handleLogout = async () => {
+  if (await alertStore.confirm(
+    'Aquesta acció tancarà la teva sessió actual.',
+    'Tancar Sessió',
+    { 
+      confirmText: 'Sortir',
+      cancelText: 'Cancel·lar',
+      type: 'warning'
+    }
+  )) {
     logout();
   }
 };
 </script>
+
+<style scoped>
+/* ========================================
+   MEJORAS DE UX - MainLayout
+   ======================================== */
+
+/* Fix para el hover "loco" en los botones del sidebar */
+.sidebar button {
+  position: relative;
+  display: block;
+  width: 100%;
+  text-align: left;
+  border-radius: 0;
+  font-size: 0.9rem;
+  padding: 0.875rem 1.5rem;
+  margin: 0;
+  transition: background-color 0.2s ease, border-left-color 0.2s ease;
+  border-left: 4px solid transparent;
+  font-weight: 300;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+}
+
+.sidebar button:not(.sidebar-item-active):hover {
+  background-color: var(--gray-50);
+  color: var(--primary);
+  border-left-color: var(--border-color);
+  /* NO cambiar padding en hover para evitar el efecto "loco" */
+}
+
+.sidebar button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.sidebar button:disabled:hover {
+  background-color: transparent;
+  border-left-color: transparent;
+}
+
+/* Botones de navegación principal - hover suave */
+.header nav button {
+  padding: 1rem 1.75rem;
+  margin: 0;
+  border: none;
+  border-radius: 0;
+  font-size: 0.875rem;
+  font-weight: 300;
+  transition: background-color 0.2s ease;
+  background: transparent;
+  text-transform: none;
+  letter-spacing: normal;
+  border-bottom: 3px solid transparent;
+  cursor: pointer;
+}
+
+.header nav button:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+/* Scrollbar mejorado y responsivo */
+.sidebar {
+  scrollbar-width: thin;
+  scrollbar-color: var(--gray-300) var(--gray-100);
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.sidebar::-webkit-scrollbar {
+  width: 8px;
+}
+
+.sidebar::-webkit-scrollbar-track {
+  background: var(--gray-100);
+  border-radius: 0;
+}
+
+.sidebar::-webkit-scrollbar-thumb {
+  background: var(--gray-300);
+  border-radius: 4px;
+  transition: background 0.2s ease;
+}
+
+.sidebar::-webkit-scrollbar-thumb:hover {
+  background: var(--primary-light);
+}
+
+/* Contenido principal - scroll suave */
+main {
+  scrollbar-width: thin;
+  scrollbar-color: var(--gray-300) var(--gray-100);
+  overflow-y: auto;
+  overflow-x: hidden;
+  height: calc(100vh - 160px);
+}
+
+main::-webkit-scrollbar {
+  width: 10px;
+}
+
+main::-webkit-scrollbar-track {
+  background: var(--gray-100);
+}
+
+main::-webkit-scrollbar-thumb {
+  background: var(--gray-300);
+  border-radius: 5px;
+  transition: background 0.2s ease;
+}
+
+main::-webkit-scrollbar-thumb:hover {
+  background: var(--primary-light);
+}
+
+/* Botón de logout mejorado */
+.logout-button {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 0;
+  color: white;
+  font-size: 0.875rem;
+  font-weight: 300;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.logout-button:hover {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.logout-button:active {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+/* Badge de perfil de usuario */
+.user-profile-badge {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 500;
+  font-size: 0.875rem;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  transition: all 0.2s ease;
+}
+
+.user-profile-badge:hover {
+  background: rgba(255, 255, 255, 0.3);
+  border-color: rgba(255, 255, 255, 0.5);
+}
+
+/* Mejoras responsive */
+@media (max-width: 1024px) {
+  .sidebar {
+    width: 200px !important;
+  }
+  
+  main {
+    margin-left: 200px !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .sidebar {
+    position: fixed;
+    left: -240px;
+    transition: left 0.3s ease;
+    z-index: 1000;
+  }
+  
+  .sidebar.open {
+    left: 0;
+  }
+  
+  main {
+    margin-left: 0 !important;
+  }
+}
+
+/* Animaciones suaves */
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.sidebar button {
+  animation: slideIn 0.3s ease;
+}
+
+/* Prevenir selección de texto en botones */
+.sidebar button,
+.header nav button,
+.logout-button {
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+}
+</style>

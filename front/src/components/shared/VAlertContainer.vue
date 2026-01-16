@@ -55,7 +55,7 @@
         >
           <div class="confirm-content">
             <div class="confirm-icon">
-              <AlertTriangle v-if="store.confirmState.type === 'danger'" :size="28" />
+              <AlertTriangle v-if="store.confirmState.type === 'danger' || store.confirmState.type === 'warning'" :size="28" />
               <HelpCircle v-else :size="28" />
             </div>
             <div class="confirm-text">
