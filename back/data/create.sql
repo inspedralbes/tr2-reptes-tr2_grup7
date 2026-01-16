@@ -1,4 +1,21 @@
--- 1. La tabla de IDENTIDAD (Login)
+-- ==========================================
+-- LIMPIEZA INICIAL (Opcional, para reiniciar)
+-- ==========================================
+DROP TABLE IF EXISTS evaluations CASCADE;
+DROP TABLE IF EXISTS workshop_enrollments CASCADE;
+DROP TABLE IF EXISTS center_request_students CASCADE;
+DROP TABLE IF EXISTS student_interest CASCADE;
+DROP TABLE IF EXISTS center_requests CASCADE;
+DROP TABLE IF EXISTS workshop_teachers CASCADE;
+DROP TABLE IF EXISTS workshops CASCADE;
+DROP TABLE IF EXISTS students CASCADE;
+DROP TABLE IF EXISTS teachers CASCADE;
+DROP TABLE IF EXISTS centers CASCADE;
+DROP TABLE IF EXISTS users CASCADE;
+
+-- ==========================================
+-- 1. LA TABLA DE IDENTIDAD (Login)
+-- ==========================================
 CREATE TABLE users (
     id SERIAL PRIMARY KEY,
     email VARCHAR(255) UNIQUE NOT NULL,
@@ -8,7 +25,9 @@ CREATE TABLE users (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+-- ==========================================
 -- 2. CENTROS
+-- ==========================================
 CREATE TABLE centers (
     id_user INT PRIMARY KEY, 
     center_name VARCHAR(255) NOT NULL,
@@ -18,7 +37,9 @@ CREATE TABLE centers (
     CONSTRAINT fk_user_center FOREIGN KEY (id_user) REFERENCES users(id) ON DELETE CASCADE
 );
 
+-- ==========================================
 -- 3. PROFESORES
+-- ==========================================
 CREATE TABLE teachers (
     id_user INT PRIMARY KEY,
     first_name VARCHAR(100) NOT NULL,
@@ -28,7 +49,9 @@ CREATE TABLE teachers (
     CONSTRAINT fk_teacher_center FOREIGN KEY (id_center_assigned) REFERENCES centers(id_user) ON DELETE SET NULL
 );
 
+-- ==========================================
 -- 4. ALUMNOS
+-- ==========================================
 CREATE TABLE students (
     id_user INT PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,
     first_name VARCHAR(100) NOT NULL,
@@ -40,7 +63,9 @@ CREATE TABLE students (
     CONSTRAINT fk_student_center FOREIGN KEY (id_center_assigned) REFERENCES centers(id_user) ON DELETE SET NULL
 );
 
--- 5. TALLERES (Relaciones blindadas)
+-- ==========================================
+-- 5. TALLERES
+-- ==========================================
 CREATE TABLE workshops (
     id_workshop SERIAL PRIMARY KEY,
     title VARCHAR(255) NOT NULL,
@@ -55,9 +80,9 @@ CREATE TABLE workshops (
     total_capacity INT DEFAULT 16,
     max_students_per_center INT DEFAULT 4,
     request_deadline TIMESTAMP,
-    status VARCHAR(20) NOT NULL DEFAULT 'OFFERED' CHECK (status IN ('PENDING', 'FULL', 'OFFERED', 'ARCHIVED')),
-    center_id INT REFERENCES centers(id_user), -- Solo centros, EL PROFESOR NO VA AQUÍ
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- Coma añadida
+    status VARCHAR(20) NOT NULL DEFAULT 'OFFERED' CHECK (status IN ('PENDING', 'FULL', 'OFFERED', 'ARCHIVED', 'CANCELLED')),
+    center_id INT REFERENCES centers(id_user), 
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT check_dates CHECK (end_date > start_date)
 );
 
@@ -68,20 +93,21 @@ CREATE TABLE workshop_teachers (
     PRIMARY KEY (id_workshop, id_teacher)
 );
 
-
+-- SOLICITUDES DE CENTROS (Para pedir plazas en bloque)
 CREATE TABLE center_requests (
     id_request SERIAL PRIMARY KEY,
     id_center INT REFERENCES centers(id_user),
     id_workshop INT REFERENCES workshops(id_workshop),
-    requested_slots INT CHECK (requested_slots <= 4), -- El centro pide p.ej. 3 plazas
+    requested_slots INT CHECK (requested_slots <= 4),
     student_count INT,
     course_level VARCHAR(50),
-    id_teacher INT REFERENCES teachers(id_user),
+    id_teacher INT REFERENCES teachers(id_user), -- Profesor responsable del grupo visitante
     status VARCHAR(20) DEFAULT 'PENDING' CHECK (status IN ('PENDING', 'ACCEPTED', 'REJECTED', 'PARTIAL')),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     comments TEXT
 );
 
+-- INTERÉS INDIVIDUAL DE ALUMNOS (Pre-inscripción / Validación legal)
 CREATE TABLE student_interest (
     id_interest SERIAL PRIMARY KEY,
     id_student INT REFERENCES students(id_user) ON DELETE CASCADE,
@@ -90,16 +116,19 @@ CREATE TABLE student_interest (
     verified_by_teacher_id INT REFERENCES teachers(id_user),
     status VARCHAR(20) DEFAULT 'WAITING' CHECK (status IN ('WAITING', 'CONFIRMED', 'CANCELLED')),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    UNIQUE(id_student, id_workshop) -- Un alumno no puede estar "interesado" dos veces en lo mismo
+    UNIQUE(id_student, id_workshop)
 );
 
+-- RELACIÓN SOLICITUD - ALUMNOS (Qué alumnos van en esa solicitud del centro)
 CREATE TABLE center_request_students (
     id_request INT REFERENCES center_requests(id_request) ON DELETE CASCADE,
     id_student INT REFERENCES students(id_user) ON DELETE CASCADE,
     PRIMARY KEY (id_request, id_student)
 );
 
--- 6. INSCRIPCIONES
+-- ==========================================
+-- 6. INSCRIPCIONES (Matrícula final firme)
+-- ==========================================
 CREATE TABLE workshop_enrollments (
     id_enrollment SERIAL PRIMARY KEY,
     id_workshop INT REFERENCES workshops(id_workshop) ON DELETE CASCADE,
@@ -108,7 +137,9 @@ CREATE TABLE workshop_enrollments (
     UNIQUE(id_workshop, id_student)
 );
 
--- 6.5 AVALUACIONS (EVALUATIONS)
+-- ==========================================
+-- 6.5 EVALUACIONES (Feedback post-taller)
+-- ==========================================
 CREATE TABLE evaluations (
     id_evaluation SERIAL PRIMARY KEY,
     id_workshop INT REFERENCES workshops(id_workshop) ON DELETE CASCADE,
@@ -119,143 +150,6 @@ CREATE TABLE evaluations (
     UNIQUE(id_workshop, id_student)
 );
 
--- 7. INSERT ADMIN (CORREGIDO)
--- Password: 123 (bcrypt hash with 10 rounds)
--- Use the fix-admin-password.js script to regenerate this hash if needed
+-- INSERT ADMIN INICIAL
 INSERT INTO users (email, password_hash, role, is_active)
 VALUES ('admin@workshop.com', '123', 'ADMIN', TRUE);
-
-
-
-
--- Población de datos inicial (Ejemplos Extensos) --
-
--- ==========================================
--- 1. USUARIOS (USERS)
--- ==========================================
--- Admin (ID 1) se asume creado.
--- IDs 2-6: Centros
--- IDs 7-11: Profesores
--- IDs 12-16: Alumnos
-
--- 1.1 Centros
-INSERT INTO users (email, password_hash, role, is_active) VALUES
-('centro1@ejemplo.com', '1234', 'CENTER', TRUE),
-('centro2@ejemplo.com', '1234', 'CENTER', TRUE),
-('centro3@ejemplo.com', '1234', 'CENTER', TRUE),
-('centro4@ejemplo.com', '1234', 'CENTER', TRUE),
-('centro5@ejemplo.com', '1234', 'CENTER', TRUE);
-
--- 1.2 Profesores
-INSERT INTO users (email, password_hash, role, is_active) VALUES
-('profe1@ejemplo.com', '1234', 'TEACHER', TRUE),
-('profe2@ejemplo.com', '1234', 'TEACHER', TRUE),
-('profe3@ejemplo.com', '1234', 'TEACHER', TRUE),
-('profe4@ejemplo.com', '1234', 'TEACHER', TRUE),
-('profe5@ejemplo.com', '1234', 'TEACHER', TRUE);
-
--- 1.3 Alumnos
-INSERT INTO users (email, password_hash, role, is_active) VALUES
-('alumno1@ejemplo.com', '1234', 'STUDENT', TRUE),
-('alumno2@ejemplo.com', '1234', 'STUDENT', TRUE),
-('alumno3@ejemplo.com', '1234', 'STUDENT', TRUE),
-('alumno4@ejemplo.com', '1234', 'STUDENT', TRUE),
-('alumno5@ejemplo.com', '1234', 'STUDENT', TRUE);
-
-
--- ==========================================
--- 2. CENTROS (CENTERS)
--- ==========================================
--- IDs de usuario 2 al 6
-INSERT INTO centers (id_user, center_name, center_code, address, phone) VALUES
-(2, 'IES Pedralbes',      '080001', 'Av. Esplugues 36, BCN', '930000001'),
-(3, 'Institut Poblenou',  '080002', 'Carrer bilbao 20, BCN', '930000002'),
-(4, 'Colegio Tecnológico','080003', 'Gran Via 123, BCN',     '930000003'),
-(5, 'IES Gracia',         '080004', 'Carrer Verdi 50, BCN',  '930000004'),
-(6, 'Escola del Treball', '080005', 'Carrer Urgell 187, BCN','930000005');
-
-
--- ==========================================
--- 3. PROFESORES (TEACHERS)
--- ==========================================
--- IDs de usuario 7 al 11. Asignados a distintos centros.
-INSERT INTO teachers (id_user, first_name, last_name, id_center_assigned) VALUES
-(7,  'Juan',    'Pérez',     2), -- En IES Pedralbes
-(8,  'Laura',   'García',    2), -- En IES Pedralbes
-(9,  'Carlos',  'Sánchez',   3), -- En Poblenou
-(10, 'Ana',     'Martínez',  4), -- En Col. Tecnológico
-(11, 'Roberto', 'Rodríguez', 5); -- En IES Gracia
-
-
--- ==========================================
--- 4. ALUMNOS (STUDENTS)
--- ==========================================
--- IDs de usuario 12 al 16.
-INSERT INTO students (id_user, first_name, last_name, birth_date, phone, id_center_assigned) VALUES
-(12, 'María',  'López',  '2005-01-15', '600000001', 2), -- Pedralbes
-(13, 'Pedro',  'Gómez',  '2006-03-22', '600000002', 2), -- Pedralbes
-(14, 'Lucía',  'Fern.',  '2005-07-30', '600000003', 3), -- Poblenou
-(15, 'Miguel', 'Torres', '2005-11-05', '600000004', 3), -- Poblenou
-(16, 'Elena',  'Ruiz',   '2006-02-14', '600000005', 4); -- Tecnológico
-
-
--- ==========================================
--- 5. TALLERES (WORKSHOPS)
--- ==========================================
--- Suponemos que auto-increment empieza en 1 -> 5
-INSERT INTO workshops (title, short_description, max_slots, start_date, end_date, available_slots, category, center_id) VALUES
-('Robótica Básica', 'Intro a Arduino',  16, '2025-05-10 09:00', '2025-05-10 13:00', 16, 'Tecnología', 2),
-('Diseño Web',      'HTML y CSS',       20, '2025-05-11 10:00', '2025-05-11 14:00', 20, 'Informática', 2),
-('Impresión 3D',    'Modelado básico',  10, '2025-05-12 16:00', '2025-05-12 19:00', 10, 'Fabricación', 3),
-('Ciberseguridad',  'Hacking ético',    15, '2025-06-01 09:00', '2025-06-01 13:00', 15, 'Seguridad',   3),
-('IA para Todos',   'Conceptos de LLM', 25, '2025-06-02 10:00', '2025-06-02 12:00', 25, 'IA',          4);
-
-
--- ==========================================
--- 6. TALLER_PROFESORES (WORKSHOP_TEACHERS)
--- ==========================================
--- Asignamos profesores a los talleres recién creados
--- IDs workshop 1..5 estáticos supuestos (al ser fresh insert)
--- Profesores IDs 7..11
-INSERT INTO workshop_teachers (id_workshop, id_teacher) VALUES
-(1, 7), -- Juan da Robótica
-(1, 8), -- Laura también ayuda en Robótica
-(2, 7), -- Juan da Diseño Web
-(3, 9), -- Carlos da Impresión 3D
-(4, 9); -- Carlos da Ciberseguridad
-
-
--- ==========================================
--- 7. SOLICITUDES DE CENTROS (CENTER_REQUESTS)
--- ==========================================
--- Centros solicitan plazas para talleres
-INSERT INTO center_requests (id_center, id_workshop, requested_slots, status, comments) VALUES
-(3, 1, 4, 'PENDING',  'Interés alto'),         -- Poblenou pide Robótica
-(4, 2, 2, 'ACCEPTED', 'Confirmado'),           -- Tecnológico pide Diseño Web
-(5, 1, 3, 'REJECTED', 'Fuera de plazo'),       -- Gracia pide Robótica
-(2, 3, 4, 'PENDING',  'Alumnos motivados'),    -- Pedralbes pide Impresión 3D (aunque es "su competencia" o colaboración)
-(6, 5, 4, 'PARTIAL',  'Solo hay 2 huecos');    -- Treball pide IA
-
-
--- ==========================================
--- 8. INTERÉS DE ALUMNOS (STUDENT_INTEREST)
--- ==========================================
--- Alumnos (12..16) interesados en talleres (1..5)
-INSERT INTO student_interest (id_student, id_workshop, status, verified_by_teacher_id) VALUES
-(12, 1, 'WAITING',   7),
-(13, 1, 'CONFIRMED', 7),
-(14, 3, 'WAITING',   9),
-(15, 4, 'CANCELLED', 9),
-(16, 5, 'WAITING',   10);
-
-
--- ==========================================
--- 9. INSCRIPCIONES (WORKSHOP_ENROLLMENTS)
--- ==========================================
--- Alumnos inscritos
-INSERT INTO workshop_enrollments (id_workshop, id_student) VALUES
-(1, 13), -- Pedro inscrito en Robótica
-(2, 16), -- Elena inscrita en Diseño Web
-(3, 14), -- Lucía inscrita en Impresión 3D
-(1, 12), -- María inscrita en Robótica
-(5, 15); -- Miguel inscrito en IA
