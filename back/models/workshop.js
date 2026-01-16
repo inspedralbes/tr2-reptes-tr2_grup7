@@ -30,51 +30,32 @@ export const create = async (data) => {
     teacher_id,
     start_date,
     end_date,
-    center_id
+    status,
+    modalidad,
+    center_id,
   } = data;
 
-  const client = await db.connect();
-  try {
-    await client.query('BEGIN');
-
-    // available_slots starts equal to max_slots
-    const workshopText = `
-      INSERT INTO workshops (title, short_description, max_slots, available_slots, category, schedule, duration_hours, start_date, end_date, center_id)
-      VALUES ($1, $2, $3, $3, $4, $5, $6, $7, $8, $9)
-      RETURNING *
-    `;
-    const workshopValues = [
-      title,
-      short_description,
-      max_slots,
-      category,
-      schedule,
-      duration_hours,
-      start_date,
-      end_date,
-      center_id
-    ];
-    
-    const { rows: workshopRows } = await client.query(workshopText, workshopValues);
-    const newWorkshop = workshopRows[0];
-
-    // Assign to teacher if provided
-    if (teacher_id) {
-      const teacherText = `
-        INSERT INTO workshop_teachers (id_workshop, id_teacher)
-        VALUES ($1, $2)
-      `;
-      await client.query(teacherText, [newWorkshop.id_workshop, teacher_id]);
-    }
-
-    await client.query('COMMIT');
-    return newWorkshop;
-  } catch (error) {
-    await client.query('ROLLBACK');
-    throw error;
-  } finally {
-    client.release();
-  }
+  // available_slots starts as max_slots
+  const text = `
+    INSERT INTO workshops (title, short_description, max_slots, available_slots, category, schedule, duration_hours, start_date, end_date, status, modalidad, center_id)
+    VALUES ($1, $2, $3, $3, $4, $5, $6, $7, $8, $9, $10, $11)
+    RETURNING *
+  `;
+  const values = [
+    title,
+    short_description,
+    max_slots,
+    category,
+    schedule,
+    duration_hours,
+    start_date,
+    end_date,
+    status || "OFFERED",
+    modalidad || "C",
+    center_id,
+  ];
+  const result = await db.query(text, values);
+  return result.rows[0];
 };
 
 export const update = async (id, data) => {
@@ -85,12 +66,12 @@ export const update = async (id, data) => {
     available_slots,
     category,
     schedule,
-    status,
     duration_hours,
     start_date,
     end_date,
-    // is_active, // Not in table based on create.sql check, usually status handles this
-    center_id
+    status,
+    modalidad,
+    center_id,
   } = data;
 
   // We don't update teacher_id here usually, that would be a separate assignment change
@@ -98,8 +79,8 @@ export const update = async (id, data) => {
 
   const text = `
     UPDATE workshops 
-    SET title=$1, short_description=$2, max_slots=$3, available_slots=$4, category=$5, schedule=$6, status=$7, duration_hours=$8, start_date=$9, end_date=$10, center_id=$11
-    WHERE id_workshop = $12
+    SET title=$1, short_description=$2, max_slots=$3, available_slots=$4, category=$5, schedule=$6, duration_hours=$7, start_date=$8, end_date=$9, status=$10, modalidad=$11, center_id=$12
+    WHERE id_workshop = $13
     RETURNING *
   `;
   const values = [
@@ -108,16 +89,16 @@ export const update = async (id, data) => {
     max_slots,
     available_slots, // If updating, we might need logic to keep sync, but basic update for now
     category,
-    start_date,
-    end_date,
-    status,
+    schedule,
     duration_hours,
     start_date,
     end_date,
+    status,
+    modalidad,
     center_id,
     id,
   ];
-  
+
   const result = await db.query(text, values);
   return result.rows[0];
 };
@@ -156,4 +137,3 @@ export const getByTeacherId = async (teacherId) => {
   );
   return result.rows;
 };
-

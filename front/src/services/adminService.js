@@ -31,7 +31,6 @@ export const adminService = {
     return response.data
   },
 
-
   async acceptRequest(requestId) {
     const response = await apiClient.put(`/admin/requests/${requestId}/accept`)
     return response.data
@@ -81,5 +80,10 @@ export const adminService = {
   async toggleTeacherActive(teacherId) {
     const response = await apiClient.put(`/admin/teachers/${teacherId}/toggle-active`)
     return response.data
-  }
+  },
+
+  async runMatching(config) {
+    const response = await apiClient.post('/assign/match', config)
+    return response.data
+  },
 }

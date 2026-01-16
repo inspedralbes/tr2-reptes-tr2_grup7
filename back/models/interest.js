@@ -3,15 +3,16 @@ import db from "../data/db.js";
 export const create = async (
   id_student,
   id_workshop,
-  verified_by_teacher_id
+  verified_by_teacher_id,
+  id_request = null
 ) => {
   const text = `
-        INSERT INTO student_interest (id_student, id_workshop, verified_by_teacher_id, status)
-        VALUES ($1, $2, $3, 'CONFIRMED')
+        INSERT INTO student_interest (id_student, id_workshop, verified_by_teacher_id, id_request, status)
+        VALUES ($1, $2, $3, $4, 'WAITING')
         RETURNING *
     `;
-  // Assuming if a teacher creates it, it's confirmed.
-  const values = [id_student, id_workshop, verified_by_teacher_id];
+  // Status 'WAITING' because it needs matching engine approval.
+  const values = [id_student, id_workshop, verified_by_teacher_id, id_request];
   const result = await db.query(text, values);
   return result.rows[0];
 };

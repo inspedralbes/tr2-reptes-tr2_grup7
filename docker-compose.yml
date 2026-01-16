@@ -50,6 +50,7 @@ services:
       NODE_ENV: development
       DATABASE_URL: ${DATABASE_URL}
       JWT_SECRET: ${JWT_SECRET}
+      CHOKIDAR_USEPOLLING: true
     depends_on:
       db:
         condition: service_healthy
@@ -69,7 +70,6 @@ services:
     environment:
       - VITE_API_URL=${VITE_API_URL}
       - CHOKIDAR_USEPOLLING=true
-
     depends_on:
       - backend
 

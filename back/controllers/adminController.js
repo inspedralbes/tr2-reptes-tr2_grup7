@@ -36,7 +36,8 @@ export const getAllRequests = async (req, res) => {
     const query = `
       SELECT cr.*, c.center_name, w.title as workshop_title, w.start_date, w.end_date
       FROM center_requests cr
-      JOIN centers c ON cr.id_center = c.id_user
+      JOIN school_applications sa ON cr.id_application = sa.id_application
+      JOIN centers c ON sa.id_center = c.id_user
       JOIN workshops w ON cr.id_workshop = w.id_workshop
       ORDER BY cr.created_at DESC
     `;
@@ -53,7 +54,8 @@ export const getPendingRequests = async (req, res) => {
     const query = `
       SELECT cr.*, c.center_name, w.title as workshop_title, w.start_date, w.end_date
       FROM center_requests cr
-      JOIN centers c ON cr.id_center = c.id_user
+      JOIN school_applications sa ON cr.id_application = sa.id_application
+      JOIN centers c ON sa.id_center = c.id_user
       JOIN workshops w ON cr.id_workshop = w.id_workshop
       WHERE cr.status = 'PENDING'
       ORDER BY cr.created_at DESC
