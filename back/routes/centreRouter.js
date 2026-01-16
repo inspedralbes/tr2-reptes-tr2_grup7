@@ -3,7 +3,7 @@ import * as centreController from "../controllers/centreController.js";
 
 const router = express.Router();
 
-// router.get("/", centreController.getAllCentres);
+router.get("/", centreController.getAllCentres);
 router.get("/:id", centreController.getCentreById);
 router.get("/:id/teachers", centreController.getCentreTeachers);
 router.get("/:id/students", centreController.getCentreStudents);
