@@ -4,16 +4,57 @@ export const create = async (
   id_center,
   id_workshop,
   requested_slots,
-  comments
+  comments,
+  student_count,
+  course_level,
+  id_teacher,
+  students = []
 ) => {
-  const text = `
-        INSERT INTO center_requests (id_center, id_workshop, requested_slots, comments, status)
-        VALUES ($1, $2, $3, $4, 'PENDING')
+  const client = await db.connect();
+  try {
+    await client.query("BEGIN");
+
+    // 1. Create Request
+    const textRequest = `
+        INSERT INTO center_requests (
+            id_center, id_workshop, requested_slots, comments, 
+            student_count, course_level, id_teacher, 
+            status
+        )
+        VALUES ($1, $2, $3, $4, $5, $6, $7, 'PENDING')
         RETURNING *
     `;
-  const values = [id_center, id_workshop, requested_slots, comments];
-  const result = await db.query(text, values);
-  return result.rows[0];
+    const valuesRequest = [
+      id_center,
+      id_workshop,
+      requested_slots,
+      comments,
+      student_count,
+      course_level,
+      id_teacher,
+    ];
+    const resRequest = await client.query(textRequest, valuesRequest);
+    const newRequest = resRequest.rows[0];
+
+    // 2. Insert Students
+    if (students && students.length > 0) {
+      const textStudent = `
+        INSERT INTO center_request_students (id_request, id_student)
+        VALUES ($1, $2)
+      `;
+      for (const studentId of students) {
+        await client.query(textStudent, [newRequest.id_request, studentId]);
+      }
+    }
+
+    await client.query("COMMIT");
+    return newRequest;
+  } catch (e) {
+    await client.query("ROLLBACK");
+    throw e;
+  } finally {
+    client.release();
+  }
 };
 
 export const getByCenter = async (id_center) => {

@@ -1,11 +1,19 @@
 import * as Request from "../models/centerRequest.js";
 import * as Interest from "../models/interest.js";
 import db from "../data/db.js"; // Import db for transactions
+import * as Centre from "../models/centre.js";
 
 export const createRequest = async (req, res) => {
   const client = await db.pool.connect();
   try {
-    const { id_workshop, student_ids, comments } = req.body;
+    const {
+      id_workshop,
+      student_ids,
+      comments,
+      course_level,
+      id_teacher,
+      students, // Array of student IDs
+    } = req.body;
     const id_center = req.user.id; // Center ID (User ID)
 
     if (!student_ids || !Array.isArray(student_ids) || student_ids.length === 0) {
@@ -14,8 +22,48 @@ export const createRequest = async (req, res) => {
 
     const requested_slots = student_ids.length;
 
+    // 1. Validate max limits
+    const numStudents = students ? students.length : 0;
+    if (numStudents > 4) {
+      return res
+        .status(400)
+        .json({ error: "Max 4 students per request allowed." });
+    }
+
+    // 2. Validate requested_slots matches (or just use numStudents)
+    // If requested_slots is provided, check consistency, or just overwrite/default?
+    // Let's use requested_slots if provided, but ensure it's >= numStudents.
+    // Actually, if we are sending specific students, requested_slots IS student length.
+    // But maybe they want extra slots? "solicitud del taller sean maximo de 4 alumnos".
+    // Implies max 4 slots.
     if (requested_slots > 4) {
       return res.status(400).json({ error: "Máximo 4 alumnos por taller." });
+    }
+
+    // 3. Validate students belong to center
+    if (numStudents > 0) {
+      const validStudents = await Centre.checkStudentsBelongToCenter(
+        id_center,
+        students
+      );
+      if (!validStudents) {
+        return res.status(403).json({
+          error: "One or more students do not belong to this center.",
+        });
+      }
+    }
+
+    // 3. Validate students belong to center
+    if (numStudents > 0) {
+      const validStudents = await Centre.checkStudentsBelongToCenter(
+        id_center,
+        students
+      );
+      if (!validStudents) {
+        return res.status(403).json({
+          error: "One or more students do not belong to this center.",
+        });
+      }
     }
 
     await client.query('BEGIN');
@@ -25,10 +73,10 @@ export const createRequest = async (req, res) => {
     // For simplicity, I'll allow Request.create to run outside transaction OR replicate logic here using client.
     // Replicating logic using client to ensure atomicity.
     const requestResult = await client.query(`
-        INSERT INTO center_requests (id_center, id_workshop, requested_slots, comments, status)
-        VALUES ($1, $2, $3, $4, 'PENDING')
-        RETURNING *
-    `, [id_center, id_workshop, requested_slots, comments]);
+        INSERT INTO center_requests (id_center, id_workshop, requested_slots, comments, status, num_students, course_level, id_teacher)
+        VALUES ($1, $2, $3, $4, 'PENDING', $5, $6, $7)
+        RETURNING *º
+    `, [id_center, id_workshop, requested_slots, comments, numStudents, course_level, id_teacher]);
     
     const newRequest = requestResult.rows[0];
 

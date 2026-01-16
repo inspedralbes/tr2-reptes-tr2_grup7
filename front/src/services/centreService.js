@@ -25,3 +25,23 @@ export const remove = async (id) => {
   const response = await apiClient.delete(`/centres/${id}`)
   return response.data
 }
+
+export const getTeachers = async (id) => {
+  const response = await apiClient.get(`/centres/${id}/teachers`)
+  return response.data
+}
+
+export const getStatistics = async (id) => {
+  const response = await apiClient.get(`/centres/${id}/stats`)
+  return response.data
+}
+
+export const getStudents = async (id) => {
+  const response = await apiClient.get(`/centres/${id}/students`)
+  return response.data
+}
+
+export const getRequests = async (id) => {
+  const response = await apiClient.get(`/centres/${id}/requests`)
+  return response.data
+}

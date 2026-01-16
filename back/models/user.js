@@ -168,7 +168,7 @@ export const getTeachersByCenter = async (id_center) => {
 };
 
 export const remove = async (id) => {
-  const text = "DELETE FROM users WHERE id_user = $1 RETURNING *";
+  const text = "DELETE FROM users WHERE id = $1 RETURNING *";
   const result = await db.query(text, [id]);
   return result.rows[0];
 };

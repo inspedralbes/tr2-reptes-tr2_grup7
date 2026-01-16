@@ -6,6 +6,6 @@ export const create = async (data) => {
 }
 
 export const getMyRequests = async () => {
-  const response = await apiClient.get('/requests/my-requests')
+  const response = await apiClient.get('/requests')
   return response.data
 }

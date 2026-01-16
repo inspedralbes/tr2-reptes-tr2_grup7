@@ -76,6 +76,9 @@ CREATE TABLE center_requests (
     id_center INT REFERENCES centers(id_user),
     id_workshop INT REFERENCES workshops(id_workshop),
     requested_slots INT CHECK (requested_slots <= 4), -- El centro pide p.ej. 3 plazas
+    student_count INT,
+    course_level VARCHAR(50),
+    id_teacher INT REFERENCES teachers(id_user),
     status VARCHAR(20) DEFAULT 'PENDING' CHECK (status IN ('PENDING', 'ACCEPTED', 'REJECTED', 'PARTIAL')),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     comments TEXT
@@ -91,6 +94,12 @@ CREATE TABLE student_interest (
     status VARCHAR(20) DEFAULT 'WAITING' CHECK (status IN ('WAITING', 'CONFIRMED', 'CANCELLED')),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     UNIQUE(id_student, id_workshop) -- Un alumno no puede estar "interesado" dos veces en lo mismo
+);
+
+CREATE TABLE center_request_students (
+    id_request INT REFERENCES center_requests(id_request) ON DELETE CASCADE,
+    id_student INT REFERENCES students(id_user) ON DELETE CASCADE,
+    PRIMARY KEY (id_request, id_student)
 );
 
 -- 6. INSCRIPCIONES

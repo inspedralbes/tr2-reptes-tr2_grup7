@@ -7,7 +7,7 @@ const router = createRouter({
     {
       path: '/login',
       name: 'login',
-      component: () => import('../components/general/login.vue')
+      component: () => import('../components/general/login.vue'),
     },
     // Layout principal con rutas protegidas
     {
@@ -18,62 +18,77 @@ const router = createRouter({
         {
           path: 'centro/panel',
           name: 'centro-panel',
-          component: () => import('../components/views/centre/PanelCentro.vue')
+          component: () => import('../components/views/centre/PanelCentro.vue'),
         },
         {
           path: 'centro/catalogo',
           name: 'centro-catalogo',
-          component: () => import('../components/shared/CatalogoTalleres.vue')
+          component: () => import('../components/shared/CatalogoTalleres.vue'),
         },
         {
           path: 'centro/nueva-peticion',
           name: 'centro-nueva-peticion',
-          component: () => import('../components/views/centre/NuevaPeticion.vue')
+          component: () => import('../components/views/centre/NuevaPeticion.vue'),
+        },
+        {
+          path: 'centro/alumnos',
+          name: 'centro-alumnos',
+          component: () => import('../components/views/centre/LlistaAlumnes.vue'),
+        },
+        {
+          path: 'centro/talleres',
+          name: 'centro-talleres',
+          component: () => import('../components/views/centre/InfoTalleres.vue'),
+        },
+        {
+          path: 'centro/historial',
+          name: 'centro-historial',
+          component: () => import('../components/views/centre/HistorialPeticiones.vue'),
         },
         // Rutas de Administración
         {
           path: 'admin/panel',
           name: 'admin-panel',
-          component: () => import('../components/views/admin/PanelAdmin.vue')
+          component: () => import('../components/views/admin/PanelAdmin.vue'),
         },
         {
           path: 'admin/peticiones',
           name: 'admin-peticiones',
-          component: () => import('../components/views/admin/GestionPeticiones.vue')
+          component: () => import('../components/views/admin/GestionPeticiones.vue'),
         },
         {
           path: 'admin/asignacion',
           name: 'admin-asignacion',
-          component: () => import('../components/views/admin/HerramientaAsignacion.vue')
+          component: () => import('../components/views/admin/HerramientaAsignacion.vue'),
         },
         {
           path: 'admin/profesores',
           name: 'admin-profesores',
-          component: () => import('../components/views/admin/GestionProfesores.vue')
+          component: () => import('../components/views/admin/GestionProfesores.vue'),
         },
         {
           path: 'admin/talleres',
           name: 'admin-talleres',
-          component: () => import('../components/views/admin/GestionTalleres.vue')
+          component: () => import('../components/views/admin/GestionTalleres.vue'),
         },
         {
           path: 'admin/centros',
           name: 'admin-centros',
-          component: () => import('../components/views/admin/GestionCentros.vue')
+          component: () => import('../components/views/admin/GestionCentros.vue'),
         },
         // Rutas de Profesor
         {
           path: 'profesor/talleres',
           name: 'profesor-talleres',
-          component: () => import('../components/views/profesor/PanelProfesor.vue')
+          component: () => import('../components/views/profesor/PanelProfesor.vue'),
         },
         {
           path: 'profesor/detalle/:id?',
           name: 'profesor-detalle',
-          component: () => import('../components/shared/DetalleTaller.vue')
-        }
-      ]
-    }
+          component: () => import('../components/shared/DetalleTaller.vue'),
+        },
+      ],
+    },
   ],
 })
 
@@ -115,8 +130,7 @@ router.beforeEach((to, from, next) => {
     } else {
       next()
     }
-  }
-  else {
+  } else {
     next()
   }
 })
