@@ -12,6 +12,7 @@ import authRouter from "./routes/authRouter.js";
 import assignRouter from "./routes/assignRouter.js";
 import adminRouter from "./routes/adminRouter.js";
 import schoolApplicationRouter from "./routes/schoolApplicationRouter.js";
+import evaluationRouter from "./routes/evaluationRouter.js";
 import "dotenv/config";
 
 // 1. Inicialización del Servidor
@@ -59,6 +60,7 @@ app.use("/api/auth", authRouter);
 app.use("/api/assign", assignRouter);
 app.use("/api/admin", adminRouter);
 app.use("/api/applications", schoolApplicationRouter);
+app.use("/api/evaluations", evaluationRouter);
 
 // 6. Lógica de Socket.io (Tiempo Real)
 io.on("connection", (socket) => {
