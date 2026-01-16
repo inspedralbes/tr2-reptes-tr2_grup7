@@ -167,13 +167,6 @@ const navigationStructure = {
         { id: 'checklist-actual', name: 'Checklist Actual', route: '/centro/checklist' },
         { id: 'finalitzats', name: 'Finalitzats', route: '/centro/finalizados' }
       ]
-    },
-    {
-      id: 'sessio',
-      name: 'Sessió',
-      subsections: [
-        { id: 'logout', name: 'Tancar Sessió', route: '/login' }
-      ]
     }
   ],
   admin: [
@@ -198,7 +191,7 @@ const navigationStructure = {
       name: 'Assignació',
       subsections: [
         { id: 'assignacio', name: 'Eina Assignació', route: '/admin/asignacion' },
-        { id: 'professors', name: 'Professors Disponibles', route: '/admin/asignacion' }
+        { id: 'professors', name: 'Professors Disponibles', route: '/admin/profesores' }
       ]
     },
     {
@@ -206,13 +199,6 @@ const navigationStructure = {
       name: 'Centres',
       subsections: [
         { id: 'llista-centres', name: 'Llista Centres', route: '/admin/centros' }
-      ]
-    },
-    {
-      id: 'sessio',
-      name: 'Sessió',
-      subsections: [
-        { id: 'logout', name: 'Tancar Sessió', route: '/login' }
       ]
     }
   ],
@@ -247,13 +233,6 @@ const navigationStructure = {
       subsections: [
         { id: 'materials-taller', name: 'Materials del Taller', route: '/profesor/materials' },
         { id: 'recursos', name: 'Recursos Educatius', route: '/profesor/materials' }
-      ]
-    },
-    {
-      id: 'sessio',
-      name: 'Sessió',
-      subsections: [
-        { id: 'logout', name: 'Tancar Sessió', route: '/login' }
       ]
     }
   ]
