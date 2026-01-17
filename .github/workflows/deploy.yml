@@ -17,10 +17,13 @@ jobs:
           password: ${{ secrets.PROD_PASSWORD }}
           port: ${{ secrets.PROD_PORT || '22' }}
           script: |
+            set -e  # Fail immediately if any command returns a non-zero status
             echo "🚀 Starting Deployment..."
 
             # 1. Navigate to project directory (or create if missing)
-            PROJECT_DIR="~/tr2-reptes-tr2_grup7"
+            PROJECT_DIR="$HOME/tr2-reptes-tr2_grup7"
+            echo "📂 Target Directory: $PROJECT_DIR"
+
             if [ ! -d "$PROJECT_DIR" ]; then
               echo "📂 Cloning repository..."
               git clone https://github.com/inspedralbes/tr2-reptes-tr2_grup7.git "$PROJECT_DIR"
