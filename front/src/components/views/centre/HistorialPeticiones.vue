@@ -149,9 +149,11 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue'
 import { useRouter } from 'vue-router'
-import * as schoolApplicationService from '../../../services/schoolApplicationService'
+import { getCurrentUser } from '../../../services/authService'
 
-const applications = ref([]) // Keep for raw fetch
+onMounted(async () => {
+  try {
+    const user = getCurrentUser() || {}
 const application = ref(null) // selected/main application
 const matchingRequests = ref([]) // requests for the selected app
 const loading = ref(true)

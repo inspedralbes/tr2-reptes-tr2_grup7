@@ -220,7 +220,9 @@ import * as workshopService from '../../../services/workshopService'
 import * as centreService from '../../../services/centreService'
 import * as schoolApplicationService from '../../../services/schoolApplicationService'
 
-const getUser = () => JSON.parse(localStorage.getItem('user') || '{}')
+import { getCurrentUser } from '../../../services/authService'
+
+const getUser = () => getCurrentUser() || {}
 
 const router = useRouter()
 const route = useRoute()
