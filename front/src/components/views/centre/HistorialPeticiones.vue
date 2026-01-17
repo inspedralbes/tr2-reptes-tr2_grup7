@@ -29,7 +29,7 @@
       <p class="mt-1 text-sm text-gray-500">Encara no has creat la sol·licitud per a aquest curs.</p>
     </div>
 
-    <!--    <!-- Detail View -->
+    <!-- Detail View -->
     <div v-else class="space-y-6 animate-fade-in-up">
       
       <!-- 1. HEADER & GLOBAL INFO CARD -->
@@ -149,11 +149,10 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue'
 import { useRouter } from 'vue-router'
+import * as schoolApplicationService from '../../../services/schoolApplicationService'
 import { getCurrentUser } from '../../../services/authService'
 
-onMounted(async () => {
-  try {
-    const user = getCurrentUser() || {}
+const applications = ref([]) // Keep for raw fetch
 const application = ref(null) // selected/main application
 const matchingRequests = ref([]) // requests for the selected app
 const loading = ref(true)
@@ -178,27 +177,13 @@ const formatDate = (dateString) => {
   })
 }
 
-const getStatusClass = (status) => {
-  switch (status) {
-    case 'ACCEPTED': return 'bg-green-100 text-green-800'
-    case 'REJECTED': return 'bg-red-100 text-red-800'
-    case 'PENDING':
-    case 'SUBMITTED':
-    case 'WAITING': // Also for students
-      return 'bg-yellow-100 text-yellow-800'
-    case 'PARTIAL': return 'bg-blue-100 text-blue-800'
-    case 'CONFIRMED': return 'bg-green-100 text-green-800'
-    default: return 'bg-gray-100 text-gray-800'
+const getStatusLabel = (status) => {
+  const labels = {
+    ACCEPTED: 'Acceptada', REJECTED: 'Rebutjada', PENDING: 'Pendent',
+    SUBMITTED: 'Enviada', PARTIAL: 'Parcial', DRAFT: 'Esborrany',
+    WAITING: 'En Espera', CONFIRMED: 'Asignat', CANCELLED: 'Cancel·lat'
   }
-}
-
-const getStudentStatusClass = (status) => {
-     switch (status) {
-    case 'CONFIRMED': return 'bg-green-200 text-green-800'
-    case 'WAITING': return 'bg-yellow-200 text-yellow-800'
-    case 'CANCELLED': return 'bg-red-200 text-red-800'
-    default: return 'bg-gray-200 text-gray-600'
-  }
+  return labels[status] || status
 }
 
 const getStudentStatusDot = (status) => {
@@ -210,18 +195,9 @@ const getStudentStatusDot = (status) => {
   }
 }
 
-const getStatusLabel = (status) => {
-  const labels = {
-    ACCEPTED: 'Acceptada', REJECTED: 'Rebutjada', PENDING: 'Pendent',
-    SUBMITTED: 'Enviada', PARTIAL: 'Parcial', DRAFT: 'Esborrany',
-    WAITING: 'En Espera', CONFIRMED: 'Asignat', CANCELLED: 'Cancel·lat'
-  }
-  return labels[status] || status
-}
-
 onMounted(async () => {
   try {
-    const user = JSON.parse(localStorage.getItem('user') || '{}')
+    const user = getCurrentUser() || {}
     if (user.id) {
         // Fetch list
         const apps = await schoolApplicationService.getMyApplications()
@@ -235,8 +211,8 @@ onMounted(async () => {
              application.value = fullData; // Contains basic info
              matchingRequests.value = fullData.requests || [];
         } else if (apps.length > 0) {
-            // Fallback: Show the most recent one if current period doesn't exist? 
-            // Or just show first. Let's show first for now.
+             // Fallback: Show the most recent one if current period doesn't exist? 
+             // Or just show first. Let's show first for now.
              const fullData = await schoolApplicationService.getApplicationById(apps[0].id_application);
              application.value = fullData;
              matchingRequests.value = fullData.requests || [];
