@@ -33,7 +33,7 @@ INSERT INTO users (email, password_hash, role, is_active, created_at) VALUES
 ('teacher.ana@edu.com',  '1234', 'TEACHER', TRUE, '2026-01-01'),
 ('teacher.pol@edu.com',  '1234', 'TEACHER', TRUE, '2026-01-01'),
 ('teacher.sofia@edu.com','1234', 'TEACHER', TRUE, '2026-01-01'),
-('teacher.marc@edu.com', '1234', 'TEACHER', TRUE, '2026-01-01');
+('teacher.marc@gmail.com', '1234', 'TEACHER', TRUE, '2026-01-01');
 
 -- Students (IDs 12+)
 -- We will create students dynamically below via the students table but need users first.

@@ -138,8 +138,8 @@ const router = createRouter({
 
 // Navigation Guard - Protege las rutas según autenticación y roles
 router.beforeEach((to, from, next) => {
-  const token = localStorage.getItem('token')
-  const user = localStorage.getItem('user')
+  const token = sessionStorage.getItem('token') || localStorage.getItem('token')
+  const user = sessionStorage.getItem('user') || localStorage.getItem('user')
 
   // Si intenta acceder a / sin estar autenticado, ir a login
   if (to.path === '/' && !token) {

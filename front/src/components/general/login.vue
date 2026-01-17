@@ -154,8 +154,8 @@
             "
           >
             <p class="text-xs" style="color: var(--text-secondary); line-height: 1.5">
-              El sistema detectarà automàticament el teu rol (Centre Educatiu, Professor o
-              Administració) segons el teu correu electrònic.
+              Accés exclusiu per a personal docent i centres educatius.
+              <strong>Utilitza el teu correu @xtec.cat</strong> per accedir.
             </p>
           </div>
         </form>
@@ -180,13 +180,23 @@ const loading = ref(false)
 const handleLogin = async () => {
   // Netejar errors previs
   error.value = ''
+
+  // Validació de domini (Req: només xtec o similar, mantenim edu.com per dev)
+  const allowedDomains = ['xtec.cat', 'edu.com', 'workshop.com']
+  const emailDomain = email.value.split('@')[1]
+
+  if (!emailDomain || !allowedDomains.includes(emailDomain)) {
+    error.value = 'Accés restringit: Només es permeten correus xtec.cat'
+    return
+  }
+
   loading.value = true
 
   try {
     console.log('Intentant login amb:', email.value, password.value)
 
     // Cridar al servei d'autenticació
-    const response = await login(email.value, password.value)
+    const response = await login(email.value, password.value, rememberMe.value)
 
     console.log('Login correcte:', response)
 
