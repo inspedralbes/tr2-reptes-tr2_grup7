@@ -10,18 +10,42 @@
         padding-bottom: 1rem;
       "
     >
-      Nova Petició de Taller
+      Sol·licitud de Tallers (Curs 2025-2026)
     </h1>
 
+    <div v-if="isBlocked" class="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-6">
+      <div class="flex">
+        <div class="flex-shrink-0">
+          <!-- Icon -->
+          <svg class="h-5 w-5 text-yellow-400" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+          </svg>
+        </div>
+        <div class="ml-3">
+          <p class="text-sm text-yellow-700">
+            <strong>Atenció:</strong> Ja has enviat una sol·licitud per a aquest curs ({{ currentPeriod }}).
+            No pots crear-ne una altra de nova, però pots consultar l'estat de la teva sol·licitud a l'historial.
+          </p>
+          <p class="mt-2 text-sm">
+             <button @click="$router.push('/centro/historial')" class="font-medium text-yellow-700 underline hover:text-yellow-600">
+                Torna a l'historial
+             </button>
+          </p>
+        </div>
+      </div>
+    </div>
+
     <form @submit.prevent="submitRequests" class="space-y-8">
+      <fieldset :disabled="isBlocked" class="contents">
       <!-- Loop through requests -->
       <div
         v-for="(req, index) in requests"
         :key="index"
         class="card p-8 relative shadow-sm border border-gray-100"
+        :class="{ 'opacity-75': isBlocked }"
       >
         <!-- Header for each request card (only if > 1) -->
-        <div v-if="requests.length > 1 && index > 0" class="absolute top-0 right-0 p-4">
+        <div v-if="requests.length > 1 && index > 0 && !isBlocked" class="absolute top-0 right-0 p-4">
           <button
             type="button"
             @click="removeRequest(index)"
@@ -33,7 +57,7 @@
         </div>
 
         <h2 v-if="requests.length > 1" class="text-lg font-bold mb-4 text-gray-700 border-b pb-2">
-          Petició {{ index + 1 }}
+          Taller {{ index + 1 }}
         </h2>
 
         <div class="space-y-5">
@@ -63,7 +87,7 @@
                   <select
                     v-model="req.selectedStudentToAdd"
                     class="flex-1 w-full"
-                    :disabled="req.students.length >= 4"
+                    :disabled="req.students.length >= 4 || isBlocked"
                   >
                     <option value="" disabled>Selecciona un alumne...</option>
                     <option
@@ -75,6 +99,7 @@
                     </option>
                   </select>
                   <button
+                    v-if="!isBlocked"
                     type="button"
                     @click="addStudentToRequest(index)"
                     class="btn-primary px-4 py-2"
@@ -103,6 +128,7 @@
                         {{ getStudentName(studentId) }}
                       </span>
                       <button
+                        v-if="!isBlocked"
                         type="button"
                         @click="removeStudentFromRequest(index, studentId)"
                         class="text-red-500 hover:text-red-700 text-sm font-bold"
@@ -158,28 +184,31 @@
       </div>
 
       <!-- Add Request Button -->
-      <div class="text-center py-4">
+      <div v-if="!isBlocked" class="text-center py-4">
         <button
           type="button"
           @click="addNewRequest"
           class="btn-outline px-6 py-3 border-dashed border-2 flex items-center gap-2 mx-auto hover:bg-gray-50 bg-white"
         >
           <span class="text-xl font-bold text-blue-600">+</span>
-          <span class="font-medium">Afegir una altra petició (Un altre taller)</span>
+          <span class="font-medium">Afegir Taller al llistat</span>
         </button>
       </div>
 
+
       <div
+        v-if="!isBlocked"
         class="flex gap-4 sticky bottom-4 bg-white p-4 shadow-lg rounded-lg border border-gray-200"
         style="z-index: 50"
       >
         <button type="submit" class="flex-1 btn-primary py-3 font-bold text-lg" :disabled="loading">
-          {{ loading ? 'Enviant...' : `Enviar Peticions (${requests.length})` }}
+          {{ loading ? 'Enviant...' : `Enviar Sol·licitud Única` }}
         </button>
         <button type="button" @click="$router.push('/centro/panel')" class="px-8 btn-outline py-3">
           Cancel·lar
         </button>
       </div>
+      </fieldset>
     </form>
   </div>
 </template>
@@ -188,8 +217,8 @@
 import { ref, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import * as workshopService from '../../../services/workshopService'
-import * as requestService from '../../../services/requestService'
 import * as centreService from '../../../services/centreService'
+import * as schoolApplicationService from '../../../services/schoolApplicationService'
 
 const getUser = () => JSON.parse(localStorage.getItem('user') || '{}')
 
@@ -199,9 +228,11 @@ const workshops = ref([])
 const teachers = ref([])
 const students = ref([])
 const loading = ref(false)
+const isBlocked = ref(false)
 
 // State: Array of Request Objects
 const requests = ref([createEmptyRequest()])
+const globalComments = ref('')
 
 function createEmptyRequest() {
   return {
@@ -255,16 +286,47 @@ const removeRequest = (index) => {
   }
 }
 
+// Helper to calculate academic year
+const getCurrentSchoolYear = () => {
+  const today = new Date();
+  const month = today.getMonth(); // 0-11
+  const year = today.getFullYear();
+  // If we are in September (8) or later, it's the start of a year (e.g., Sept 2025 -> 2025-2026)
+  // If we are before September, it's the end of a year (e.g., Jan 2026 -> 2025-2026)
+  return month >= 8 ? `${year}-${year + 1}` : `${year - 1}-${year}`;
+}
+
+const currentPeriod = getCurrentSchoolYear();
+
 onMounted(async () => {
   try {
     const user = getUser()
     if (user && user.id) {
+      console.log('Fetching data for user:', user.id);
+      
       // Parallel fetch
-      const [workshopsData, teachersData, studentsData] = await Promise.all([
+      const [workshopsData, teachersData, studentsData, myApps] = await Promise.all([
         workshopService.getAll(),
         centreService.getTeachers(user.id),
         centreService.getStudents(user.id),
+        schoolApplicationService.getMyApplications()
       ])
+
+      console.log('Fetched Applications:', myApps);
+      console.log('Current Computed Period:', currentPeriod);
+
+      // Check if already has application for this period
+      const existingApp = myApps.find(app => app.year_period === currentPeriod);
+      
+      if (existingApp) {
+        // BLOCKED STATE
+        console.log('Found existing application:', existingApp);
+        isBlocked.value = true;
+        // Don't redirect, just show blocked state
+      } else {
+        console.log('No existing application found for period:', currentPeriod);
+      }
+
       workshops.value = workshopsData
       teachers.value = teachersData
       students.value = studentsData
@@ -309,19 +371,28 @@ const submitRequests = async () => {
 
   loading.value = true
   try {
-    const promises = requests.value.map((req) => {
-      // Clean up the object before sending (remove UI helpers)
-      // eslint-disable-next-line no-unused-vars
-      const { selectedStudentToAdd, ...data } = req
-      return requestService.create(data)
-    })
+    // Construct the single application object
+    const applicationPayload = {
+      year_period: currentPeriod, 
+      comments: globalComments.value,
+      items: requests.value.map(req => {
+         // eslint-disable-next-line no-unused-vars
+         const { selectedStudentToAdd, ...data } = req
+         return data
+      })
+    };
 
-    await Promise.all(promises)
-    alert(`S'han creat ${requests.value.length} peticions correctament!`)
-    router.push('/centro/panel')
+    await schoolApplicationService.createApplication(applicationPayload);
+    
+    alert(`Sol·licitud creada correctament amb ${requests.value.length} tallers!`)
+    router.push('/centro/historial') // Redirect to history to see the new app
   } catch (error) {
-    console.error('Error submitting requests:', error)
-    alert('Error al crear les peticions. Si us plau, torna-ho a provar.')
+    console.error('Error submitting application:', error)
+    if (error.response && error.response.data && error.response.data.error) {
+        alert('Error: ' + error.response.data.error);
+    } else {
+        alert('Error al crear la sol·licitud. Si us plau, torna-ho a provar.')
+    }
   } finally {
     loading.value = false
   }

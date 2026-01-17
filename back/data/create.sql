@@ -84,6 +84,7 @@ CREATE TABLE workshops (
     max_students_per_center INT DEFAULT 4,
     request_deadline TIMESTAMP,
     status VARCHAR(20) NOT NULL DEFAULT 'OFFERED' CHECK (status IN ('PENDING', 'FULL', 'OFFERED', 'ARCHIVED', 'CANCELLED')),
+    modalidad CHAR(1) DEFAULT 'C' CHECK (modalidad IN ('A', 'B', 'C')),
     center_id INT REFERENCES centers(id_user), 
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT check_dates CHECK (end_date > start_date)
@@ -165,6 +166,6 @@ CREATE TABLE evaluations (
     UNIQUE(id_workshop, id_student)
 );
 
--- INSERT ADMIN INICIAL
-INSERT INTO users (email, password_hash, role, is_active)
-VALUES ('admin@workshop.com', '123', 'ADMIN', TRUE);
+-- -- INSERT ADMIN INICIAL
+-- INSERT INTO users (email, password_hash, role, is_active)
+-- VALUES ('admin@workshop.com', '123', 'ADMIN', TRUE);

@@ -7,7 +7,7 @@ export const createApplicationWithDetails = async (
   global_comments,
   items = []
 ) => {
-  const client = await db.pool.connect();
+  const client = await db.connect();
   try {
     await client.query("BEGIN");
 
@@ -85,11 +85,25 @@ export const getApplicationDetails = async (id_application) => {
     if (appRes.rows.length === 0) return null;
     
     const reqRes = await db.query(`
-        SELECT cr.*, w.title as workshop_title 
+        SELECT cr.*, w.title as workshop_title, w.category as workshop_category, t.first_name as teacher_name, t.last_name as teacher_surname
         FROM center_requests cr
-        JOIN workshops w ON cr.id_workshop = w.id_workshop 
+        JOIN workshops w ON cr.id_workshop = w.id_workshop
+        LEFT JOIN teachers t ON cr.id_teacher = t.id_user
         WHERE cr.id_application = $1
     `, [id_application]);
 
-    return { ...appRes.rows[0], requests: reqRes.rows };
+    const requests = reqRes.rows;
+
+    // Fetch students for each request
+    for (const req of requests) {
+        const studentRes = await db.query(`
+            SELECT s.id_user, s.first_name, s.last_name, si.status as interest_status
+            FROM student_interest si
+            JOIN students s ON si.id_student = s.id_user
+            WHERE si.id_request = $1
+        `, [req.id_request]);
+        req.students = studentRes.rows;
+    }
+
+    return { ...appRes.rows[0], requests };
 };

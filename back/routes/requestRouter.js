@@ -10,12 +10,7 @@ router.get(
   authorizeRoles("ADMIN"),
   requestController.getAllRequests
 );
-router.post(
-  "/",
-  verifyToken,
-  authorizeRoles("CENTER"),
-  requestController.createRequest
-);
+
 router.get(
   "/",
   verifyToken,

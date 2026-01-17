@@ -20,8 +20,9 @@ export const ejecutarProcesoAsignacion = async (config = {}) => {
 
         console.log("\n✅ Proceso de asignación finalizado con éxito.");
         
-        // 7. GENERAR RESUMEN FINAL
+        // 7. GENERAR RESUMEN FINAL (HTML)
         return await generateAssignmentReportHtml();
+
     } catch (error) {
         console.error("❌ Error en el matchingEngine:", error);
         throw error; // Rethrow to let the controller handle it
