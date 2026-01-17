@@ -148,7 +148,7 @@ INSERT INTO center_requests (id_application, id_workshop, requested_slots, statu
 -- 5. Hugo, Irene, Jordi, Klara, Lluis (Gracia) -> 5 students. Limit per center is 4. One should be excluded?
 
 -- Request 1 (Pedralbes)
-INSERT INTO student_interest (id_student, id_workshop, id_request, status, has_legal_papers, created_at) VALUES
+-- INSERT INTO student_interest (id_student, id_workshop, id_request, status, has_legal_papers, created_at) VALUES
 -- (12, 1, 1, 'WAITING', TRUE, '2026-01-07'), -- Albert -- Commented out
 -- (15, 1, 1, 'WAITING', TRUE, '2026-01-07'), -- David -- Commented out
 -- (17, 1, 1, 'WAITING', TRUE, '2026-01-07'); -- Fabian (Grade 1) -- Commented out
