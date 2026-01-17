@@ -164,6 +164,8 @@ const stats = ref({
   student_count: 0,
 })
 
+import { getCurrentUser } from '../../../services/authService'
+
 const centerInfo = ref({})
 const coReferent = ref(null)
 const students = ref([])
@@ -178,7 +180,7 @@ const sendMessage = () => {
 
 onMounted(async () => {
   try {
-    const user = JSON.parse(localStorage.getItem('user') || '{}')
+    const user = getCurrentUser() || {}
     if (user.id) {
       const statsData = await centreService.getStatistics(user.id)
       stats.value = statsData

@@ -95,10 +95,11 @@
 import { ref, onMounted } from 'vue';
 import { FileText, BookOpen, Download, Monitor, Link } from 'lucide-vue-next';
 import apiClient from '../../../services/apiClient';
+import { getCurrentUser } from '../../../services/authService'
 
 const workshops = ref([]);
 const loading = ref(true);
-const user = ref(JSON.parse(localStorage.getItem('user') || '{}'));
+const user = ref(getCurrentUser() || {});
 
 const fetchWorkshops = async () => {
   try {

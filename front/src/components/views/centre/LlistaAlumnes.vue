@@ -140,6 +140,7 @@
 import { ref, onMounted } from 'vue'
 import { Pencil, Trash2 } from 'lucide-vue-next'
 import * as centreService from '../../../services/centreService'
+import { getCurrentUser } from '../../../services/authService'
 
 const students = ref([])
 const loading = ref(true)
@@ -242,7 +243,7 @@ const sortStudents = () => {
 
 onMounted(async () => {
   try {
-    const user = JSON.parse(localStorage.getItem('user') || '{}')
+    const user = getCurrentUser() || {}
     if (user.id) {
       centreId.value = user.id
       students.value = await centreService.getStudents(user.id)

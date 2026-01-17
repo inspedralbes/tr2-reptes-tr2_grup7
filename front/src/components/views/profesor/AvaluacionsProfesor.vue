@@ -178,11 +178,12 @@ import { ref, computed, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { Users, UserCheck, Clock, Star, ClipboardList, Edit, Eye, Info, ArrowLeft, Save } from 'lucide-vue-next';
 import apiClient from '../../../services/apiClient';
+import { getCurrentUser } from '../../../services/authService'
 
 const router = useRouter();
 const workshops = ref([]);
 const loading = ref(true);
-const user = ref(JSON.parse(localStorage.getItem('user') || '{}'));
+const user = ref(getCurrentUser() || {});
 
 // Grading Mode State
 const gradingMode = ref(false);

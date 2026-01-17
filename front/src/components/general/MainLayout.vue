@@ -128,6 +128,8 @@ import { logout } from '../../services/authService'
 import { useAlertStore } from '../../stores/alert'
 import VAlertContainer from '../shared/VAlertContainer.vue'
 
+import { getCurrentUser } from '../../services/authService'
+
 const router = useRouter()
 const alertStore = useAlertStore()
 
@@ -139,9 +141,8 @@ const user = ref(null)
 
 // Función para obtener el usuario actual
 const loadUser = () => {
-  const userData = localStorage.getItem('user')
   if (userData) {
-    user.value = JSON.parse(userData)
+    user.value = userData
     // Mapear rol a currentRole
     if (user.value.role === 'ADMIN') {
       currentRole.value = 'admin'

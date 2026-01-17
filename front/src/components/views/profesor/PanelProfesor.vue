@@ -91,11 +91,12 @@ import { ref, onMounted, computed } from 'vue';
 import { useRouter } from 'vue-router';
 import { BookOpen, Calendar, ChevronRight, ClipboardList } from 'lucide-vue-next';
 import apiClient from '../../../services/apiClient';
+import { getCurrentUser } from '../../../services/authService'
 
 const router = useRouter();
 const workshops = ref([]);
 const loading = ref(true);
-const user = ref(JSON.parse(localStorage.getItem('user') || '{}'));
+const user = ref(getCurrentUser() || {});
 
 const fetchWorkshops = async () => {
   try {
