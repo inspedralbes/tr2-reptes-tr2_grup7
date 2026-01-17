@@ -41,6 +41,8 @@ services:
     build:
       context: ./front
       dockerfile: Dockerfile
+      args:
+        VITE_API_URL: ${VITE_API_URL}
     container_name: frontend_prod
     restart: always
     ports:

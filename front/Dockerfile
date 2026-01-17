@@ -3,6 +3,12 @@
 FROM node:20-alpine as build
 WORKDIR /app
 COPY package*.json ./
+
+# Recibimos el argumento de construcción (pasa desde docker-compose.prod.yml)
+ARG VITE_API_URL
+# Lo establecemos como variable de entorno durante el build
+ENV VITE_API_URL=$VITE_API_URL
+
 RUN npm install
 COPY . .
 RUN npm run build # Asume que tu script de build genera los archivos estáticos en '/app/dist'

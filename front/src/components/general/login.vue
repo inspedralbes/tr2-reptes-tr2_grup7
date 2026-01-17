@@ -193,7 +193,6 @@ const handleLogin = async () => {
   loading.value = true
 
   try {
-    console.log('Intentant login amb:', email.value, password.value)
 
     // Cridar al servei d'autenticació
     const response = await login(email.value, password.value, rememberMe.value)
