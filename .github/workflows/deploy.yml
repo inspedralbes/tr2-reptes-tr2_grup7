@@ -49,9 +49,12 @@ jobs:
             VITE_API_URL=${{ secrets.VITE_API_URL }}
             EOF
 
-            # 4. Stop and Remove old containers (optional but safe)
-            # echo "🛑 Stopping old containers..."
-            # docker compose -f docker-compose.prod.yml down
+            # 4. Clean slate deployment
+            echo "🧹 Cleaning up..."
+            # Try proper down first (for current project context)
+            docker compose -f docker-compose.prod.yml down --remove-orphans || true
+            # Force remove specific named containers in case they belong to a different project context
+            docker rm -f postgres_prod backend_prod frontend_prod certbot 2>/dev/null || true
 
             # 5. Build and Start new containers
             echo "🏗️ Building and Starting containers..."
