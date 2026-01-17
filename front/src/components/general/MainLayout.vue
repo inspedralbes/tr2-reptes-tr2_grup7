@@ -141,6 +141,7 @@ const user = ref(null)
 
 // Función para obtener el usuario actual
 const loadUser = () => {
+  const userData = getCurrentUser()
   if (userData) {
     user.value = userData
     // Mapear rol a currentRole
