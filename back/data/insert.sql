@@ -120,7 +120,7 @@ INSERT INTO workshops (title, short_description, max_slots, start_date, end_date
 -- ==========================================
 -- We need Applications for the centers created in section 2
 INSERT INTO school_applications (id_center, year_period, status, global_comments, created_at) VALUES
-(2, '2025-2026', 'SUBMITTED', 'App Pedralbes', '2026-01-05'),
+-- (2, '2025-2026', 'SUBMITTED', 'App Pedralbes', '2026-01-05'), -- Commented out to allow testing "New Request"
 (3, '2025-2026', 'SUBMITTED', 'App Poblenou',  '2026-01-05'),
 (4, '2025-2026', 'SUBMITTED', 'App Tecnologic','2026-01-05'),
 (5, '2025-2026', 'SUBMITTED', 'App Gracia',    '2026-01-05');
@@ -128,7 +128,7 @@ INSERT INTO school_applications (id_center, year_period, status, global_comments
 -- Create Requests linked to Apps
 -- Request 1: Pedralbes wants Workshop 1 (Robotics)
 INSERT INTO center_requests (id_application, id_workshop, requested_slots, status, created_at) VALUES
-(1, 1, 4, 'PENDING', '2026-01-06'), -- App 1 (Pedralbes) -> Workshop 1
+-- (1, 1, 4, 'PENDING', '2026-01-06'), -- App 1 (Pedralbes) -> Workshop 1 -- Commented out
 (2, 1, 4, 'PENDING', '2026-01-06'), -- App 2 (Poblenou) -> Workshop 1
 (3, 2, 4, 'PENDING', '2026-01-06'), -- App 3 (Tecnologic) -> Workshop 2 (Capacity 5)
 (4, 1, 4, 'PENDING', '2026-01-06'); -- App 4 (Gracia) -> Workshop 1
@@ -149,9 +149,9 @@ INSERT INTO center_requests (id_application, id_workshop, requested_slots, statu
 
 -- Request 1 (Pedralbes)
 INSERT INTO student_interest (id_student, id_workshop, id_request, status, has_legal_papers, created_at) VALUES
-(12, 1, 1, 'WAITING', TRUE, '2026-01-07'), -- Albert
-(15, 1, 1, 'WAITING', TRUE, '2026-01-07'), -- David
-(17, 1, 1, 'WAITING', TRUE, '2026-01-07'); -- Fabian (Grade 1)
+-- (12, 1, 1, 'WAITING', TRUE, '2026-01-07'), -- Albert -- Commented out
+-- (15, 1, 1, 'WAITING', TRUE, '2026-01-07'), -- David -- Commented out
+-- (17, 1, 1, 'WAITING', TRUE, '2026-01-07'); -- Fabian (Grade 1) -- Commented out
 
 -- Request 2 (Poblenou)
 INSERT INTO student_interest (id_student, id_workshop, id_request, status, has_legal_papers, created_at) VALUES
