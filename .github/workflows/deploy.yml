@@ -1,4 +1,4 @@
-name: Deploy to Production (Test Connection)
+name: Deploy to Production
 
 on:
   push:
@@ -17,6 +17,41 @@ jobs:
           password: ${{ secrets.PROD_PASSWORD }}
           port: ${{ secrets.PROD_PORT || '22' }}
           script: |
-            echo "✅ ¡Conexión SSH exitosa!"
-            echo "El servidor es accesible y las credenciales son correctas."
-            echo "No se ha desplegado nada porque estamos en modo prueba."
+            echo "🚀 Starting Deployment..."
+
+            # 1. Navigate to project directory (or create if missing)
+            PROJECT_DIR="~/tr2-reptes-tr2_grup7"
+            if [ ! -d "$PROJECT_DIR" ]; then
+              echo "📂 Cloning repository..."
+              git clone https://github.com/inspedralbes/tr2-reptes-tr2_grup7.git "$PROJECT_DIR"
+            fi
+
+            cd "$PROJECT_DIR"
+
+            # 2. Pull latest changes
+            echo "⬇️ Pulling latest changes..."
+            git pull origin main
+
+            # 3. Create/Update .env file from Secrets
+            echo "📝 Updating .env file..."
+            cat <<EOF > .env
+            POSTGRES_DB=${{ secrets.POSTGRES_DB }}
+            POSTGRES_USER=${{ secrets.POSTGRES_USER }}
+            POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}
+            PORT_DATABASE=5432
+            PORT_BACKEND=3000
+            PORT_FRONTEND=80
+            DATABASE_URL=postgres://${{ secrets.POSTGRES_USER }}:${{ secrets.POSTGRES_PASSWORD }}@db:5432/${{ secrets.POSTGRES_DB }}
+            JWT_SECRET=${{ secrets.JWT_SECRET }}
+            VITE_API_URL=${{ secrets.VITE_API_URL }}
+            EOF
+
+            # 4. Stop and Remove old containers (optional but safe)
+            # echo "🛑 Stopping old containers..."
+            # docker compose -f docker-compose.prod.yml down
+
+            # 5. Build and Start new containers
+            echo "🏗️ Building and Starting containers..."
+            docker compose -f docker-compose.prod.yml up --build -d
+
+            echo "✅ Deployment Successful!"

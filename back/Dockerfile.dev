@@ -1,0 +1,8 @@
+# Dockerfile.dev en la carpeta 'backend/'
+FROM node:20-alpine
+WORKDIR /app
+# Solo copia los archivos de manifiesto para instalar dependencias primero (cache)
+COPY package*.json ./
+RUN npm install
+# No copiamos el resto del código aquí, ya que se montará con un volumen.
+# El comando de inicio se define en docker-compose.yml

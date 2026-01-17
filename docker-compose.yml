@@ -1,0 +1,77 @@
+services:
+  # 🧱 Base de Datos
+  db:
+    image: postgres:16-alpine
+    container_name: postgres_dev
+    restart: always
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    ports:
+      - "${PORT_DATABASE}:5432"
+    volumes:
+      - pg_data_dev:/var/lib/postgresql/data
+      - ./back/data/create.sql:/docker-entrypoint-initdb.d/01-create.sql
+      - ./back/data/insert.sql:/docker-entrypoint-initdb.d/02-insert.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin_dev
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports:
+      - "5050:80"
+    depends_on:
+      - db
+
+  # 🖥️ Back-end (Node.js)
+  backend:
+    build:
+      context: ./back # Asegúrate de que la carpeta se llame 'back'
+      dockerfile: Dockerfile.dev
+    container_name: backend_dev
+    # Usamos 'npm run dev' para que nodemon funcione
+    command: npm run dev
+    ports:
+      - "${PORT_BACKEND}:3000"
+    volumes:
+      - ./back:/app
+      - /app/node_modules # Protege las dependencias del contenedor
+    environment:
+      NODE_ENV: development
+      DATABASE_URL: ${DATABASE_URL}
+      JWT_SECRET: ${JWT_SECRET}
+      CHOKIDAR_USEPOLLING: true
+    depends_on:
+      db:
+        condition: service_healthy
+
+  # 🌐 Front-end (Vue + Vite)
+  frontend:
+    build:
+      context: ./front # Asegúrate de que la carpeta se llame 'front'
+      dockerfile: Dockerfile.dev
+    container_name: frontend_dev
+    command: npm run dev
+    ports:
+      - "${PORT_FRONTEND}:5173"
+    volumes:
+      - ./front:/app
+      - /app/node_modules
+    environment:
+      - VITE_API_URL=${VITE_API_URL}
+      - CHOKIDAR_USEPOLLING=true
+    depends_on:
+      - backend
+
+volumes:
+  pg_data_dev:
