@@ -129,9 +129,9 @@ INSERT INTO school_applications (id_center, year_period, status, global_comments
 -- Request 1: Pedralbes wants Workshop 1 (Robotics)
 INSERT INTO center_requests (id_application, id_workshop, requested_slots, status, created_at) VALUES
 -- (1, 1, 4, 'PENDING', '2026-01-06'), -- App 1 (Pedralbes) -> Workshop 1 -- Commented out
-(2, 1, 4, 'PENDING', '2026-01-06'), -- App 2 (Poblenou) -> Workshop 1
-(3, 2, 4, 'PENDING', '2026-01-06'), -- App 3 (Tecnologic) -> Workshop 2 (Capacity 5)
-(4, 1, 4, 'PENDING', '2026-01-06'); -- App 4 (Gracia) -> Workshop 1
+(1, 1, 4, 'PENDING', '2026-01-06'), -- App 2 (Poblenou) -> Workshop 1
+(2, 2, 4, 'PENDING', '2026-01-06'), -- App 3 (Tecnologic) -> Workshop 2 (Capacity 5)
+(3, 1, 4, 'PENDING', '2026-01-06'); -- App 4 (Gracia) -> Workshop 1
 
 -- ==========================================
 -- 6. STUDENT INTEREST
@@ -155,19 +155,19 @@ INSERT INTO center_requests (id_application, id_workshop, requested_slots, statu
 
 -- Request 2 (Poblenou)
 INSERT INTO student_interest (id_student, id_workshop, id_request, status, has_legal_papers, created_at) VALUES
-(13, 1, 2, 'WAITING', TRUE, '2026-01-07'), -- Berta
-(16, 1, 2, 'WAITING', TRUE, '2026-01-07'); -- Elena
+(13, 1, 1, 'WAITING', TRUE, '2026-01-07'), -- Berta
+(16, 1, 1, 'WAITING', TRUE, '2026-01-07'); -- Elena
 
 -- Request 4 (Gracia) -> 5 students (Test Limit)
 INSERT INTO student_interest (id_student, id_workshop, id_request, status, has_legal_papers, created_at) VALUES
-(19, 1, 4, 'WAITING', TRUE, '2026-01-07'), -- Hugo
-(20, 1, 4, 'WAITING', TRUE, '2026-01-07'), -- Irene
-(21, 1, 4, 'WAITING', TRUE, '2026-01-07'), -- Jordi
-(22, 1, 4, 'WAITING', TRUE, '2026-01-07'), -- Klara
-(23, 1, 4, 'WAITING', TRUE, '2026-01-07'); -- Lluis
+(19, 1, 3, 'WAITING', TRUE, '2026-01-07'), -- Hugo
+(20, 1, 3, 'WAITING', TRUE, '2026-01-07'), -- Irene
+(21, 1, 3, 'WAITING', TRUE, '2026-01-07'), -- Jordi
+(22, 1, 3, 'WAITING', TRUE, '2026-01-07'), -- Klara
+(23, 1, 3, 'WAITING', TRUE, '2026-01-07'); -- Lluis
 
 -- Workshop 2: Design (5 slots)
 -- Request 3 (Tecnologic)
 -- Test Paper Rejection
 INSERT INTO student_interest (id_student, id_workshop, id_request, status, has_legal_papers, created_at) VALUES
-(14, 2, 3, 'WAITING', FALSE, '2026-01-07'); -- Carles (Valid profile but NO PAPERS) -> Should Reject
+(14, 2, 2, 'WAITING', FALSE, '2026-01-07'); -- Carles (Valid profile but NO PAPERS) -> Should Reject
