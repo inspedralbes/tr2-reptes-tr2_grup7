@@ -84,6 +84,7 @@ CREATE TABLE workshops (
     max_students_per_center INT DEFAULT 4,
     request_deadline TIMESTAMP,
     status VARCHAR(20) NOT NULL DEFAULT 'OFFERED' CHECK (status IN ('PENDING', 'FULL', 'OFFERED', 'ARCHIVED', 'CANCELLED')),
+    modalidad VARCHAR(50) DEFAULT 'Presencial',
     center_id INT REFERENCES centers(id_user), 
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT check_dates CHECK (end_date > start_date)
@@ -100,7 +101,7 @@ CREATE TABLE workshop_teachers (
 CREATE TABLE school_applications (
     id_application SERIAL PRIMARY KEY,
     id_center INT REFERENCES centers(id_user) ON DELETE CASCADE,
-    year_period VARCHAR(9), -- e.g. "2025-2026"
+    year_period VARCHAR(50), -- e.g. "2025-2026", "2025-2026-v2"
     status VARCHAR(20) DEFAULT 'DRAFT' CHECK (status IN ('DRAFT', 'SUBMITTED', 'ARCHIVED')),
     global_comments TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -168,3 +169,5 @@ CREATE TABLE evaluations (
 -- INSERT ADMIN INICIAL
 INSERT INTO users (email, password_hash, role, is_active)
 VALUES ('admin@workshop.com', '123', 'ADMIN', TRUE);
+
+

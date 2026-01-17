@@ -1,12 +1,3 @@
--- ==========================================
--- 1. USUARIOS (USERS) - CREACIÓN MASIVA
--- ==========================================
--- ID 1 es Admin (ya creado en schema).
--- IDs 2-6: Centros (5 Centros)
--- IDs 7-16: Profesores (10 Profesores)
--- IDs 17-46: Alumnos (30 Alumnos)
-
--- 1.1 Centros
 INSERT INTO users (email, password_hash, role, is_active) VALUES
 ('centro.pedralbes@edu.com', '1234', 'CENTER', TRUE), -- ID 2
 ('centro.poblenou@edu.com', '1234', 'CENTER', TRUE),  -- ID 3
@@ -75,30 +66,34 @@ INSERT INTO teachers (id_user, first_name, last_name, id_center_assigned) VALUES
 -- 4. DETALLES DE ALUMNOS (Asignación masiva)
 -- ==========================================
 -- IDs 17-22 -> Centro 2
-INSERT INTO students (id_user, first_name, last_name, birth_date, id_center_assigned) VALUES
-(17, 'Alumno', 'DosUno', '2006-01-01', 2), (18, 'Alumno', 'DosDos', '2006-02-01', 2),
-(19, 'Alumno', 'DosTres', '2006-03-01', 2), (20, 'Alumno', 'DosCuatro', '2006-04-01', 2),
-(21, 'Alumno', 'DosCinco', '2006-05-01', 2), (22, 'Alumno', 'DosSeis', '2006-06-01', 2);
+INSERT INTO students (id_user, first_name, last_name, birth_date, id_center_assigned, eso_grade, gender) VALUES
+(17, 'Alumno', 'DosUno', '2006-01-01', 2, 4, 'M'), (18, 'Alumno', 'DosDos', '2006-02-01', 2, 4, 'F'),
+(19, 'Alumno', 'DosTres', '2006-03-01', 2, 3, 'M'), (20, 'Alumno', 'DosCuatro', '2006-04-01', 2, 3, 'F'),
+(21, 'Alumno', 'DosCinco', '2006-05-01', 2, 4, 'M'), (22, 'Alumno', 'DosSeis', '2006-06-01', 2, 4, 'F');
+
 -- IDs 23-28 -> Centro 3
-INSERT INTO students (id_user, first_name, last_name, birth_date, id_center_assigned) VALUES
-(23, 'Alumno', 'TresUno', '2005-01-01', 3), (24, 'Alumno', 'TresDos', '2005-02-01', 3),
-(25, 'Alumno', 'TresTres', '2005-03-01', 3), (26, 'Alumno', 'TresCuatro', '2005-04-01', 3),
-(27, 'Alumno', 'TresCinco', '2005-05-01', 3), (28, 'Alumno', 'TresSeis', '2005-06-01', 3);
+INSERT INTO students (id_user, first_name, last_name, birth_date, id_center_assigned, eso_grade, gender) VALUES
+(23, 'Alumno', 'TresUno', '2005-01-01', 3, 4, 'M'), (24, 'Alumno', 'TresDos', '2005-02-01', 3, 4, 'F'),
+(25, 'Alumno', 'TresTres', '2005-03-01', 3, 3, 'M'), (26, 'Alumno', 'TresCuatro', '2005-04-01', 3, 3, 'F'),
+(27, 'Alumno', 'TresCinco', '2005-05-01', 3, 4, 'M'), (28, 'Alumno', 'TresSeis', '2005-06-01', 3, 4, 'F');
+
 -- IDs 29-34 -> Centro 4
-INSERT INTO students (id_user, first_name, last_name, birth_date, id_center_assigned) VALUES
-(29, 'Alumno', 'CuatroUno', '2007-01-01', 4), (30, 'Alumno', 'CuatroDos', '2007-02-01', 4),
-(31, 'Alumno', 'CuatroTres', '2007-03-01', 4), (32, 'Alumno', 'CuatroCuatro', '2007-04-01', 4),
-(33, 'Alumno', 'CuatroCinco', '2007-05-01', 4), (34, 'Alumno', 'CuatroSeis', '2007-06-01', 4);
+INSERT INTO students (id_user, first_name, last_name, birth_date, id_center_assigned, eso_grade, gender) VALUES
+(29, 'Alumno', 'CuatroUno', '2007-01-01', 4, 3, 'M'), (30, 'Alumno', 'CuatroDos', '2007-02-01', 4, 3, 'F'),
+(31, 'Alumno', 'CuatroTres', '2007-03-01', 4, 4, 'M'), (32, 'Alumno', 'CuatroCuatro', '2007-04-01', 4, 4, 'F'),
+(33, 'Alumno', 'CuatroCinco', '2007-05-01', 4, 3, 'M'), (34, 'Alumno', 'CuatroSeis', '2007-06-01', 4, 3, 'F');
+
 -- IDs 35-40 -> Centro 5
-INSERT INTO students (id_user, first_name, last_name, birth_date, id_center_assigned) VALUES
-(35, 'Alumno', 'CincoUno', '2006-01-01', 5), (36, 'Alumno', 'CincoDos', '2006-02-01', 5),
-(37, 'Alumno', 'CincoTres', '2006-03-01', 5), (38, 'Alumno', 'CincoCuatro', '2006-04-01', 5),
-(39, 'Alumno', 'CincoCinco', '2006-05-01', 5), (40, 'Alumno', 'CincoSeis', '2006-06-01', 5);
+INSERT INTO students (id_user, first_name, last_name, birth_date, id_center_assigned, eso_grade, gender) VALUES
+(35, 'Alumno', 'CincoUno', '2006-01-01', 5, 4, 'M'), (36, 'Alumno', 'CincoDos', '2006-02-01', 5, 4, 'F'),
+(37, 'Alumno', 'CincoTres', '2006-03-01', 5, 3, 'M'), (38, 'Alumno', 'CincoCuatro', '2006-04-01', 5, 3, 'F'),
+(39, 'Alumno', 'CincoCinco', '2006-05-01', 5, 4, 'M'), (40, 'Alumno', 'CincoSeis', '2006-06-01', 5, 4, 'F');
+
 -- IDs 41-46 -> Centro 6
-INSERT INTO students (id_user, first_name, last_name, birth_date, id_center_assigned) VALUES
-(41, 'Alumno', 'SeisUno', '2005-01-01', 6), (42, 'Alumno', 'SeisDos', '2005-02-01', 6),
-(43, 'Alumno', 'SeisTres', '2005-03-01', 6), (44, 'Alumno', 'SeisCuatro', '2005-04-01', 6),
-(45, 'Alumno', 'SeisCinco', '2005-05-01', 6), (46, 'Alumno', 'SeisSeis', '2005-06-01', 6);
+INSERT INTO students (id_user, first_name, last_name, birth_date, id_center_assigned, eso_grade, gender) VALUES
+(41, 'Alumno', 'SeisUno', '2005-01-01', 6, 4, 'M'), (42, 'Alumno', 'SeisDos', '2005-02-01', 6, 4, 'F'),
+(43, 'Alumno', 'SeisTres', '2005-03-01', 6, 3, 'M'), (44, 'Alumno', 'SeisCuatro', '2005-04-01', 6, 3, 'F'),
+(45, 'Alumno', 'SeisCinco', '2005-05-01', 6, 4, 'M'), (46, 'Alumno', 'SeisSeis', '2005-06-01', 6, 4, 'F');
 
 -- ==========================================
 -- 5. TALLERES (WORKSHOPS)
@@ -137,17 +132,27 @@ INSERT INTO workshop_teachers (id_workshop, id_teacher) VALUES
 (8, 12);         -- IA: Elena
 
 -- ==========================================
--- 7. SOLICITUDES DE CENTROS (CENTER_REQUESTS)
+-- 7. SOLICITUDES DE CENTROS (SCHOOL_APPLICATIONS + CENTER_REQUESTS)
 -- ==========================================
--- Centro 3 pide plazas en Taller 1 (Robótica del Centro 2)
-INSERT INTO center_requests (id_center, id_workshop, requested_slots, id_teacher, status, comments) VALUES
-(3, 1, 4, 9, 'ACCEPTED', 'Alumnos de grado superior'),
--- Centro 4 pide plazas en Taller 1 (Robótica del Centro 2) - Parcialmente aceptado
-(4, 1, 4, 11, 'PARTIAL', 'Solo quedan 2 plazas disponibles'),
--- Centro 5 pide plazas en Taller 2 (Web del Centro 2) - Pendiente
-(5, 2, 3, 13, 'PENDING', 'Interés en React'),
--- Centro 2 pide plazas en Taller 3 (3D del Centro 3) - Rechazado
-(2, 3, 4, 7, 'REJECTED', 'No cumple requisitos de edad');
+
+-- 7.1 SCHOOL APPLICATIONS (Una por centro para el periodo actual)
+-- Centros IDs: 2, 3, 4, 5, 6
+INSERT INTO school_applications (id_center, year_period, status, global_comments) VALUES
+(3, '2025-2026', 'SUBMITTED', 'Solicitud global Poblenou'), -- id_application 1
+(4, '2025-2026', 'SUBMITTED', 'Solicitud global Tecnológico'), -- id_application 2
+(5, '2025-2026', 'DRAFT',     'Borrador Gracia'), -- id_application 3
+(2, '2025-2026', 'SUBMITTED', 'Solicitud Pedralbes'); -- id_application 4
+
+-- 7.2 CENTER REQUESTS (Items dentro de la Application)
+-- Centro 3 (App 1) pide plazas en Taller 1 (Robótica del Centro 2)
+INSERT INTO center_requests (id_application, id_workshop, requested_slots, id_teacher, status, comments) VALUES
+(1, 1, 4, 9, 'ACCEPTED', 'Alumnos de grado superior'),
+-- Centro 4 (App 2) pide plazas en Taller 1 (Robótica del Centro 2) - Parcialmente aceptado
+(2, 1, 4, 11, 'PARTIAL', 'Solo quedan 2 plazas disponibles'),
+-- Centro 5 (App 3) pide plazas en Taller 2 (Web del Centro 2) - Pendiente
+(3, 2, 3, 13, 'PENDING', 'Interés en React'),
+-- Centro 2 (App 4) pide plazas en Taller 3 (3D del Centro 3) - Rechazado
+(4, 3, 4, 7, 'REJECTED', 'No cumple requisitos de edad');
 
 -- ==========================================
 -- 8. VINCULAR ALUMNOS A SOLICITUDES (center_request_students)

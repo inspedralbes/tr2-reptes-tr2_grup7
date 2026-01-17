@@ -47,8 +47,13 @@ export const getStudentsByCenter = async (id_center) => {
 export const getDashboardStats = async (id_center) => {
   const studentsQuery =
     "SELECT COUNT(*) FROM students WHERE id_center_assigned = $1";
-  const requestsQuery =
-    "SELECT status, COUNT(*) FROM center_requests WHERE id_center = $1 GROUP BY status";
+  const requestsQuery = `
+    SELECT cr.status, COUNT(*) 
+    FROM center_requests cr
+    JOIN school_applications sa ON cr.id_application = sa.id_application
+    WHERE sa.id_center = $1 
+    GROUP BY cr.status
+  `;
 
   const [studentsRes, requestsRes] = await Promise.all([
     db.query(studentsQuery, [id_center]),
@@ -110,9 +115,10 @@ export const update = async (id, centre) => {
 };
 
 export const remove = async (id) => {
-  // Primero eliminamos las solicitudes del centro para evitar errores de FK
-  await db.query("DELETE FROM center_requests WHERE id_center = $1", [id]);
-  
+  // Primero eliminamos las solicitudes/aplicaciones del centro
+  // Al borrar school_applications se borran en cascada los center_requests
+  await db.query("DELETE FROM school_applications WHERE id_center = $1", [id]);
+
   // Deleting the user will cascade delete the center
   const text = "DELETE FROM users WHERE id = $1 RETURNING *";
   const result = await db.query(text, [id]);
