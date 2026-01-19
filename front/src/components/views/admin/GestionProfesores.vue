@@ -100,12 +100,13 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed, onMounted, onBeforeUnmount } from 'vue';
 import { Search, Eye, Edit, UserX, UserCheck } from 'lucide-vue-next';
 import { adminService } from '../../../services/adminService.js';
 import TeacherDetailsModal from '../../modals/TeacherDetailsModal.vue';
 import TeacherEditModal from '../../modals/TeacherEditModal.vue';
 import { useAlertStore } from '../../../stores/alert';
+import socketService from '../../../services/socketService.js';
 
 const alertStore = useAlertStore();
 
@@ -175,5 +176,19 @@ const handleTeacherUpdated = () => {
 
 onMounted(() => {
   loadTeachers();
+  
+  // Conectar Socket.IO
+  socketService.connect();
+  
+  // Escuchar eventos de actualización de profesores
+  socketService.on('teacher_updated', () => {
+    console.log('👨‍🏫 Actualitzant professors en temps real...');
+    loadTeachers();
+  });
+});
+
+onBeforeUnmount(() => {
+  // Limpiar listeners de socket
+  socketService.off('teacher_updated');
 });
 </script>
