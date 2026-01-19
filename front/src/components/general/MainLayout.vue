@@ -178,6 +178,7 @@ const navigationStructure = {
         { id: 'taula-centre', name: 'Taula Central', route: '/centro/panel' },
         { id: 'info-taller', name: 'Informació Tallers', route: '/centro/info' },
         { id: 'alumnes', name: 'Llista Alumnes', route: '/centro/alumnos' },
+        { id: 'professors', name: 'Llista Professors', route: '/centro/profesores' },
       ],
     },
     {
