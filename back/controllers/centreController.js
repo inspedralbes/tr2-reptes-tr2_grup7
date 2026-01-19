@@ -173,6 +173,54 @@ export const deleteCentre = async (req, res) => {
 };
 
 // Student CRUD operations
+export const createStudent = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { first_name, last_name, email, birth_date, phone } = req.body;
+
+    if (!first_name || !last_name || !email || !birth_date) {
+      return res.status(400).json({ error: "Faltan campos obligatorios" });
+    }
+
+    // Default password for students if not provided? Or generate one?
+    // Project requirement usually implies students might not log in or have a default one.
+    // For now, let's use a default or allow it to be passed.
+    // Based on user.js, password_hash is required.
+    // Let's generate a temporary password or use '12345678' for ease if not specified,
+    // or better, if the frontend doesn't send it, generate one.
+    // Looking at `LlistaProfessors`, we send password. `LlistaAlumnes` currently doesn't have password field in edit.
+    // I'll add a default generic password for students created by center: "student123" (hashed)
+    // or require it from frontend. Let's start with a default to simplify UI unless user asks.
+
+    // Correction: Frontend UI for students usually doesn't ask for password in this context?
+    // Let's check `User.create`.
+
+    const salt = await bcrypt.genSalt(10);
+    const password_hash = await bcrypt.hash("12345678", salt); // Default password
+
+    const newStudent = await User.create({
+      email,
+      password_hash,
+      role: "STUDENT",
+      first_name,
+      last_name,
+      birth_date,
+      phone,
+      id_center_assigned: id,
+    });
+
+    res.status(201).json(newStudent);
+  } catch (error) {
+    console.error("Error creating student:", error);
+    if (error.code === "23505") {
+      return res
+        .status(400)
+        .json({ error: "El correo electrónico ya está registrado" });
+    }
+    res.status(500).json({ error: "Error creando el alumno" });
+  }
+};
+
 export const updateStudent = async (req, res) => {
   try {
     const { studentId } = req.params;

@@ -25,7 +25,7 @@
     </div>
 
     <div v-else class="card overflow-hidden shadow-sm">
-      <table class="w-full" style="margin-bottom: 2rem">
+      <table class="w-full" style="margin-bottom: 20rem">
         <thead class="bg-gray-50" style="border-bottom: 2px solid var(--border-color)">
           <tr>
             <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700">Nom</th>
@@ -78,69 +78,73 @@
     </div>
 
     <!-- Modal Creat/Editar -->
-    <div
-      v-if="showModal"
-      class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
-      @click.self="closeModal"
+    <Modal
+      :show="showModal"
+      :title="isEditing ? 'Editar Professor' : 'Nou Professor'"
+      @close="closeModal"
     >
-      <div class="bg-white rounded-lg shadow-xl max-w-md w-full mx-4 p-6">
-        <h3 class="text-lg font-semibold mb-4" style="color: var(--text-primary)">
-          {{ isEditing ? 'Editar Professor' : 'Nou Professor' }}
-        </h3>
+      <form id="teacherForm" @submit.prevent="saveTeacher" class="space-y-4">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Nom *</label>
+          <input
+            v-model="form.first_name"
+            type="text"
+            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            required
+          />
+        </div>
 
-        <form @submit.prevent="saveTeacher" class="space-y-4">
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">Nom *</label>
-            <input
-              v-model="form.first_name"
-              type="text"
-              class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              required
-            />
-          </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Cognoms *</label>
+          <input
+            v-model="form.last_name"
+            type="text"
+            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            required
+          />
+        </div>
 
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">Cognoms *</label>
-            <input
-              v-model="form.last_name"
-              type="text"
-              class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              required
-            />
-          </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Email *</label>
+          <input
+            v-model="form.email"
+            type="email"
+            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            required
+          />
+        </div>
 
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">Email *</label>
-            <input
-              v-model="form.email"
-              type="email"
-              class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              required
-            />
-          </div>
+        <div v-if="!isEditing">
+          <label class="block text-sm font-medium text-gray-700 mb-1">Contrasenya *</label>
+          <input
+            v-model="form.password"
+            type="password"
+            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            required
+            minlength="6"
+          />
+        </div>
+      </form>
 
-          <div v-if="!isEditing">
-            <label class="block text-sm font-medium text-gray-700 mb-1">Contrasenya *</label>
-            <input
-              v-model="form.password"
-              type="password"
-              class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              required
-              minlength="6"
-            />
-          </div>
-
-          <div class="flex gap-3 pt-4">
-            <button type="submit" class="flex-1 btn-primary py-2" :disabled="saving">
-              {{ saving ? 'Guardant...' : 'Guardar' }}
-            </button>
-            <button type="button" @click="closeModal" class="flex-1 btn-outline py-2">
-              Cancel·lar
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
+      <template #footer>
+        <button
+          type="button"
+          @click="closeModal"
+          class="px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
+        >
+          Cancel·lar
+        </button>
+        <button
+          type="submit"
+          form="teacherForm"
+          class="px-4 py-2 text-white bg-blue-600 rounded-lg hover:bg-blue-700 flex items-center gap-2 transition-colors"
+          :disabled="saving"
+        >
+          <span v-if="saving">Guardant...</span>
+          <span v-else>{{ isEditing ? 'Actualitzar' : 'Crear' }}</span>
+        </button>
+      </template>
+    </Modal>
   </div>
 </template>
 
@@ -149,7 +153,10 @@ import { ref, onMounted } from 'vue'
 import { Plus, Pencil, Trash2 } from 'lucide-vue-next'
 import * as centreService from '../../../services/centreService'
 import { getCurrentUser } from '../../../services/authService'
+import Modal from '../../shared/Modal.vue'
+import { useAlertStore } from '../../../stores/alert'
 
+const alertStore = useAlertStore()
 const teachers = ref([])
 const loading = ref(true)
 const showModal = ref(false)
@@ -181,6 +188,7 @@ const loadTeachers = async () => {
     }
   } catch (error) {
     console.error('Error fetching teachers:', error)
+    alertStore.addAlert('error', 'Error al carregar els professors')
   }
 }
 
@@ -221,7 +229,7 @@ const saveTeacher = async () => {
         last_name: form.value.last_name,
         email: form.value.email
       })
-      alert('Professor actualitzat correctament')
+      alertStore.addAlert('success', 'Professor actualitzat correctament')
     } else {
       await centreService.createTeacher(centreId.value, {
         first_name: form.value.first_name,
@@ -229,27 +237,35 @@ const saveTeacher = async () => {
         email: form.value.email,
         password: form.value.password
       })
-      alert('Professor creat correctament')
+      alertStore.addAlert('success', 'Professor creat correctament')
     }
     await loadTeachers()
     closeModal()
   } catch (error) {
     console.error('Error saving teacher:', error)
-    alert(error.response?.data?.error || 'Error al guardar el professor')
+    // The endpoint might return an object with "error" key
+    const msg = error.response?.data?.error || 'Error al guardar el professor'
+    alertStore.addAlert('error', msg)
   } finally {
     saving.value = false
   }
 }
 
 const confirmDelete = async (teacher) => {
-  if (confirm(`Estàs segur que vols eliminar el professor "${teacher.first_name} ${teacher.last_name}"?`)) {
+  const confirmed = await alertStore.confirm(
+    `Estàs segur que vols eliminar el professor "${teacher.first_name} ${teacher.last_name}"?`,
+    'Confirmar eliminació'
+  )
+  
+  if (confirmed) {
     try {
       await centreService.deleteTeacher(centreId.value, teacher.id_user)
-      alert('Professor eliminat correctament')
+      alertStore.addAlert('success', 'Professor eliminat correctament')
       await loadTeachers()
     } catch (error) {
       console.error('Error deleting teacher:', error)
-      alert('Error al eliminar el professor')
+      const msg = error.response?.data?.error || 'Error al eliminar el professor'
+      alertStore.addAlert('error', msg)
     }
   }
 }

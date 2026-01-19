@@ -14,6 +14,7 @@ router.put("/:id", centreController.updateCentre);
 router.delete("/:id", centreController.deleteCentre);
 
 // Student CRUD routes
+router.post("/:id/students", centreController.createStudent);
 router.put("/:id/students/:studentId", centreController.updateStudent);
 router.delete("/:id/students/:studentId", centreController.deleteStudent);
 

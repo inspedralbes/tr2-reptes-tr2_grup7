@@ -2,7 +2,25 @@ import db from "../data/db.js";
 
 export const getByCenter = async (id_center) => {
   const text = `
-        SELECT cr.*, w.title as workshop_title, sa.status as app_status, sa.year_period
+        SELECT cr.*, 
+               w.title as workshop_title, 
+               sa.status as app_status, 
+               sa.year_period as course_level,
+               cr.requested_slots as student_count,
+               (
+                   SELECT t.first_name 
+                   FROM workshop_teachers wt
+                   JOIN teachers t ON wt.id_teacher = t.id_user
+                   WHERE wt.id_workshop = w.id_workshop
+                   LIMIT 1
+               ) as teacher_first_name,
+               (
+                   SELECT t.last_name 
+                   FROM workshop_teachers wt
+                   JOIN teachers t ON wt.id_teacher = t.id_user
+                   WHERE wt.id_workshop = w.id_workshop
+                   LIMIT 1
+               ) as teacher_last_name
         FROM center_requests cr
         JOIN school_applications sa ON cr.id_application = sa.id_application
         JOIN workshops w ON cr.id_workshop = w.id_workshop

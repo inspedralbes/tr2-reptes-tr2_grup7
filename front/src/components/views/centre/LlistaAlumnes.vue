@@ -7,6 +7,13 @@
       >
         Llista d'Alumnes
       </h1>
+      <button
+        @click="openCreateModal"
+        class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2"
+      >
+        <Plus :size="20" />
+        Nou Alumne
+      </button>
     </div>
 
     <div v-if="loading" class="text-center py-8">
@@ -18,7 +25,7 @@
     </div>
 
     <div v-else class="card overflow-hidden shadow-sm">
-      <table class="w-full" style="margin-bottom: 15rem">
+      <table class="w-full" style="margin-bottom: 20rem">
         <thead class="bg-gray-50" style="border-bottom: 2px solid var(--border-color)">
           <tr>
             <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700">Nom</th>
@@ -74,82 +81,106 @@
       </table>
     </div>
 
-    <!-- Modal d'Edició -->
-    <div
-      v-if="showEditModal"
-      class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
-      @click.self="closeEditModal"
+    <!-- Modal d'Edició / Creació -->
+    <Modal
+      :show="showModal"
+      :title="isEditing ? 'Editar Alumne' : 'Nou Alumne'"
+      @close="closeModal"
     >
-      <div class="bg-white rounded-lg shadow-xl max-w-md w-full mx-4 p-6">
-        <h3 class="text-lg font-semibold mb-4" style="color: var(--text-primary)">Editar Alumne</h3>
+      <form id="studentForm" @submit.prevent="saveStudent" class="space-y-4">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Nom *</label>
+          <input
+            v-model="form.first_name"
+            type="text"
+            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            required
+          />
+        </div>
 
-        <form @submit.prevent="saveStudent" class="space-y-4">
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">Nom *</label>
-            <input
-              v-model="editForm.first_name"
-              type="text"
-              class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              required
-            />
-          </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Cognoms *</label>
+          <input
+            v-model="form.last_name"
+            type="text"
+            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            required
+          />
+        </div>
 
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">Cognoms *</label>
-            <input
-              v-model="editForm.last_name"
-              type="text"
-              class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              required
-            />
-          </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Email *</label>
+          <input
+            v-model="form.email"
+            type="email"
+            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            required
+          />
+        </div>
 
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">Telèfon</label>
-            <input
-              v-model="editForm.phone"
-              type="tel"
-              class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Telèfon</label>
+          <input
+            v-model="form.phone"
+            type="tel"
+            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+          />
+        </div>
 
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">Data Naixement</label>
-            <input
-              v-model="editForm.birth_date"
-              type="date"
-              class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Data Naixement *</label>
+          <input
+            v-model="form.birth_date"
+            type="date"
+            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            required
+          />
+        </div>
+      </form>
 
-          <div class="flex gap-3 pt-4">
-            <button type="submit" class="flex-1 btn-primary py-2" :disabled="saving">
-              {{ saving ? 'Guardant...' : 'Guardar' }}
-            </button>
-            <button type="button" @click="closeEditModal" class="flex-1 btn-outline py-2">
-              Cancel·lar
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
+      <template #footer>
+        <button
+          type="button"
+          @click="closeModal"
+          class="px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
+        >
+          Cancel·lar
+        </button>
+        <button
+          type="submit"
+          form="studentForm"
+          class="px-4 py-2 text-white bg-blue-600 rounded-lg hover:bg-blue-700 flex items-center gap-2 transition-colors"
+          :disabled="saving"
+        >
+          <span v-if="saving">Guardant...</span>
+          <span v-else>{{ isEditing ? 'Actualitzar' : 'Crear' }}</span>
+        </button>
+      </template>
+    </Modal>
   </div>
 </template>
 
 <script setup>
 import { ref, onMounted } from 'vue'
-import { Pencil, Trash2 } from 'lucide-vue-next'
+// Ensure Plus is imported
+import { Plus, Pencil, Trash2 } from 'lucide-vue-next'
 import * as centreService from '../../../services/centreService'
 import { getCurrentUser } from '../../../services/authService'
+import Modal from '../../shared/Modal.vue'
+import { useAlertStore } from '../../../stores/alert'
 
+const alertStore = useAlertStore()
 const students = ref([])
 const loading = ref(true)
-const showEditModal = ref(false)
+const showModal = ref(false)
 const saving = ref(false)
-const editForm = ref({
+const isEditing = ref(false)
+// Renamed editForm to form to assume generic usage
+const form = ref({
   id_user: null,
   first_name: '',
   last_name: '',
+  email: '',
   phone: '',
   birth_date: '',
 })
@@ -170,54 +201,76 @@ const formatDateForInput = (dateString) => {
   return date.toISOString().split('T')[0]
 }
 
-const openEditModal = (student) => {
-  editForm.value = {
-    id_user: student.id_user,
-    first_name: student.first_name,
-    last_name: student.last_name,
-    phone: student.phone || '',
-    birth_date: formatDateForInput(student.birth_date),
-  }
-  showEditModal.value = true
-}
-
-const closeEditModal = () => {
-  showEditModal.value = false
-  editForm.value = {
+const openCreateModal = () => {
+  isEditing.value = false
+  form.value = {
     id_user: null,
     first_name: '',
     last_name: '',
+    email: '',
     phone: '',
     birth_date: '',
   }
+  showModal.value = true
+}
+
+const openEditModal = (student) => {
+  isEditing.value = true
+  form.value = {
+    id_user: student.id_user,
+    first_name: student.first_name,
+    last_name: student.last_name,
+    email: student.email, 
+    phone: student.phone || '',
+    birth_date: formatDateForInput(student.birth_date),
+  }
+  showModal.value = true
+}
+
+const closeModal = () => {
+  showModal.value = false
 }
 
 const saveStudent = async () => {
   saving.value = true
   try {
-    await centreService.updateStudent(centreId.value, editForm.value.id_user, {
-      first_name: editForm.value.first_name,
-      last_name: editForm.value.last_name,
-      phone: editForm.value.phone || null,
-      birth_date: editForm.value.birth_date || null,
-    })
+    if (isEditing.value) {
+      await centreService.updateStudent(centreId.value, form.value.id_user, {
+        first_name: form.value.first_name,
+        last_name: form.value.last_name,
+        email: form.value.email,
+        phone: form.value.phone || null,
+        birth_date: form.value.birth_date || null,
+      })
+      alertStore.addAlert('success', 'Alumne actualitzat correctament!')
+    } else {
+      await centreService.createStudent(centreId.value, {
+        first_name: form.value.first_name,
+        last_name: form.value.last_name,
+        email: form.value.email,
+        phone: form.value.phone || null,
+        birth_date: form.value.birth_date || null,
+      })
+      alertStore.addAlert('success', 'Alumne creat correctament!')
+    }
 
     // Refresh the list
     students.value = await centreService.getStudents(centreId.value)
     sortStudents()
-    closeEditModal()
-    alert('Alumne actualitzat correctament!')
+    closeModal()
   } catch (error) {
-    console.error('Error updating student:', error)
-    alert("Error actualitzant l'alumne. Torna-ho a provar.")
+    console.error('Error updating/creating student:', error)
+    const msg = error.response?.data?.error || "Error guardant l'alumne."
+    alertStore.addAlert('error', msg)
   } finally {
     saving.value = false
   }
 }
 
 const confirmDelete = async (student) => {
-  const confirmed = confirm(
+  const confirmed = await alertStore.confirm(
     `Estàs segur que vols eliminar l'alumne "${student.first_name} ${student.last_name}"?\n\nAquesta acció no es pot desfer.`,
+    'Confirmar eliminació'
   )
 
   if (confirmed) {
@@ -225,10 +278,11 @@ const confirmDelete = async (student) => {
       await centreService.deleteStudent(centreId.value, student.id_user)
       // Remove from local list
       students.value = students.value.filter((s) => s.id_user !== student.id_user)
-      alert('Alumne eliminat correctament!')
+      alertStore.addAlert('success', 'Alumne eliminat correctament!')
     } catch (error) {
       console.error('Error deleting student:', error)
-      alert("Error eliminant l'alumne. Potser té peticions associades.")
+      const msg = error.response?.data?.details || "Error eliminant l'alumne. Potser té peticions associades."
+      alertStore.addAlert('error', msg)
     }
   }
 }
@@ -251,6 +305,7 @@ onMounted(async () => {
     }
   } catch (error) {
     console.error('Error fetching students:', error)
+    alertStore.addAlert('error', 'Error al carregar els alumnes')
   } finally {
     loading.value = false
   }

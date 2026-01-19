@@ -47,6 +47,11 @@ export const getRequests = async (id) => {
 }
 
 // Student CRUD
+export const createStudent = async (centreId, data) => {
+  const response = await apiClient.post(`/centres/${centreId}/students`, data)
+  return response.data
+}
+
 export const updateStudent = async (centreId, studentId, data) => {
   const response = await apiClient.put(`/centres/${centreId}/students/${studentId}`, data)
   return response.data
