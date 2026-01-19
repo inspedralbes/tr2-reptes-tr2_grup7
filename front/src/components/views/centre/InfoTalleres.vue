@@ -86,6 +86,7 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import * as centreService from '../../../services/centreService'
+import { getCurrentUser } from '../../../services/authService'
 
 const workshops = ref([])
 const centerName = ref('')
@@ -99,7 +100,7 @@ const getStatusClass = (status) => {
 
 onMounted(async () => {
   try {
-    const user = JSON.parse(localStorage.getItem('user') || '{}')
+    const user = getCurrentUser() || {}
     if (user.id) {
       centerName.value = user.center_name || user.name || 'El meu centre'
       // Get all requests instead of picking just one

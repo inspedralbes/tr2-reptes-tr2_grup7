@@ -1,130 +1,142 @@
 <template>
   <div class="space-y-6">
-    <div
-      class="flex justify-between items-center"
-      style="
-        border-bottom: 2px solid var(--border-color);
-        padding-bottom: 1rem;
-        margin-bottom: 1.5rem;
-      "
-    >
-      <h1
-        class="text-2xl font-semibold"
-        style="color: var(--text-primary); text-transform: uppercase; letter-spacing: 0.5px"
+    <div class="space-y-4 mb-6">
+      <div
+        class="flex justify-between items-center"
+        style="
+          border-bottom: 2px solid var(--border-color);
+          padding-bottom: 1rem;
+        "
       >
-        Catàleg de Tallers
-      </h1>
-      <div class="flex gap-2">
-        <button
-          @click="toggleFilter"
-          class="btn-outline px-4 py-2 flex items-center gap-2"
-          :class="{ 'bg-gray-100': showFilters }"
+        <h1
+          class="text-2xl font-semibold"
+          style="color: var(--text-primary); text-transform: uppercase; letter-spacing: 0.5px"
         >
-          <Filter :size="16" /> Filtrar
-        </button>
-        <button
-          @click="toggleSearch"
-          class="btn-outline px-4 py-2 flex items-center gap-2"
-          :class="{ 'bg-gray-100': showSearch }"
-        >
-          <Search :size="16" /> Cercar
-        </button>
-      </div>
-    </div>
-
-    <!-- Search and Filter Inputs -->
-    <div
-      v-if="showSearch || showFilters"
-      class="flex gap-4 p-4 bg-gray-50 rounded-lg animate-fade-in"
-    >
-      <div v-if="showSearch" class="flex-1">
-        <label class="block text-sm font-medium text-gray-700 mb-1">Cercar per nom</label>
-        <input
-          v-model="searchQuery"
-          type="text"
-          placeholder="Escriu per cercar..."
-          class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-        />
-      </div>
-      <div v-if="showFilters" class="flex-1">
-        <label class="block text-sm font-medium text-gray-700 mb-1">Filtrar per categoria</label>
-        <select
-          v-model="selectedCategory"
-          class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-        >
-          <option value="">Totes les categories</option>
-          <option v-for="category in uniqueCategories" :key="category" :value="category">
-            {{ category }}
-          </option>
-        </select>
-      </div>
-    </div>
-  </div>
-
-  <div v-if="loading" class="text-center py-8">
-    <p class="text-gray-500">Carregant tallers...</p>
-  </div>
-
-  <div v-else-if="filteredWorkshops.length === 0" class="text-center py-8">
-    <p class="text-gray-500">No s'han trobat tallers amb els criteris seleccionats.</p>
-  </div>
-
-  <div v-else class="grid grid-cols-1 md:grid-cols-3 gap-5">
-    <div
-      v-for="workshop in filteredWorkshops"
-      :key="workshop.id_workshop"
-      class="card overflow-hidden flex flex-col"
-      style="padding: 0 !important"
-    >
-      <div class="h-32 bg-gray-200" style="background-color: var(--primary)"></div>
-      <div class="p-5">
-        <div
-          class="flex justify-between items-start mb-3"
-          style="border-bottom: 1px solid var(--border-color); padding-bottom: 0.75rem"
-        >
-          <h3 class="text-base font-semibold" style="color: var(--text-primary)">
-            {{ workshop.title }}
-          </h3>
+          Catàleg de Tallers
+        </h1>
+        <div class="flex gap-2">
+          <button
+            @click="toggleFilter"
+            class="btn-outline px-4 py-2 flex items-center gap-2"
+            :class="{ 'bg-gray-100': showFilters }"
+          >
+            <Filter :size="16" /> Filtrar
+          </button>
+          <button
+            @click="toggleSearch"
+            class="btn-outline px-4 py-2 flex items-center gap-2"
+            :class="{ 'bg-gray-100': showSearch }"
+          >
+            <Search :size="16" /> Cercar
+          </button>
         </div>
+      </div>
 
-        <div class="space-y-2 mb-4 flex-1">
-          <div class="text-sm text-gray-500 mb-2">
-            {{ workshop.category }}
+      <!-- Search and Filter Inputs -->
+      <div
+        v-if="showSearch || showFilters"
+        class="flex gap-4 p-4 bg-gray-50 rounded-lg animate-fade-in"
+      >
+        <div v-if="showSearch" class="flex-1">
+          <label class="block text-sm font-medium text-gray-700 mb-1">Cercar per nom</label>
+          <input
+            v-model="searchQuery"
+            type="text"
+            placeholder="Escriu per cercar..."
+            class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+        </div>
+        <div v-if="showFilters" class="flex-1">
+          <label class="block text-sm font-medium text-gray-700 mb-1">Filtrar per categoria</label>
+          <select
+            v-model="selectedCategory"
+            class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          >
+            <option value="">Totes les categories</option>
+            <option v-for="category in uniqueCategories" :key="category" :value="category">
+              {{ category }}
+            </option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div v-if="loading" class="text-center py-8">
+      <p class="text-gray-500">Carregant tallers...</p>
+    </div>
+
+    <div v-else-if="filteredWorkshops.length === 0" class="text-center py-8">
+      <p class="text-gray-500">No s'han trobat tallers amb els criteris seleccionats.</p>
+    </div>
+
+    <div v-else class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div v-for="workshop in filteredWorkshops" :key="workshop.id_workshop" class="card p-6">
+        <h2
+          class="text-lg font-semibold mb-4"
+          style="
+            color: var(--text-primary);
+            padding-bottom: 0.75rem;
+            border-bottom: 1px solid var(--border-color);
+          "
+        >
+          {{ workshop.title }}
+        </h2>
+        <div class="space-y-2">
+          <div
+            class="flex justify-between py-2.5"
+            style="border-bottom: 1px solid var(--border-color)"
+          >
+            <span style="color: var(--text-secondary); font-size: 0.9rem">Categoria:</span>
+            <span class="font-semibold" style="color: var(--text-primary)">{{ workshop.category }}</span>
           </div>
-          <p class="text-sm text-gray-600 line-clamp-2" v-if="workshop.short_description">
-            {{ workshop.short_description }}
-          </p>
-          <div class="flex justify-between text-sm py-1 mt-2">
-            <span style="color: var(--text-secondary)">Places totals:</span>
-            <span class="font-semibold" style="color: var(--text-primary)">{{
-              workshop.max_slots
-            }}</span>
+
+          <div
+             class="py-2.5"
+             style="border-bottom: 1px solid var(--border-color)"
+             v-if="workshop.short_description"
+          >
+             <p class="text-sm text-gray-600 italic">"{{ workshop.short_description }}"</p>
           </div>
-          <div class="flex justify-between text-sm py-1">
-            <span style="color: var(--text-secondary)">Places disponibles:</span>
-            <span class="font-semibold" style="color: var(--success)">
-              {{ workshop.available_slots }}
+
+          <div
+            class="flex justify-between py-2.5"
+            style="border-bottom: 1px solid var(--border-color)"
+          >
+            <span style="color: var(--text-secondary); font-size: 0.9rem">Durada:</span>
+            <span class="font-semibold" style="color: var(--text-primary)">
+               {{ workshop.duration_hours || 30 }} hores
             </span>
           </div>
-          <!-- Modalitat C Info (Implicit for all workshops in this context) -->
-          <div class="mt-3 pt-3 border-t border-gray-100 text-xs space-y-1">
-            <div class="flex items-center gap-1.5 text-gray-600">
-               <Clock :size="14" />
-               <span>3h/setmana (Dijous)</span>
-            </div>
-            <div class="flex items-center gap-1.5 text-gray-600">
-               <MapPin :size="14" />
-               <span>Fora del centre</span>
-            </div>
+          
+           <div
+            class="flex justify-between py-2.5"
+            style="border-bottom: 1px solid var(--border-color)"
+          >
+            <span style="color: var(--text-secondary); font-size: 0.9rem">Horari:</span>
+            <span class="font-semibold" style="color: var(--text-primary)">Dijous (3h/setmana)</span>
+          </div>
+
+          <div
+            class="flex justify-between py-2.5"
+            style="border-bottom: 1px solid var(--border-color)"
+          >
+            <span style="color: var(--text-secondary); font-size: 0.9rem">Places Disponibles:</span>
+            <span class="font-semibold" :class="workshop.available_slots > 0 ? 'text-green-600' : 'text-red-500'">
+                {{ workshop.available_slots }} / {{ workshop.max_slots }}
+            </span>
+          </div>
+
+          <div class="pt-4">
+               <button
+                  @click="requestWorkshop(workshop.id_workshop)"
+                  class="btn-primary w-full py-2.5 flex justify-center items-center gap-2"
+                  :disabled="workshop.available_slots === 0"
+                  :class="{'opacity-50 cursor-not-allowed': workshop.available_slots === 0}"
+                >
+                  {{ workshop.available_slots === 0 ? 'Complet' : 'Solicitar Taller' }}
+                </button>
           </div>
         </div>
-
-        <button
-          @click="requestWorkshop(workshop.id_workshop)"
-          class="btn-primary w-full py-2.5 mt-auto"
-        >
-          Sol·licitar Taller
-        </button>
       </div>
     </div>
   </div>

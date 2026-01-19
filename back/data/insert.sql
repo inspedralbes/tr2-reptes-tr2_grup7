@@ -111,9 +111,9 @@ INSERT INTO students (id_user, first_name, last_name, birth_date, eso_grade, gen
 -- 4. WORKSHOPS
 -- ==========================================
 -- Need DEADLINE in the PAST ('2026-01-10') so matching runs NOW ('2026-01-16')
-INSERT INTO workshops (title, short_description, max_slots, start_date, end_date, available_slots, category, center_id, modalidad, request_deadline) VALUES
-('Robótica Avanzada', 'Arduino', 10, '2026-05-01 10:00', '2026-05-01 14:00', 10, 'Tech', 2, 'C', '2026-01-10 23:59:00'),
-('Diseño UI/UX', 'Figma', 5, '2026-05-02 10:00', '2026-05-02 14:00', 5,  'Design', 3, 'C', '2026-01-10 23:59:00');
+INSERT INTO workshops (title, short_description, max_slots, start_date, end_date, available_slots, category, center_id, modalidad, request_deadline, duration_hours) VALUES
+('Robótica Avanzada', 'Arduino', 4, '2026-05-01 10:00', '2026-05-01 14:00', 0, 'Tech', 2, 'C', '2026-01-10 23:59:00', 30),
+('Diseño UI/UX', 'Figma', 4, '2026-05-02 10:00', '2026-05-02 14:00', 4,  'Design', 3, 'C', '2026-01-10 23:59:00', 30);
 
 -- ==========================================
 -- 5. SCHOOL APPLICATIONS & REQUESTS
@@ -209,8 +209,8 @@ INSERT INTO workshop_enrollments (id_workshop, id_student, enrolled_at) VALUES
 -- Request 3: 3 de 4 estudiantes aceptados
 INSERT INTO workshop_enrollments (id_workshop, id_student, enrolled_at) VALUES
 (1, 19, '2026-01-08 11:00:00'), -- Hugo aceptado
-(1, 20, '2026-01-08 11:00:00'), -- Irene aceptada
-(1, 21, '2026-01-08 11:00:00'); -- Jordi aceptado
+(1, 20, '2026-01-08 11:00:00'); -- Irene aceptada
+-- Jordi (21) removido para respetar limite de 4 (Berta, Elena, Hugo, Irene)
 -- Klara NO está aceptada aún
 
 -- ==========================================

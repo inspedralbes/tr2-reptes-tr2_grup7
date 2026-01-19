@@ -5,7 +5,7 @@ export const getByCenter = async (id_center) => {
         SELECT cr.*, 
                w.title as workshop_title, 
                sa.status as app_status, 
-               sa.year_period as course_level,
+               sa.year_period as academic_year,
                cr.requested_slots as student_count,
                (
                    SELECT t.first_name 

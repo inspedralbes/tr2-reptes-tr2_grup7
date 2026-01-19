@@ -110,14 +110,14 @@ export const getApplicationDetails = async (id_application) => {
   // Fetch Teacher info for App
   if (appData.id_teacher_1) {
     const t1 = await db.query(
-      "SELECT first_name, last_name, email FROM teachers WHERE id_user = $1",
+      "SELECT t.first_name, t.last_name, u.email FROM teachers t JOIN users u ON t.id_user = u.id WHERE t.id_user = $1",
       [appData.id_teacher_1],
     );
     appData.teacher_1_info = t1.rows[0];
   }
   if (appData.id_teacher_2) {
     const t2 = await db.query(
-      "SELECT first_name, last_name, email FROM teachers WHERE id_user = $1",
+      "SELECT t.first_name, t.last_name, u.email FROM teachers t JOIN users u ON t.id_user = u.id WHERE t.id_user = $1",
       [appData.id_teacher_2],
     );
     appData.teacher_2_info = t2.rows[0];
