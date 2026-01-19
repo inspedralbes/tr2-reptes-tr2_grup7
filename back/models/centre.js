@@ -47,8 +47,7 @@ export const getStudentsByCenter = async (id_center) => {
 export const getDashboardStats = async (id_center) => {
   const studentsQuery =
     "SELECT COUNT(*) FROM students WHERE id_center_assigned = $1";
-  const requestsQuery =
-    `SELECT cr.status, COUNT(*) 
+  const requestsQuery = `SELECT cr.status, COUNT(*) 
      FROM center_requests cr
      JOIN school_applications sa ON cr.id_application = sa.id_application
      WHERE sa.id_center = $1 
@@ -117,7 +116,7 @@ export const remove = async (id) => {
   // Primero eliminamos las solicitudes del centro para evitar errores de FK
   // Primero eliminamos las solicitudes del centro para evitar errores de FK
   await db.query("DELETE FROM school_applications WHERE id_center = $1", [id]);
-  
+
   // Deleting the user will cascade delete the center
   const text = "DELETE FROM users WHERE id = $1 RETURNING *";
   const result = await db.query(text, [id]);
@@ -134,4 +133,41 @@ export const checkStudentsBelongToCenter = async (id_center, studentIds) => {
   const result = await db.query(text, [id_center, studentIds]);
   const count = parseInt(result.rows[0].count, 10);
   return count === studentIds.length;
+};
+
+export const updateTeacher = async (teacherId, data) => {
+  const { first_name, last_name, email } = data;
+
+  // Start transaction
+  const client = await db.connect();
+  try {
+    await client.query("BEGIN");
+
+    // Update teacher details
+    await client.query(
+      "UPDATE teachers SET first_name = $1, last_name = $2 WHERE id_user = $3",
+      [first_name, last_name, teacherId],
+    );
+
+    // Update user email
+    await client.query("UPDATE users SET email = $1 WHERE id = $2", [
+      email,
+      teacherId,
+    ]);
+
+    await client.query("COMMIT");
+    return { id_user: teacherId, first_name, last_name, email };
+  } catch (error) {
+    await client.query("ROLLBACK");
+    throw error;
+  } finally {
+    client.release();
+  }
+};
+
+export const deleteTeacher = async (teacherId) => {
+  // Deleting from users table cascades to teachers table
+  const text = "DELETE FROM users WHERE id = $1 RETURNING id";
+  const result = await db.query(text, [teacherId]);
+  return result.rows[0];
 };

@@ -17,4 +17,9 @@ router.delete("/:id", centreController.deleteCentre);
 router.put("/:id/students/:studentId", centreController.updateStudent);
 router.delete("/:id/students/:studentId", centreController.deleteStudent);
 
+// Teacher CRUD routes
+router.post("/:id/teachers", centreController.createTeacher);
+router.put("/:id/teachers/:teacherId", centreController.updateTeacher);
+router.delete("/:id/teachers/:teacherId", centreController.deleteTeacher);
+
 export default router;

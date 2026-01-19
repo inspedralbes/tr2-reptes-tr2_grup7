@@ -56,3 +56,19 @@ export const deleteStudent = async (centreId, studentId) => {
   const response = await apiClient.delete(`/centres/${centreId}/students/${studentId}`)
   return response.data
 }
+
+// Teacher CRUD
+export const createTeacher = async (centreId, data) => {
+  const response = await apiClient.post(`/centres/${centreId}/teachers`, data)
+  return response.data
+}
+
+export const updateTeacher = async (centreId, teacherId, data) => {
+  const response = await apiClient.put(`/centres/${centreId}/teachers/${teacherId}`, data)
+  return response.data
+}
+
+export const deleteTeacher = async (centreId, teacherId) => {
+  const response = await apiClient.delete(`/centres/${centreId}/teachers/${teacherId}`)
+  return response.data
+}

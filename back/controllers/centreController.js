@@ -208,3 +208,99 @@ export const deleteStudent = async (req, res) => {
     res.status(500).json({ error: "Error eliminant l'alumne" });
   }
 };
+
+// Teacher CRUD operations
+export const createTeacher = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { first_name, last_name, email, password } = req.body;
+
+    if (!first_name || !last_name || !email || !password) {
+      return res.status(400).json({ error: "Faltan campos obligatorios" });
+    }
+
+    const salt = await bcrypt.genSalt(10);
+    const password_hash = await bcrypt.hash(password, salt);
+
+    // Create user with role TEACHER and assigned to this center
+    const newTeacher = await User.create({
+      email,
+      password_hash,
+      role: "TEACHER",
+      first_name,
+      last_name,
+      id_center_assigned: id,
+    });
+
+    res.status(201).json(newTeacher);
+  } catch (error) {
+    console.error("Error creating teacher:", error);
+    if (error.code === "23505") {
+      // Unique violation
+      return res
+        .status(400)
+        .json({ error: "El correo electrónico ya está registrado" });
+    }
+    res.status(500).json({ error: "Error creando el profesor" });
+  }
+};
+
+export const updateTeacher = async (req, res) => {
+  try {
+    const { teacherId } = req.params;
+    const { first_name, last_name, email } = req.body;
+
+    // We need to import db to run raw queries if we don't have a Teacher model
+    // Assuming db is not imported in this file, we might need to add it or use User model if we fix it.
+    // Checking imports... "import * as User" is there. User model methods might not suffice for specific updates.
+    // Let's rely on adminController logic which likely imports 'db'.
+    // Wait, centreController imports models which import db.
+    // I should check if I can import db here or if I should add a method to User model or Centre model.
+    // I'll assume I need to import db at the top or add a helper in Centre model.
+    // Adding to Centre model "updateTeacher" seems cleanest since I already import Centre.
+
+    // For now, let's use Centre.updateTeacher (I will create it in next step)
+    // to avoid messing with top-level imports in this replace block if possible.
+    // But wait, I can't guarantee Centre.updateTeacher exists yet.
+    // I already inspected Centre model and it didn't have it.
+
+    // Actually, I can just add the import of db at the top of this file in a separate step?
+    // Or I can add `updateTeacher` to `back/models/centre.js` which already imports db.
+    // Let's go with adding helper methods to `back/models/centre.js` to keep controller clean.
+
+    const updated = await Centre.updateTeacher(teacherId, {
+      first_name,
+      last_name,
+      email,
+    });
+    if (updated) {
+      res.json(updated);
+    } else {
+      res.status(404).json({ error: "Profesor no encontrado" });
+    }
+  } catch (error) {
+    console.error("Error updating teacher:", error);
+    if (error.code === "23505") {
+      return res
+        .status(400)
+        .json({ error: "El correo electrónico ya está en uso" });
+    }
+    res.status(500).json({ error: "Error actualizando profesor" });
+  }
+};
+
+export const deleteTeacher = async (req, res) => {
+  try {
+    const { teacherId } = req.params;
+    // User.remove deletes from users table, which cascades to teachers
+    const deleted = await Centre.deleteTeacher(teacherId); // Using Centre model wrapper for consistency
+    if (deleted) {
+      res.json({ message: "Profesor eliminado correctamente" });
+    } else {
+      res.status(404).json({ error: "Profesor no encontrado" });
+    }
+  } catch (error) {
+    console.error("Error deleting teacher:", error);
+    res.status(500).json({ error: "Error eliminando profesor" });
+  }
+};
