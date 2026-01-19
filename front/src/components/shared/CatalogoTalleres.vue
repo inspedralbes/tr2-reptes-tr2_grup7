@@ -106,6 +106,17 @@
               {{ workshop.available_slots }}
             </span>
           </div>
+          <!-- Modalitat C Info (Implicit for all workshops in this context) -->
+          <div class="mt-3 pt-3 border-t border-gray-100 text-xs space-y-1">
+            <div class="flex items-center gap-1.5 text-gray-600">
+               <Clock :size="14" />
+               <span>3h/setmana (Dijous)</span>
+            </div>
+            <div class="flex items-center gap-1.5 text-gray-600">
+               <MapPin :size="14" />
+               <span>Fora del centre</span>
+            </div>
+          </div>
         </div>
 
         <button
@@ -120,7 +131,7 @@
 </template>
 
 <script setup>
-import { Filter, Search } from 'lucide-vue-next'
+import { Filter, Search, Clock, MapPin } from 'lucide-vue-next'
 import { ref, onMounted, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import * as workshopService from '../../services/workshopService'

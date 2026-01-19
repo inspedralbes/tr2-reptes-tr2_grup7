@@ -104,6 +104,8 @@ CREATE TABLE school_applications (
     year_period VARCHAR(9), -- e.g. "2025-2026"
     status VARCHAR(20) DEFAULT 'DRAFT' CHECK (status IN ('DRAFT', 'SUBMITTED', 'ARCHIVED')),
     global_comments TEXT,
+    id_teacher_1 INT REFERENCES teachers(id_user),
+    id_teacher_2 INT REFERENCES teachers(id_user),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     UNIQUE(id_center, year_period) -- Only one application per year per center
 );
@@ -116,7 +118,6 @@ CREATE TABLE center_requests (
     requested_slots INT CHECK (requested_slots <= 4),
     student_count INT,
     course_level VARCHAR(50),
-    id_teacher INT REFERENCES teachers(id_user), -- Profesor responsable del grupo visitante
     status VARCHAR(20) DEFAULT 'PENDING' CHECK (status IN ('PENDING', 'ACCEPTED', 'REJECTED', 'PARTIAL')),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     comments TEXT

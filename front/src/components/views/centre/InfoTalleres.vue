@@ -55,6 +55,16 @@
               workshop.student_count
             }}</span>
           </div>
+
+          <!-- Schedule Info Rows -->
+          <div class="flex justify-between py-2.5" style="border-bottom: 1px solid var(--border-color)">
+            <span style="color: var(--text-secondary); font-size: 0.9rem">Horari:</span>
+            <span class="font-semibold" style="color: var(--text-primary)">Dijous (3h/setmana)</span>
+          </div>
+          <div class="flex justify-between py-2.5" style="border-bottom: 1px solid var(--border-color)">
+            <span style="color: var(--text-secondary); font-size: 0.9rem">Lloc:</span>
+            <span class="font-semibold" style="color: var(--text-primary)">Fora del centre</span>
+          </div>
           <div class="flex justify-between py-2.5">
             <span style="color: var(--text-secondary); font-size: 0.9rem">Estat:</span>
             <span class="font-semibold" :class="getStatusClass(workshop.status)">

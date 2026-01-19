@@ -35,6 +35,67 @@
       </div>
     </div>
 
+
+
+    <!-- Global Teacher Selection Section -->
+    <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200 mb-8 element-fade-in" v-if="!isBlocked">
+      <h2 class="text-xl font-bold mb-4 flex items-center gap-2" style="color: var(--text-primary)">
+        <span class="bg-blue-100 text-blue-700 w-8 h-8 flex items-center justify-center rounded-full text-sm">1</span>
+        Professors Referents
+      </h2>
+      <p class="text-sm text-gray-600 mb-4">
+        Selecciona els professors responsables d'aquesta sol·licitud (Màxim 2).
+      </p>
+      
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- 1st Teacher (Mandatory) -->
+        <div>
+          <label class="block text-sm font-semibold mb-2" style="color: var(--text-primary)">
+            Referent Principal *
+          </label>
+          <select 
+            v-model="teacher1" 
+            class="w-full form-select rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
+            required
+          >
+            <option value="" disabled>Selecciona un professor...</option>
+            <option 
+              v-for="teacher in teachers" 
+              :key="teacher.id_user" 
+              :value="teacher.id_user"
+              :disabled="teacher.id_user === teacher2"
+            >
+              {{ teacher.first_name }} {{ teacher.last_name }} ({{ teacher.email }})
+            </option>
+          </select>
+        </div>
+
+        <!-- 2nd Teacher (Optional) -->
+        <div>
+           <label class="block text-sm font-semibold mb-2" style="color: var(--text-primary)">
+            Segon Referent (Opcional)
+          </label>
+          <select 
+            v-model="teacher2" 
+            class="w-full form-select rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
+          >
+            <option value="">-- Cap --</option>
+             <option 
+              v-for="teacher in teachers" 
+              :key="teacher.id_user" 
+              :value="teacher.id_user"
+              :disabled="teacher.id_user === teacher1"
+            >
+              {{ teacher.first_name }} {{ teacher.last_name }} ({{ teacher.email }})
+            </option>
+          </select>
+        </div>
+      </div>
+      <p v-if="teachers.length === 0" class="text-sm text-red-500 mt-2">
+         No s'han trobat professors assignats al teu centre.
+      </p>
+    </div>
+
     <form @submit.prevent="submitRequests" class="space-y-8">
       <fieldset :disabled="isBlocked" class="contents">
       <!-- Loop through requests -->
@@ -75,6 +136,31 @@
                 {{ workshop.title }} ({{ workshop.category }})
               </option>
             </select>
+            
+            <!-- Schedule Info Box -->
+            <div v-if="req.id_workshop" class="mt-3 bg-gray-50 border border-gray-200 p-4 rounded shadow-sm animate-fade-in">
+               <div class="flex">
+                 <div class="flex-shrink-0">
+                   <!-- Icon Info -->
+                   <svg class="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
+                     <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
+                   </svg>
+                 </div>
+                 <div class="ml-3">
+                   <h3 class="text-sm leading-5 font-medium text-gray-800">
+                     Informació del Taller
+                   </h3>
+                   <div class="mt-2 text-sm leading-5 text-gray-600">
+                     <ul class="list-disc pl-5 space-y-1">
+                       <li><strong>Horari:</strong> Dijous (3h/setmana)</li>
+                       <li><strong>Durada:</strong> 30 hores trimestrals</li>
+                       <li><strong>Lloc:</strong> Fora del centre (activitat externa)</li>
+                       <li><strong>Destinataris:</strong> Alumnat de 3r i 4t d'ESO</li>
+                     </ul>
+                   </div>
+                 </div>
+               </div>
+            </div>
           </div>
 
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -86,6 +172,7 @@
                 <div class="flex gap-2">
                   <select
                     v-model="req.selectedStudentToAdd"
+                    @change="addStudentToRequest(index)"
                     class="flex-1 w-full"
                     :disabled="req.students.length >= 4 || isBlocked"
                   >
@@ -98,47 +185,38 @@
                       {{ student.first_name }} {{ student.last_name }}
                     </option>
                   </select>
-                  <button
-                    v-if="!isBlocked"
-                    type="button"
-                    @click="addStudentToRequest(index)"
-                    class="btn-primary px-4 py-2"
-                    :disabled="!req.selectedStudentToAdd || req.students.length >= 4"
-                  >
-                    Afegir
-                  </button>
                 </div>
 
                 <!-- Lista de seleccionados -->
                 <div
                   v-if="req.students.length > 0"
-                  class="border p-4 rounded bg-gray-50"
+                  class="border p-3 rounded bg-gray-50 text-sm"
                   style="border-color: var(--border-color)"
                 >
-                  <p class="text-sm font-semibold mb-2" style="color: var(--text-primary)">
+                  <p class="font-semibold mb-2" style="color: var(--text-primary)">
                     Alumnes Seleccionats ({{ req.students.length }}/4):
                   </p>
-                  <div class="space-y-2">
+                  <div class="space-y-1">
                     <div
                       v-for="studentId in req.students"
                       :key="studentId"
-                      class="flex justify-between items-center bg-white p-2 rounded shadow-sm border"
+                      class="flex justify-between items-center bg-white px-2 py-1 rounded shadow-sm border"
                     >
-                      <span class="text-sm">
+                      <span>
                         {{ getStudentName(studentId) }}
                       </span>
                       <button
                         v-if="!isBlocked"
                         type="button"
                         @click="removeStudentFromRequest(index, studentId)"
-                        class="text-red-500 hover:text-red-700 text-sm font-bold"
+                        class="text-red-500 hover:text-red-700 font-bold ml-2"
                       >
                         &times;
                       </button>
                     </div>
                   </div>
                 </div>
-                <p v-else class="text-sm text-gray-500 italic">Cap alumne seleccionat (Màxim 4).</p>
+                <p v-else class="text-xs text-gray-500 italic">Cap alumne seleccionat (Màxim 4).</p>
               </div>
             </div>
 
@@ -154,20 +232,7 @@
             </div>
           </div>
 
-          <div>
-            <label class="block text-sm font-semibold mb-2" style="color: var(--text-primary)">
-              Professor Referent *
-            </label>
-            <select v-model="req.id_teacher" class="w-full" required>
-              <option value="" disabled>Selecciona un professor ref...</option>
-              <option v-for="teacher in teachers" :key="teacher.id_user" :value="teacher.id_user">
-                {{ teacher.first_name }} {{ teacher.last_name }} ({{ teacher.email }})
-              </option>
-            </select>
-            <p v-if="teachers.length === 0" class="text-xs text-red-500 mt-1">
-              No s'han trobat professors assignats al teu centre. Contacta amb l'administrador.
-            </p>
-          </div>
+          <!-- Removed Teacher Selection from here -->
 
           <div>
             <label class="block text-sm font-semibold mb-2" style="color: var(--text-primary)">
@@ -235,13 +300,14 @@ const isBlocked = ref(false)
 // State: Array of Request Objects
 const requests = ref([createEmptyRequest()])
 const globalComments = ref('')
+const teacher1 = ref('')
+const teacher2 = ref('')
 
 function createEmptyRequest() {
   return {
     id_workshop: '',
     students: [],
     course_level: '',
-    id_teacher: '',
     comments: '',
     requested_slots: 1,
     selectedStudentToAdd: '', // Helper for UI specific to this request
@@ -365,10 +431,16 @@ const submitRequests = async () => {
       alert(`La petició #${i + 1} no té curs/nivell.`)
       return
     }
-    if (!req.id_teacher) {
-      alert(`La petició #${i + 1} no té professor referent.`)
-      return
-    }
+  }
+
+  if (!teacher1.value) {
+    alert("Has de seleccionar almenys un professor referent principal.");
+    return;
+  }
+  
+  const teachersPayload = [teacher1.value];
+  if (teacher2.value) {
+      teachersPayload.push(teacher2.value);
   }
 
   loading.value = true
@@ -378,10 +450,11 @@ const submitRequests = async () => {
       year_period: currentPeriod, 
       comments: globalComments.value,
       items: requests.value.map(req => {
-         // eslint-disable-next-line no-unused-vars
-         const { selectedStudentToAdd, ...data } = req
-         return data
-      })
+       // eslint-disable-next-line no-unused-vars
+       const { selectedStudentToAdd, ...data } = req
+       return data
+    }),
+    teachers: teachersPayload
     };
 
     await schoolApplicationService.createApplication(applicationPayload);
