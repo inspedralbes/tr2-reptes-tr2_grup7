@@ -43,6 +43,11 @@ const router = createRouter({
           component: () => import('../components/views/centre/InfoTalleres.vue'),
         },
         {
+          path: 'centro/profesores',
+          name: 'centro-profesores',
+          component: () => import('../components/views/centre/LlistaProfessors.vue'),
+        },
+        {
           path: 'centro/historial',
           name: 'centro-peticiones',
           component: () => import('../components/views/centre/HistorialPeticiones.vue'),
