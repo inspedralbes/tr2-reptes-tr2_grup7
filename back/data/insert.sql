@@ -129,9 +129,9 @@ INSERT INTO school_applications (id_center, year_period, status, global_comments
 -- Request 1: Pedralbes wants Workshop 1 (Robotics)
 INSERT INTO center_requests (id_application, id_workshop, requested_slots, status, created_at) VALUES
 -- (1, 1, 4, 'PENDING', '2026-01-06'), -- App 1 (Pedralbes) -> Workshop 1 -- Commented out
-(1, 1, 4, 'PENDING', '2026-01-06'), -- App 2 (Poblenou) -> Workshop 1
-(2, 2, 4, 'PENDING', '2026-01-06'), -- App 3 (Tecnologic) -> Workshop 2 (Capacity 5)
-(3, 1, 4, 'PENDING', '2026-01-06'); -- App 4 (Gracia) -> Workshop 1
+(1, 1, 4, 'ACCEPTED', '2026-01-06'), -- App 2 (Poblenou) -> Workshop 1 (2/4 aceptados)
+(2, 2, 3, 'PENDING', '2026-01-06'), -- App 3 (Tecnologic) -> Workshop 2 (Capacity 5) - 3 estudiantes
+(3, 1, 4, 'ACCEPTED', '2026-01-06'); -- App 4 (Gracia) -> Workshop 1 (3/4 aceptados)
 
 -- ==========================================
 -- 6. STUDENT INTEREST
@@ -171,3 +171,53 @@ INSERT INTO student_interest (id_student, id_workshop, id_request, status, has_l
 -- Test Paper Rejection
 INSERT INTO student_interest (id_student, id_workshop, id_request, status, has_legal_papers, created_at) VALUES
 (14, 2, 2, 'WAITING', FALSE, '2026-01-07'); -- Carles (Valid profile but NO PAPERS) -> Should Reject
+
+-- ==========================================
+-- 7. CENTER REQUEST STUDENTS
+-- ==========================================
+-- Asociar estudiantes específicos a cada petición
+-- Request 1 (Poblenou -> Workshop 1): 4 estudiantes
+INSERT INTO center_request_students (id_request, id_student) VALUES
+(1, 13), -- Berta
+(1, 16), -- Elena
+(1, 12), -- Albert (agregado para tener 4)
+(1, 15); -- David (agregado para tener 4)
+
+-- Request 2 (Tecnologic -> Workshop 2): 3 estudiantes
+INSERT INTO center_request_students (id_request, id_student) VALUES
+(2, 14), -- Carles
+(2, 17), -- Fabian
+(2, 18); -- Gemma
+
+-- Request 3 (Gracia -> Workshop 1): 4 estudiantes
+INSERT INTO center_request_students (id_request, id_student) VALUES
+(3, 19), -- Hugo
+(3, 20), -- Irene
+(3, 21), -- Jordi
+(3, 22); -- Klara
+
+-- ==========================================
+-- 8. WORKSHOP ENROLLMENTS (Estudiantes Aceptados)
+-- ==========================================
+-- Simular que algunas peticiones ya tienen estudiantes aceptados
+-- Request 1: 2 de 4 estudiantes aceptados
+INSERT INTO workshop_enrollments (id_workshop, id_student, enrolled_at) VALUES
+(1, 13, '2026-01-08 10:00:00'), -- Berta aceptada
+(1, 16, '2026-01-08 10:00:00'); -- Elena aceptada
+-- Albert y David NO están aceptados aún
+
+-- Request 3: 3 de 4 estudiantes aceptados
+INSERT INTO workshop_enrollments (id_workshop, id_student, enrolled_at) VALUES
+(1, 19, '2026-01-08 11:00:00'), -- Hugo aceptado
+(1, 20, '2026-01-08 11:00:00'), -- Irene aceptada
+(1, 21, '2026-01-08 11:00:00'); -- Jordi aceptado
+-- Klara NO está aceptada aún
+
+-- ==========================================
+-- 9. WORKSHOP TEACHERS
+-- ==========================================
+-- Asignar profesores a los talleres
+INSERT INTO workshop_teachers (id_workshop, id_teacher) VALUES
+(1, 7), -- Juan enseña Robótica
+(1, 8), -- Ana también enseña Robótica
+(2, 9); -- Pol enseña Diseño

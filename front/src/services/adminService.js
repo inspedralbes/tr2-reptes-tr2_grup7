@@ -16,6 +16,11 @@ export const adminService = {
     return response.data
   },
 
+  async getRequestById(requestId) {
+    const response = await apiClient.get(`/admin/requests/${requestId}`)
+    return response.data
+  },
+
   async getAvailableTeachers() {
     const response = await apiClient.get('/admin/teachers')
     return response.data

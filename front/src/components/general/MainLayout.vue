@@ -200,7 +200,6 @@ const navigationStructure = {
       name: 'Dashboard',
       subsections: [
         { id: 'dashboard', name: 'Resum General', route: '/admin/panel' },
-        { id: 'estadistiques', name: 'Estadístiques', route: '/admin/estadisticas' },
       ],
     },
     {
@@ -208,7 +207,6 @@ const navigationStructure = {
       name: 'Peticions',
       subsections: [
         { id: 'peticions', name: 'Totes les Peticions', route: '/admin/peticiones' },
-        { id: 'pendents', name: 'Pendents', route: '/admin/peticiones' },
       ],
     },
     {

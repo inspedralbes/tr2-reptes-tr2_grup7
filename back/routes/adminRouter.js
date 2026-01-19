@@ -11,6 +11,9 @@ router.get("/stats", verifyToken, isAdmin, adminController.getAdminStats);
 // Todas las peticiones para gestión
 router.get("/requests", verifyToken, isAdmin, adminController.getAllRequests);
 
+// Detalles de una petición específica con estudiantes
+router.get("/requests/:id", verifyToken, isAdmin, adminController.getRequestById);
+
 // Peticiones pendientes para asignación
 router.get("/pending-requests", verifyToken, isAdmin, adminController.getPendingRequests);
 
