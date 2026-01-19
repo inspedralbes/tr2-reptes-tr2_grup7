@@ -130,11 +130,12 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed, onMounted, onBeforeUnmount } from 'vue';
 import { Settings, Eye, Trash2, Search } from 'lucide-vue-next';
 import { adminService } from '../../../services/adminService.js';
 import { useAlertStore } from '../../../stores/alert';
 import RequestDetailsModal from '../../modals/RequestDetailsModal.vue';
+import socketService from '../../../services/socketService.js';
 
 const alertStore = useAlertStore();
 
@@ -222,5 +223,25 @@ const autoAssign = async () => {
 
 onMounted(() => {
   loadRequests();
+  
+  // Conectar Socket.IO
+  socketService.connect();
+  
+  // Escuchar eventos de actualización
+  socketService.on('stats_updated', () => {
+    console.log('📊 Actualizando peticions en temps real...');
+    loadRequests();
+  });
+  
+  socketService.on('request_status_updated', () => {
+    console.log('🔄 Estat de petició actualitzat');
+    loadRequests();
+  });
+});
+
+onBeforeUnmount(() => {
+  // Limpiar listeners de socket
+  socketService.off('stats_updated');
+  socketService.off('request_status_updated');
 });
 </script>

@@ -416,6 +416,9 @@ export const updateTeacher = async (req, res) => {
     // Update user email
     await db.query("UPDATE users SET email = $1 WHERE id = $2", [email, id]);
 
+    // Emitir evento Socket.io para actualizar en tiempo real
+    io.emit("teacher_updated", { id_user: id });
+
     res.json({
       message: "Teacher updated successfully",
       teacher: { id_user: id, first_name, last_name, email },
@@ -452,6 +455,9 @@ export const assignCenterToTeacher = async (req, res) => {
       [centerIdValue, id],
     );
 
+    // Emitir evento Socket.io para actualizar en tiempo real
+    io.emit("teacher_updated", { id_user: id });
+
     res.json({
       message: centerIdValue
         ? "Center assigned successfully"
@@ -485,6 +491,9 @@ export const toggleTeacherActive = async (req, res) => {
       newStatus,
       id,
     ]);
+
+    // Emitir evento Socket.io para actualizar en tiempo real
+    io.emit("teacher_updated", { id_user: id });
 
     res.json({
       message: `Teacher ${newStatus ? "activated" : "deactivated"} successfully`,
