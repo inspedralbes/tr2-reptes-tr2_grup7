@@ -84,7 +84,9 @@
                 <div class="max-w-xs truncate">{{ req.workshop }}</div>
               </td>
               <td class="hidden md:table-cell px-6 py-4 text-sm text-gray-800">
-                {{ req.students }}
+                <span class="font-medium">
+                  {{ req.acceptedStudents }}/{{ req.totalStudents }}
+                </span>
               </td>
               <td class="hidden lg:table-cell px-6 py-4 text-sm text-gray-600">
                 {{ req.date }}
@@ -104,29 +106,6 @@
                     <Eye :size="18" class="text-blue-600" />
                   </button>
                   <button
-                    @click="editRequest(req)"
-                    class="p-2 hover:bg-purple-50 rounded-lg transition-colors"
-                    title="Editar"
-                  >
-                    <Edit :size="18" class="text-purple-600" />
-                  </button>
-                  <button
-                    v-if="req.status === 'Pendent'"
-                    @click="acceptRequest(req.id)"
-                    class="p-2 hover:bg-green-50 rounded-lg transition-colors"
-                    title="Acceptar"
-                  >
-                    <CheckCircle :size="18" class="text-green-600" />
-                  </button>
-                  <button
-                    v-if="req.status === 'Pendent'"
-                    @click="rejectRequest(req.id)"
-                    class="p-2 hover:bg-orange-50 rounded-lg transition-colors"
-                    title="Rebutjar"
-                  >
-                    <X :size="18" class="text-orange-600" />
-                  </button>
-                  <button
                     @click="deleteRequest(req.id)"
                     class="p-2 hover:bg-red-50 rounded-lg transition-colors"
                     title="Eliminar"
@@ -141,19 +120,18 @@
       </div>
     </div>
 
-    <!-- Request Details/Edit Modal -->
+    <!-- Request Details Modal -->
     <RequestDetailsModal 
       :isOpen="showModal" 
       :request="selectedRequest"
       @close="showModal = false"
-      @updated="handleRequestUpdated"
     />
   </div>
 </template>
 
 <script setup>
 import { ref, computed, onMounted } from 'vue';
-import { Settings, Eye, Edit, CheckCircle, Trash2, X, Search } from 'lucide-vue-next';
+import { Settings, Eye, Trash2, Search } from 'lucide-vue-next';
 import { adminService } from '../../../services/adminService.js';
 import { useAlertStore } from '../../../stores/alert';
 import RequestDetailsModal from '../../modals/RequestDetailsModal.vue';
@@ -176,6 +154,8 @@ const loadRequests = async () => {
       centre: req.center_name,
       workshop: req.workshop_title,
       students: req.requested_slots,
+      totalStudents: parseInt(req.total_students) || req.requested_slots,
+      acceptedStudents: parseInt(req.accepted_students) || 0,
       status: req.status === 'ACCEPTED' ? 'Assignada' : req.status === 'PENDING' ? 'Pendent' : req.status === 'REJECTED' ? 'Rebutjada' : req.status,
       statusRaw: req.status,
       date: new Date(req.created_at).toLocaleDateString('ca-ES')
@@ -212,37 +192,7 @@ const viewRequest = (request) => {
   showModal.value = true;
 };
 
-const editRequest = (request) => {
-  selectedRequest.value = request;
-  showModal.value = true;
-};
 
-const handleRequestUpdated = async () => {
-  alertStore.addAlert('success', 'Petició actualitzada correctament');
-  await loadRequests();
-};
-
-const acceptRequest = async (requestId) => {
-  try {
-    await adminService.acceptRequest(requestId);
-    await loadRequests();
-    alertStore.addAlert('success', 'Petició acceptada correctament');
-  } catch (error) {
-    console.error('Error accepting request:', error);
-    alertStore.addAlert('error', 'Error al acceptar la petició');
-  }
-};
-
-const rejectRequest = async (requestId) => {
-  try {
-    await adminService.rejectRequest(requestId);
-    await loadRequests();
-    alertStore.addAlert('success', 'Petició rebutjada correctament');
-  } catch (error) {
-    console.error('Error rejecting request:', error);
-    alertStore.addAlert('error', 'Error al rebutjar la petició');
-  }
-};
 
 const deleteRequest = async (requestId) => {
   if (await alertStore.confirm('Estàs segur que vols eliminar aquesta petició?')) {

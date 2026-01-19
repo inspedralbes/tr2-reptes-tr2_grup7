@@ -42,7 +42,16 @@ export const getAdminStats = async (req, res) => {
 export const getAllRequests = async (req, res) => {
   try {
     const query = `
-      SELECT cr.*, c.center_name, w.title as workshop_title, w.start_date, w.end_date
+      SELECT 
+        cr.*, 
+        c.center_name, 
+        w.title as workshop_title, 
+        w.start_date, 
+        w.end_date,
+        (SELECT COUNT(*) FROM center_request_students crs WHERE crs.id_request = cr.id_request) as total_students,
+        (SELECT COUNT(*) FROM workshop_enrollments we 
+         JOIN center_request_students crs ON we.id_student = crs.id_student 
+         WHERE crs.id_request = cr.id_request AND we.id_workshop = cr.id_workshop) as accepted_students
       FROM center_requests cr
       JOIN school_applications sa ON cr.id_application = sa.id_application
       JOIN centers c ON sa.id_center = c.id_user
@@ -73,6 +82,64 @@ export const getPendingRequests = async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Error fetching pending requests" });
+  }
+};
+
+export const getRequestById = async (req, res) => {
+  try {
+    const { id } = req.params;
+    
+    // Get request details
+    const requestQuery = `
+      SELECT 
+        cr.*, 
+        c.center_name, 
+        w.title as workshop_title, 
+        w.start_date, 
+        w.end_date,
+        w.id_workshop
+      FROM center_requests cr
+      JOIN school_applications sa ON cr.id_application = sa.id_application
+      JOIN centers c ON sa.id_center = c.id_user
+      JOIN workshops w ON cr.id_workshop = w.id_workshop
+      WHERE cr.id_request = $1
+    `;
+    const requestResult = await db.query(requestQuery, [id]);
+    
+    if (requestResult.rows.length === 0) {
+      return res.status(404).json({ error: "Request not found" });
+    }
+    
+    const request = requestResult.rows[0];
+    
+    // Get students associated with this request
+    const studentsQuery = `
+      SELECT 
+        s.id_user,
+        s.first_name,
+        s.last_name,
+        s.eso_grade,
+        CASE 
+          WHEN we.id_enrollment IS NOT NULL THEN true 
+          ELSE false 
+        END as is_accepted
+      FROM center_request_students crs
+      JOIN students s ON crs.id_student = s.id_user
+      LEFT JOIN workshop_enrollments we ON we.id_student = s.id_user AND we.id_workshop = $2
+      WHERE crs.id_request = $1
+      ORDER BY s.last_name, s.first_name
+    `;
+    const studentsResult = await db.query(studentsQuery, [id, request.id_workshop]);
+    
+    res.json({
+      ...request,
+      students: studentsResult.rows,
+      total_students: studentsResult.rows.length,
+      accepted_students: studentsResult.rows.filter(s => s.is_accepted).length
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Error fetching request details" });
   }
 };
 

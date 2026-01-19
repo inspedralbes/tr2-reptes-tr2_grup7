@@ -73,9 +73,6 @@
                 <button @click="openEditModal(teacher)" class="text-blue-600 hover:text-blue-800" title="Editar">
                   <Edit :size="18" />
                 </button>
-                <button @click="openAssignCenterModal(teacher)" class="text-purple-600 hover:text-purple-800" title="Assignar Centre">
-                  <Building :size="18" />
-                </button>
                 <button @click="toggleTeacherStatus(teacher)" :class="teacher.is_active ? 'text-red-600 hover:text-red-800' : 'text-green-600 hover:text-green-800'" :title="teacher.is_active ? 'Desactivar' : 'Activar'">
                   <component :is="teacher.is_active ? UserX : UserCheck" :size="18" />
                 </button>
@@ -99,23 +96,15 @@
       @close="modals.edit = false"
       @updated="handleTeacherUpdated"
     />
-    
-    <AssignCenterModal 
-      :isOpen="modals.assignCenter" 
-      :teacher="selectedTeacher"
-      @close="modals.assignCenter = false"
-      @assigned="handleCenterAssigned"
-    />
   </div>
 </template>
 
 <script setup>
 import { ref, computed, onMounted } from 'vue';
-import { Search, Eye, Edit, Building, UserX, UserCheck } from 'lucide-vue-next';
+import { Search, Eye, Edit, UserX, UserCheck } from 'lucide-vue-next';
 import { adminService } from '../../../services/adminService.js';
 import TeacherDetailsModal from '../../modals/TeacherDetailsModal.vue';
 import TeacherEditModal from '../../modals/TeacherEditModal.vue';
-import AssignCenterModal from '../../modals/AssignCenterModal.vue';
 import { useAlertStore } from '../../../stores/alert';
 
 const alertStore = useAlertStore();
@@ -127,8 +116,7 @@ const selectedTeacher = ref(null);
 
 const modals = ref({
   details: false,
-  edit: false,
-  assignCenter: false
+  edit: false
 });
 
 const loadTeachers = async () => {
@@ -164,10 +152,7 @@ const openEditModal = (teacher) => {
   modals.value.edit = true;
 };
 
-const openAssignCenterModal = (teacher) => {
-  selectedTeacher.value = teacher;
-  modals.value.assignCenter = true;
-};
+
 
 const toggleTeacherStatus = async (teacher) => {
   const action = teacher.is_active ? 'desactivar' : 'activar';
@@ -185,11 +170,6 @@ const toggleTeacherStatus = async (teacher) => {
 
 const handleTeacherUpdated = () => {
   alertStore.addAlert('success', 'Professor actualitzat correctament');
-  loadTeachers();
-};
-
-const handleCenterAssigned = () => {
-  alertStore.addAlert('success', 'Centre assignat correctament');
   loadTeachers();
 };
 
