@@ -96,6 +96,11 @@
                                  </span>
                              </div>
                         </div>
+                        <div class="flex items-center">
+                             <span :class="['px-2 py-1 text-xs font-bold rounded border', getStatusColor(req.status)]">
+                                {{ getStatusLabel(req.status) }}
+                             </span>
+                        </div>
                     </div>
 
                     <!-- Body Grid -->
@@ -147,10 +152,11 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from 'vue'
+import { ref, onMounted, onUnmounted, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import * as schoolApplicationService from '../../../services/schoolApplicationService'
 import { getCurrentUser } from '../../../services/authService'
+import socketService from '../../../services/socketService'
 
 const applications = ref([]) // Keep for raw fetch
 const application = ref(null) // selected/main application
@@ -186,6 +192,15 @@ const getStatusLabel = (status) => {
   return labels[status] || status
 }
 
+const getStatusColor = (status) => {
+  switch(status) {
+    case 'ACCEPTED': return 'bg-green-100 text-green-700 border-green-200';
+    case 'REJECTED': return 'bg-red-100 text-red-700 border-red-200';
+    case 'PENDING': return 'bg-yellow-100 text-yellow-700 border-yellow-200';
+    default: return 'bg-gray-100 text-gray-700 border-gray-200';
+  }
+}
+
 const getStudentStatusDot = (status) => {
      switch (status) {
     case 'CONFIRMED': return 'bg-green-500'
@@ -199,6 +214,18 @@ onMounted(async () => {
   try {
     const user = getCurrentUser() || {}
     if (user.id) {
+        // Connect socket
+        socketService.connect();
+        
+        // Listen for status updates
+        socketService.on('request_status_updated', (data) => {
+            console.log('Received status update:', data);
+            const req = matchingRequests.value.find(r => r.id_request === data.id_request);
+            if (req) {
+                req.status = data.status;
+            }
+        });
+
         // Fetch list
         const apps = await schoolApplicationService.getMyApplications()
         
@@ -223,6 +250,10 @@ onMounted(async () => {
   } finally {
     loading.value = false
   }
+})
+
+onUnmounted(() => {
+    socketService.disconnect();
 })
 </script>
 
