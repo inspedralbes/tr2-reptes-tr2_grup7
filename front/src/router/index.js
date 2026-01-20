@@ -100,9 +100,15 @@ const router = createRouter({
         },
         // Rutas de Profesor
         {
+          path: 'profesor/panel',
+          name: 'profesor-panel',
+          component: () => import('../components/views/profesor/PanelProfesor.vue'),
+          meta: { roles: ['TEACHER', 'ADMIN'] },
+        },
+        {
           path: 'profesor/talleres',
           name: 'profesor-talleres',
-          component: () => import('../components/views/profesor/PanelProfesor.vue'),
+          component: () => import('../components/views/profesor/TallersProfesor.vue'),
           meta: { roles: ['TEACHER', 'ADMIN'] },
         },
         {
@@ -163,7 +169,7 @@ router.beforeEach((to, from, next) => {
     } else if (userData.role === 'CENTER') {
       next('/centro/panel')
     } else if (userData.role === 'TEACHER') {
-      next('/profesor/talleres')
+      next('/profesor/panel')
     } else {
       next('/login')
     }
