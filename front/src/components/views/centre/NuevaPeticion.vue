@@ -23,7 +23,7 @@
         </div>
         <div class="ml-3">
           <p class="text-sm text-yellow-700">
-            <strong>Atenció:</strong> Ja has enviat una sol·licitud per a aquest curs ({{ currentPeriod }}).
+            <strong>Atenció:</strong> Ja has enviat una sol·licitud per a aquest curs ({{ currentPeriodName || currentPeriod }}).
             No pots crear-ne una altra de nova, però pots consultar l'estat de la teva sol·licitud a l'historial.
           </p>
           <p class="mt-2 text-sm">
@@ -129,7 +129,7 @@
             <select v-model="req.id_workshop" class="w-full" required>
               <option value="" disabled>Selecciona un taller...</option>
               <option
-                v-for="workshop in workshops"
+                v-for="workshop in getAvailableWorkshops(index)"
                 :key="workshop.id_workshop"
                 :value="workshop.id_workshop"
               >
@@ -297,11 +297,11 @@ const students = ref([])
 const loading = ref(false)
 const isBlocked = ref(false)
 
-// State: Array of Request Objects
 const requests = ref([createEmptyRequest()])
 const globalComments = ref('')
 const teacher1 = ref('')
 const teacher2 = ref('')
+const activePeriodId = ref(null) // key for payload
 
 function createEmptyRequest() {
   return {
@@ -315,11 +315,27 @@ function createEmptyRequest() {
 }
 
 // Helpers
+const getAvailableWorkshops = (currentIndex) => {
+    // Get IDs of workshops selected in OTHER requests
+    const selectedWorkshopIds = requests.value
+        .map((r, idx) => (idx !== currentIndex ? r.id_workshop : null))
+        .filter(id => id); // Remove nulls/undefined
+    
+    // Return workshops that are NOT in the used list
+    return workshops.value.filter(w => !selectedWorkshopIds.includes(w.id_workshop));
+}
+
 const getAvailableStudentsForRequest = (index) => {
-  const currentRequest = requests.value[index]
-  // Return all students EXCEPT those already in THIS specific request
-  // We allow the same student in different requests for simpler logic/flexibility
-  return students.value.filter((student) => !currentRequest.students.includes(student.id_user))
+  // Get ALL students selected in ANY request (including this one so we don't duplicate logic,
+  // but importantly we want to filter out those already used in OTHERS too)
+  const allSelectedStudents = requests.value.flatMap(r => r.students);
+  
+  // NOTE: If we want to allow the user to see students currently in THIS request 
+  // (so they disappear only when added), the logic is slightly different.
+  // The current UI adds them to a list below and clears the select.
+  // So we should filter out ANY student that is currently in 'students' array of ANY request.
+  
+  return students.value.filter((student) => !allSelectedStudents.includes(student.id_user))
 }
 
 const getStudentName = (id) => {
@@ -366,6 +382,12 @@ const getCurrentSchoolYear = () => {
 
 const currentPeriod = getCurrentSchoolYear();
 
+import * as periodService from '../../../services/periodService'
+
+// ... existing imports
+
+const currentPeriodName = ref('')
+
 onMounted(async () => {
   try {
     const user = getUser()
@@ -373,26 +395,35 @@ onMounted(async () => {
       console.log('Fetching data for user:', user.id);
       
       // Parallel fetch
-      const [workshopsData, teachersData, studentsData, myApps] = await Promise.all([
+      const [workshopsData, teachersData, studentsData, myApps, activePeriod] = await Promise.all([
         workshopService.getAll(),
         centreService.getTeachers(user.id),
         centreService.getStudents(user.id),
-        schoolApplicationService.getMyApplications()
+        schoolApplicationService.getMyApplications(),
+        periodService.getActive()
       ])
 
       console.log('Fetched Applications:', myApps);
-      console.log('Current Computed Period:', currentPeriod);
+      console.log('Active Period:', activePeriod);
 
-      // Check if already has application for this period
-      const existingApp = myApps.find(app => app.year_period === currentPeriod);
-      
-      if (existingApp) {
-        // BLOCKED STATE
-        console.log('Found existing application:', existingApp);
-        isBlocked.value = true;
-        // Don't redirect, just show blocked state
+      if (activePeriod) {
+          currentPeriodName.value = activePeriod.name;
+          activePeriodId.value = activePeriod.id_period;
+          
+          // Check if already has application for this period ID
+          const existingApp = myApps.find(app => app.id_period === activePeriod.id_period);
+          
+          if (existingApp) {
+            // BLOCKED STATE
+            console.log('Found existing application:', existingApp);
+            isBlocked.value = true;
+          } else {
+            console.log('No existing application found for active period ID:', activePeriod.id_period);
+          }
       } else {
-        console.log('No existing application found for period:', currentPeriod);
+          console.warn('No active period found.');
+          // Optional: Block if no period is open? 
+          // For now, let's leave it, but backend will reject if no period.
       }
 
       workshops.value = workshopsData
@@ -447,7 +478,8 @@ const submitRequests = async () => {
   try {
     // Construct the single application object
     const applicationPayload = {
-      year_period: currentPeriod, 
+      id_period: activePeriodId.value, // Send the explicit ID
+      year_period: currentPeriodName.value || currentPeriod, // Keep for legacy/display if needed
       comments: globalComments.value,
       items: requests.value.map(req => {
        // eslint-disable-next-line no-unused-vars

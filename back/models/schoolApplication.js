@@ -68,10 +68,10 @@ export const createApplicationWithDetails = async (
         for (const studentId of students) {
           await client.query(
             `
-                    INSERT INTO student_interest (id_student, id_workshop, id_request, status)
-                    VALUES ($1, $2, $3, 'WAITING')
+                    INSERT INTO student_interest (id_student, id_request, status)
+                    VALUES ($1, $2, 'WAITING')
                 `,
-            [studentId, id_workshop, newReq.id_request],
+            [studentId, newReq.id_request],
           );
         }
       }

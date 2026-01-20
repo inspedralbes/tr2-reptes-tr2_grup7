@@ -42,11 +42,24 @@ export const createApplication = async (req, res) => {
     // Determine Period
     let finalPeriodId = id_period;
     if (!finalPeriodId) {
-        const activePeriod = await Period.getActive();
-        if (!activePeriod) {
-            return res.status(400).json({ error: "No hay ninguna convocatoria abierta actualmente." });
-        }
-        finalPeriodId = activePeriod.id_period;
+      const activePeriod = await Period.getActive();
+      if (!activePeriod) {
+        return res
+          .status(400)
+          .json({ error: "No hay ninguna convocatoria abierta actualmente." });
+      }
+      finalPeriodId = activePeriod.id_period;
+    }
+
+    // Check if application already exists for this center and period
+    const existingApps = await ApplicationModel.getByCenter(id_center);
+    const alreadyExists = existingApps.find(
+      (app) => app.id_period === finalPeriodId,
+    );
+    if (alreadyExists) {
+      return res
+        .status(400)
+        .json({ error: "Ja existeix una petició per aquest període." });
     }
 
     const result = await ApplicationModel.createApplicationWithDetails(
