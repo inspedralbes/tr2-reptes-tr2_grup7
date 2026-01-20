@@ -1,6 +1,6 @@
 import express from "express";
 import * as interestController from "../controllers/interestController.js";
-import { verifyToken } from "../middleware/auth.js";
+import { verifyToken } from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 

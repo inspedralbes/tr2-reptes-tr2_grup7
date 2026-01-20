@@ -1,6 +1,6 @@
 import express from "express";
 import * as assignmentController from "../controllers/assignmentController.js";
-import { verifyToken } from "../middleware/auth.js";
+import { verifyToken } from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 

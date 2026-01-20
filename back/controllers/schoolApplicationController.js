@@ -1,10 +1,11 @@
 import * as ApplicationModel from "../models/schoolApplication.js";
 import * as Centre from "../models/centre.js";
+import * as Period from "../models/period.js";
 
 export const createApplication = async (req, res) => {
   try {
     const {
-      year_period,
+      id_period,
       comments, // Global comments
       items, // Array of workshops
       teachers, // Array of teacher IDs
@@ -38,9 +39,19 @@ export const createApplication = async (req, res) => {
       }
     }
 
+    // Determine Period
+    let finalPeriodId = id_period;
+    if (!finalPeriodId) {
+        const activePeriod = await Period.getActive();
+        if (!activePeriod) {
+            return res.status(400).json({ error: "No hay ninguna convocatoria abierta actualmente." });
+        }
+        finalPeriodId = activePeriod.id_period;
+    }
+
     const result = await ApplicationModel.createApplicationWithDetails(
       id_center,
-      year_period || "2025-2026",
+      finalPeriodId,
       comments,
       items,
       teachers,

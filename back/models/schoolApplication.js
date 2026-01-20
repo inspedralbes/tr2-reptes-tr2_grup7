@@ -3,7 +3,7 @@ import db from "../data/db.js";
 // Transaction to create Application + Nested Requests + Student Interests
 export const createApplicationWithDetails = async (
   id_center,
-  year_period,
+  id_period,
   global_comments,
   items = [],
   teachers = [],
@@ -17,13 +17,13 @@ export const createApplicationWithDetails = async (
 
     // 1. Create Application
     const appText = `
-        INSERT INTO school_applications (id_center, year_period, status, global_comments, id_teacher_1, id_teacher_2)
+        INSERT INTO school_applications (id_center, id_period, status, global_comments, id_teacher_1, id_teacher_2)
         VALUES ($1, $2, 'SUBMITTED', $3, $4, $5)
         RETURNING *
     `;
     const appRes = await client.query(appText, [
       id_center,
-      year_period,
+      id_period,
       global_comments,
       id_teacher_1,
       id_teacher_2,

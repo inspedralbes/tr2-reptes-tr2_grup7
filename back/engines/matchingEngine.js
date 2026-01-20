@@ -1,6 +1,7 @@
+import { sendAssignmentNotification } from '../services/emailService.js';
 import db from "../data/db.js";
 import { obtenerFiltrosPorModalidad } from '../services/filterManager.js';
-import { generateAssignmentReportHtml } from '../reports/assignmentReport.js';
+import { generateAssignmentReportHtml, generateAssignmentReportPdf } from '../reports/assignmentReport.js';
 
 export const ejecutarProcesoAsignacion = async (config = {}) => {
     console.log("⚙️ Iniciando Motor de Asignación ENGINY...", config);
@@ -13,15 +14,55 @@ export const ejecutarProcesoAsignacion = async (config = {}) => {
             WHERE request_deadline < NOW() AND status = 'OFFERED'
         `);
 
+
+
+        // NEW: Track assigned students for emails
+        const allNewAssignments = [];
+
         for (const taller of talleres.rows) {
             console.log(`\n📦 Procesando: ${taller.title} (${taller.modalidad})`);
-            await asignarAlumnosATaller(taller, config);
+            const assignedInWorkshop = await asignarAlumnosATaller(taller, config);
+            allNewAssignments.push(...assignedInWorkshop);
         }
 
         console.log("\n✅ Proceso de asignación finalizado con éxito.");
         
-        // 7. GENERAR RESUMEN FINAL (HTML)
-        return await generateAssignmentReportHtml();
+        // 8. ENVIAR CORREOS
+        console.log("📧 Enviando notificaciones...");
+
+        if (allNewAssignments.length === 0) {
+            console.log("ℹ️ No hay nuevas asignaciones para notificar (¿Ya se ejecutó el matching?).");
+        }
+
+        // Group by center
+        const assignmentsByCenter = {};
+        for (const a of allNewAssignments) {
+            if (!assignmentsByCenter[a.centerId]) assignmentsByCenter[a.centerId] = [];
+            assignmentsByCenter[a.centerId].push(a);
+        }
+
+        // Send emails
+        for (const [centerId, assignments] of Object.entries(assignmentsByCenter)) {
+            // Get Center Email and Name
+            const centerRes = await db.query(
+                `SELECT c.center_name, u.email 
+                 FROM centers c 
+                 JOIN users u ON c.id_user = u.id 
+                 WHERE c.id_user = $1`, 
+                [centerId]
+            );
+            
+            if (centerRes.rows.length > 0) {
+                const { center_name, email } = centerRes.rows[0];
+                await sendAssignmentNotification(email, center_name, assignments);
+            }
+        }
+
+        // 7. GENERAR RESUMEN FINAL (PDF)
+
+        const html = await generateAssignmentReportHtml();
+        const pdfBuffer = await generateAssignmentReportPdf(html);
+        return Buffer.from(pdfBuffer).toString('base64');
 
     } catch (error) {
         console.error("❌ Error en el matchingEngine:", error);
@@ -50,7 +91,8 @@ const getGlobalCenterCounts = async (modalidad) => {
 };
 
 const asignarAlumnosATaller = async (taller, config) => {
-    const { id_workshop, modalidad, total_capacity, max_students_per_center } = taller;
+    const { id_workshop, title, modalidad, total_capacity, max_students_per_center } = taller;
+    const localAssignments = []; // List to track assignments for emails
     
     // Global tracking for Modality C
     const globalCenterCounts = await getGlobalCenterCounts(modalidad);
@@ -66,17 +108,15 @@ const asignarAlumnosATaller = async (taller, config) => {
         FROM student_interest si
         JOIN students s ON si.id_student = s.id_user
         JOIN center_requests cr ON si.id_request = cr.id_request -- Enforce link to request
-        WHERE si.id_workshop = $1 
+        WHERE cr.id_workshop = $1 
           AND si.status = 'WAITING'
-          -- Optional: Ensure request is not Rejected? User said "requests shouldn't be rejected".
-          -- So we process all valid requests.
     `, [id_workshop]);
 
     const alumnosCandidatos = result.rows;
 
     // 3. OBTENER LAS REGLAS: Pedimos al gestor los archivos A, B o C
     const reglas = obtenerFiltrosPorModalidad(modalidad);
-    if (!reglas) return;
+    if (!reglas) return [];
 
     // 4. APLICAR FILTROS (Aquí es donde se "pasa" el objeto usuario a tus constantes)
     const alumnosProcesados = alumnosCandidatos
@@ -86,7 +126,6 @@ const asignarAlumnosATaller = async (taller, config) => {
                 const pass = filtro(alumno, taller);
                 if (!pass) {
                     console.log(`   ⛔ RECHAZO INICIAL: ${alumno.first_name} ${alumno.last_name} falló filtro #${index}`);
-                    console.log(`      Valor has_legal_papers: ${alumno.has_legal_papers} (Type: ${typeof alumno.has_legal_papers})`);
                 }
                 return pass;
             });
@@ -125,6 +164,15 @@ const asignarAlumnosATaller = async (taller, config) => {
                 globalCenterCounts[centroId] = currentGlobal + 1;
             }
             plazasLibres--;
+            
+            // Track for Email
+            localAssignments.push({
+                centerId: centroId,
+                workshopTitle: title,
+                studentName: `${alumno.first_name} ${alumno.last_name}`,
+                status: 'ASSIGNED'
+            });
+
         } else {
             // ❌ RECHAZAR
             await db.query(`UPDATE student_interest SET status = 'CANCELLED' WHERE id_interest = $1`, [alumno.id_interest]);
@@ -138,11 +186,9 @@ const asignarAlumnosATaller = async (taller, config) => {
     }
 
     // 6. ACTUALIZAR ESTADO DE LAS SOLICITUDES (CENTER_REQUESTS)
-    // Recopilamos los IDs de solicitud afectados
-    const solicitudesAfectadas = new Set(alumnosCandidatos.map(a => a.id_request)); // Note: make sure id_request is in SELECT
+    const solicitudesAfectadas = new Set(alumnosCandidatos.map(a => a.id_request)); 
 
     for (const idRequest of solicitudesAfectadas) {
-        // Contamos cuántos estudiantes tiene esa solicitud y cuántos han entrado
         const stats = await db.query(`
             SELECT 
                 COUNT(*) as total,
@@ -168,7 +214,7 @@ const asignarAlumnosATaller = async (taller, config) => {
         console.log(`📝 Solicitud ${idRequest} actualizada a ${newStatus} (${confirmedInt}/${totalInt})`);
     }
 
-// End of function
+    return localAssignments;
 };
 
 // ... (existing confirmarInscripcion)

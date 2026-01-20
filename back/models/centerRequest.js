@@ -5,7 +5,7 @@ export const getByCenter = async (id_center) => {
         SELECT cr.*, 
                w.title as workshop_title, 
                sa.status as app_status, 
-               sa.year_period as academic_year,
+               ap.name as academic_year,
                cr.requested_slots as student_count,
                (
                    SELECT t.first_name 
@@ -23,6 +23,7 @@ export const getByCenter = async (id_center) => {
                ) as teacher_last_name
         FROM center_requests cr
         JOIN school_applications sa ON cr.id_application = sa.id_application
+        JOIN application_periods ap ON sa.id_period = ap.id_period
         JOIN workshops w ON cr.id_workshop = w.id_workshop
         WHERE sa.id_center = $1
     `;

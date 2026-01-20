@@ -1,38 +1,12 @@
 import db from "../data/db.js";
 import { io } from "../server.js";
+import bcrypt from "bcrypt";
+import * as Admin from "../models/admin.js";
 
 export const getAdminStats = async (req, res) => {
   try {
-    // Total peticiones
-    const totalRequestsResult = await db.query(
-      "SELECT COUNT(*) as total FROM center_requests",
-    );
-    const totalRequests = parseInt(totalRequestsResult.rows[0].total);
-
-    // Peticiones asignadas (aceptadas)
-    const assignedRequestsResult = await db.query(
-      "SELECT COUNT(*) as assigned FROM center_requests WHERE status = 'ACCEPTED'",
-    );
-    const assignedRequests = parseInt(assignedRequestsResult.rows[0].assigned);
-
-    // Peticiones pendientes
-    const pendingRequestsResult = await db.query(
-      "SELECT COUNT(*) as pending FROM center_requests WHERE status = 'PENDING'",
-    );
-    const pendingRequests = parseInt(pendingRequestsResult.rows[0].pending);
-
-    // Centros activos
-    const activeCentersResult = await db.query(
-      "SELECT COUNT(*) as active_centers FROM centers c JOIN users u ON c.id_user = u.id WHERE u.is_active = true",
-    );
-    const activeCenters = parseInt(activeCentersResult.rows[0].active_centers);
-
-    res.json({
-      totalRequests,
-      assignedRequests,
-      pendingRequests,
-      activeCenters,
-    });
+    const stats = await Admin.getStats();
+    res.json(stats);
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Error fetching admin stats" });
@@ -41,25 +15,8 @@ export const getAdminStats = async (req, res) => {
 
 export const getAllRequests = async (req, res) => {
   try {
-    const query = `
-      SELECT 
-        cr.*, 
-        c.center_name, 
-        w.title as workshop_title, 
-        w.start_date, 
-        w.end_date,
-        (SELECT COUNT(*) FROM center_request_students crs WHERE crs.id_request = cr.id_request) as total_students,
-        (SELECT COUNT(*) FROM workshop_enrollments we 
-         JOIN center_request_students crs ON we.id_student = crs.id_student 
-         WHERE crs.id_request = cr.id_request AND we.id_workshop = cr.id_workshop) as accepted_students
-      FROM center_requests cr
-      JOIN school_applications sa ON cr.id_application = sa.id_application
-      JOIN centers c ON sa.id_center = c.id_user
-      JOIN workshops w ON cr.id_workshop = w.id_workshop
-      ORDER BY cr.created_at DESC
-    `;
-    const result = await db.query(query);
-    res.json(result.rows);
+    const requests = await Admin.getAllRequests();
+    res.json(requests);
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Error fetching all requests" });
@@ -68,17 +25,8 @@ export const getAllRequests = async (req, res) => {
 
 export const getPendingRequests = async (req, res) => {
   try {
-    const query = `
-      SELECT cr.*, c.center_name, w.title as workshop_title, w.start_date, w.end_date
-      FROM center_requests cr
-      JOIN school_applications sa ON cr.id_application = sa.id_application
-      JOIN centers c ON sa.id_center = c.id_user
-      JOIN workshops w ON cr.id_workshop = w.id_workshop
-      WHERE cr.status = 'PENDING'
-      ORDER BY cr.created_at DESC
-    `;
-    const result = await db.query(query);
-    res.json(result.rows);
+    const requests = await Admin.getPendingRequests();
+    res.json(requests);
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Error fetching pending requests" });
@@ -89,53 +37,18 @@ export const getRequestById = async (req, res) => {
   try {
     const { id } = req.params;
     
-    // Get request details
-    const requestQuery = `
-      SELECT 
-        cr.*, 
-        c.center_name, 
-        w.title as workshop_title, 
-        w.start_date, 
-        w.end_date,
-        w.id_workshop
-      FROM center_requests cr
-      JOIN school_applications sa ON cr.id_application = sa.id_application
-      JOIN centers c ON sa.id_center = c.id_user
-      JOIN workshops w ON cr.id_workshop = w.id_workshop
-      WHERE cr.id_request = $1
-    `;
-    const requestResult = await db.query(requestQuery, [id]);
-    
-    if (requestResult.rows.length === 0) {
+    const request = await Admin.getRequestById(id);
+    if (!request) {
       return res.status(404).json({ error: "Request not found" });
     }
     
-    const request = requestResult.rows[0];
-    
-    // Get students associated with this request
-    const studentsQuery = `
-      SELECT 
-        s.id_user,
-        s.first_name,
-        s.last_name,
-        s.eso_grade,
-        CASE 
-          WHEN we.id_enrollment IS NOT NULL THEN true 
-          ELSE false 
-        END as is_accepted
-      FROM center_request_students crs
-      JOIN students s ON crs.id_student = s.id_user
-      LEFT JOIN workshop_enrollments we ON we.id_student = s.id_user AND we.id_workshop = $2
-      WHERE crs.id_request = $1
-      ORDER BY s.last_name, s.first_name
-    `;
-    const studentsResult = await db.query(studentsQuery, [id, request.id_workshop]);
+    const students = await Admin.getRequestStudents(id, request.id_workshop);
     
     res.json({
       ...request,
-      students: studentsResult.rows,
-      total_students: studentsResult.rows.length,
-      accepted_students: studentsResult.rows.filter(s => s.is_accepted).length
+      students,
+      total_students: students.length,
+      accepted_students: students.filter(s => s.is_accepted).length
     });
   } catch (error) {
     console.error(error);
@@ -145,15 +58,8 @@ export const getRequestById = async (req, res) => {
 
 export const getAvailableTeachers = async (req, res) => {
   try {
-    const query = `
-      SELECT t.id_user, t.first_name, t.last_name, u.email, c.center_name
-      FROM teachers t
-      JOIN users u ON t.id_user = u.id
-      LEFT JOIN centers c ON t.id_center_assigned = c.id_user
-      WHERE u.is_active = true
-    `;
-    const result = await db.query(query);
-    res.json(result.rows);
+    const teachers = await Admin.getAvailableTeachers();
+    res.json(teachers);
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Error fetching teachers" });
@@ -162,16 +68,8 @@ export const getAvailableTeachers = async (req, res) => {
 
 export const getTopWorkshops = async (req, res) => {
   try {
-    const query = `
-      SELECT w.title, COUNT(cr.id_request) as request_count
-      FROM workshops w
-      LEFT JOIN center_requests cr ON w.id_workshop = cr.id_workshop
-      GROUP BY w.id_workshop, w.title
-      ORDER BY request_count DESC
-      LIMIT 10
-    `;
-    const result = await db.query(query);
-    res.json(result.rows);
+    const workshops = await Admin.getTopWorkshops();
+    res.json(workshops);
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Error fetching top workshops" });
@@ -180,15 +78,8 @@ export const getTopWorkshops = async (req, res) => {
 
 export const getAllCenters = async (req, res) => {
   try {
-    const query = `
-      SELECT c.id_user, c.center_name, c.center_code, u.email, u.is_active
-      FROM centers c
-      JOIN users u ON c.id_user = u.id
-      WHERE u.is_active = true
-      ORDER BY c.center_name ASC
-    `;
-    const result = await db.query(query);
-    res.json(result.rows);
+    const centers = await Admin.getAllCenters();
+    res.json(centers);
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Error fetching centers" });
@@ -198,12 +89,8 @@ export const getAllCenters = async (req, res) => {
 export const acceptRequest = async (req, res) => {
   try {
     const { id } = req.params;
-    await db.query(
-      "UPDATE center_requests SET status = 'ACCEPTED' WHERE id_request = $1",
-      [id],
-    );
+    await Admin.updateRequestStatus(id, 'ACCEPTED');
 
-    // Emitir evento Socket.io para actualizar dashboard
     io.emit("stats_updated");
     io.emit("request_status_updated", {
       id_request: parseInt(id),
@@ -220,12 +107,8 @@ export const acceptRequest = async (req, res) => {
 export const rejectRequest = async (req, res) => {
   try {
     const { id } = req.params;
-    await db.query(
-      "UPDATE center_requests SET status = 'REJECTED' WHERE id_request = $1",
-      [id],
-    );
+    await Admin.updateRequestStatus(id, 'REJECTED');
 
-    // Emitir evento Socket.io para actualizar dashboard
     io.emit("stats_updated");
 
     res.json({ message: "Request rejected successfully" });
@@ -238,9 +121,8 @@ export const rejectRequest = async (req, res) => {
 export const deleteRequest = async (req, res) => {
   try {
     const { id } = req.params;
-    await db.query("DELETE FROM center_requests WHERE id_request = $1", [id]);
+    await Admin.deleteRequest(id);
 
-    // Emitir evento Socket.io para actualizar dashboard
     io.emit("stats_updated");
 
     res.json({ message: "Request deleted successfully" });
@@ -303,10 +185,7 @@ export const manualAssign = async (req, res) => {
 
     // Aquí implementarías la lógica de asignación manual
     // Por ahora, solo actualizaremos el estado de la petición
-    await db.query(
-      "UPDATE center_requests SET status = 'ACCEPTED' WHERE id_request = $1",
-      [requestId],
-    );
+    await Admin.updateRequestStatus(requestId, 'ACCEPTED');
 
     // Podrías crear registros en workshop_teachers o alguna tabla de asignaciones
     // Por simplicidad, solo cambiamos el estado
@@ -504,3 +383,107 @@ export const toggleTeacherActive = async (req, res) => {
     res.status(500).json({ error: "Error toggling teacher status" });
   }
 };
+
+// ============ USER MANAGEMENT ============
+
+export const getAllUsers = async (req, res) => {
+  try {
+    const query = `
+      SELECT id, role, email, is_active, created_at,
+        CASE 
+          WHEN role = 'CENTER' THEN (SELECT center_name FROM centers WHERE id_user = users.id)
+          WHEN role = 'TEACHER' THEN (SELECT first_name || ' ' || last_name FROM teachers WHERE id_user = users.id)
+          ELSE email
+        END as name
+      FROM users
+      ORDER BY created_at DESC
+    `;
+    const result = await db.query(query);
+    res.json(result.rows);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Error fetching users" });
+  }
+};
+
+export const createUser = async (req, res) => {
+  try {
+    // Basic User Creation (Admin usage)
+    const { name, email, password, role } = req.body;
+    
+    if (!email || !password || !role) {
+        return res.status(400).json({ error: "Missing required fields" });
+    }
+
+    // Check if email exists
+    const userCheck = await db.query("SELECT id FROM users WHERE email = $1", [email]);
+    if (userCheck.rows.length > 0) {
+        return res.status(400).json({ error: "Email already exists" });
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+    
+    // Insert into users
+    const query = `
+        INSERT INTO users (email, password_hash, role, is_active)
+        VALUES ($1, $2, $3, true)
+        RETURNING id, email, role
+    `;
+    const result = await db.query(query, [email, hashedPassword, role]);
+    const newUser = result.rows[0];
+
+    res.status(201).json(newUser);
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Error creating user" });
+  }
+};
+
+export const updateUser = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { email, role, is_active, password } = req.body;
+
+    const updates = [];
+    const values = [];
+    let paramCount = 1;
+
+    if (email !== undefined) { updates.push(`email = $${paramCount}`); values.push(email); paramCount++; }
+    if (role !== undefined) { updates.push(`role = $${paramCount}`); values.push(role); paramCount++; }
+    if (is_active !== undefined) { updates.push(`is_active = $${paramCount}`); values.push(is_active); paramCount++; }
+    if (password !== undefined && password.trim() !== "") {
+        const hashedPassword = await bcrypt.hash(password, 10);
+        updates.push(`password_hash = $${paramCount}`); 
+        values.push(hashedPassword); 
+        paramCount++;
+    }
+
+    if (updates.length === 0) return res.status(400).json({ error: "No fields to update" });
+
+    values.push(id);
+    const query = `UPDATE users SET ${updates.join(", ")} WHERE id = $${paramCount} RETURNING id, email, role, is_active`;
+    
+    const result = await db.query(query, values);
+    
+    if (result.rows.length === 0) return res.status(404).json({ error: "User not found" });
+
+    res.json(result.rows[0]);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Error updating user" });
+  }
+};
+
+export const deleteUser = async (req, res) => {
+  try {
+    const { id } = req.params;
+    await db.query("DELETE FROM users WHERE id = $1", [id]);
+    res.json({ message: "User deleted successfully" });
+  } catch (error) {
+    console.error("Delete user error:", error); 
+    res.status(500).json({ error: "Error deleting user (check dependencies)" });
+  }
+};
+
+

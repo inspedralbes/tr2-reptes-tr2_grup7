@@ -3,7 +3,7 @@
 -- ==========================================
 DROP TABLE IF EXISTS evaluations CASCADE;
 DROP TABLE IF EXISTS workshop_enrollments CASCADE;
-DROP TABLE IF EXISTS center_request_students CASCADE;
+
 DROP TABLE IF EXISTS student_interest CASCADE;
 DROP TABLE IF EXISTS center_requests CASCADE;
 DROP TABLE IF EXISTS workshop_teachers CASCADE;
@@ -97,17 +97,26 @@ CREATE TABLE workshop_teachers (
     PRIMARY KEY (id_workshop, id_teacher)
 );
 
+-- PERIODOS DE CONVOCATORIA (Ventanas de tiempo para enviar solicitudes)
+CREATE TABLE application_periods (
+    id_period SERIAL PRIMARY KEY,
+    name VARCHAR(255) NOT NULL, -- e.g. "Convocatoria Mayo 2026"
+    start_date TIMESTAMP NOT NULL,
+    end_date TIMESTAMP NOT NULL,
+    status VARCHAR(20) DEFAULT 'OPEN' CHECK (status IN ('OPEN', 'CLOSED')),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
 
 CREATE TABLE school_applications (
     id_application SERIAL PRIMARY KEY,
     id_center INT REFERENCES centers(id_user) ON DELETE CASCADE,
-    year_period VARCHAR(9), -- e.g. "2025-2026"
+    id_period INT REFERENCES application_periods(id_period), -- Link to specific period
     status VARCHAR(20) DEFAULT 'DRAFT' CHECK (status IN ('DRAFT', 'SUBMITTED', 'ARCHIVED')),
     global_comments TEXT,
     id_teacher_1 INT REFERENCES teachers(id_user),
     id_teacher_2 INT REFERENCES teachers(id_user),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    UNIQUE(id_center, year_period) -- Only one application per year per center
+    UNIQUE(id_center, id_period) -- Only one application per period per center
 );
 
 -- SOLICITUDES DE CENTROS (Para pedir plazas en bloque)
@@ -127,21 +136,16 @@ CREATE TABLE center_requests (
 CREATE TABLE student_interest (
     id_interest SERIAL PRIMARY KEY,
     id_student INT REFERENCES students(id_user) ON DELETE CASCADE,
-    id_workshop INT REFERENCES workshops(id_workshop) ON DELETE CASCADE,
     id_request INT REFERENCES center_requests(id_request) ON DELETE CASCADE,
     has_legal_papers BOOLEAN DEFAULT FALSE,
     verified_by_teacher_id INT REFERENCES teachers(id_user),
     status VARCHAR(20) DEFAULT 'WAITING' CHECK (status IN ('WAITING', 'CONFIRMED', 'CANCELLED')),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    UNIQUE(id_student, id_workshop)
+    UNIQUE(id_student, id_request)
 );
 
 -- RELACIÓN SOLICITUD - ALUMNOS (Qué alumnos van en esa solicitud del centro)
-CREATE TABLE center_request_students (
-    id_request INT REFERENCES center_requests(id_request) ON DELETE CASCADE,
-    id_student INT REFERENCES students(id_user) ON DELETE CASCADE,
-    PRIMARY KEY (id_request, id_student)
-);
+
 
 -- ==========================================
 -- 6. INSCRIPCIONES (Matrícula final firme)

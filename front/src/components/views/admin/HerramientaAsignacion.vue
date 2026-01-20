@@ -258,19 +258,27 @@ const runMatchingProcess = async () => {
     setTimeout(() => {
       isMatching.value = false;
       
-      // DOWNLOAD REPORT IF AVAILABLE
+      // Download PDF Report
       if (result.report) {
-        const blob = new Blob([result.report], { type: 'text/html' });
+         // Convert Base64 to Blob
+        const byteCharacters = atob(result.report);
+        const byteNumbers = new Array(byteCharacters.length);
+        for (let i = 0; i < byteCharacters.length; i++) {
+            byteNumbers[i] = byteCharacters.charCodeAt(i);
+        }
+        const byteArray = new Uint8Array(byteNumbers);
+        const blob = new Blob([byteArray], { type: 'application/pdf' });
+
         const url = window.URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = `informe_assignacio_${new Date().toISOString().slice(0,10)}.html`;
+        a.download = `informe_assignacio_${new Date().toISOString().slice(0,10)}.pdf`;
         document.body.appendChild(a);
         a.click();
         window.URL.revokeObjectURL(url);
         document.body.removeChild(a);
         
-        alert('Procés de matching finalitzat correctament! L\'informe HTML s\'ha descarregat.');
+        alert('Procés de matching finalitzat correctament! L\'informe PDF s\'ha descarregat.');
       } else {
         alert('Procés de matching finalitzat correctament!');
       }

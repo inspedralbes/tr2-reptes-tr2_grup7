@@ -2,15 +2,15 @@ import * as Interest from "../models/interest.js";
 
 export const createInterest = async (req, res) => {
   try {
-    const { id_student, id_workshop } = req.body;
+    const { id_student, id_request } = req.body;
     const teacher_id = req.user.id; // From auth middleware
 
     // Optional: Check if req.user.role === 'TEACHER'
 
     const newInterest = await Interest.create(
       id_student,
-      id_workshop,
-      teacher_id
+      teacher_id,
+      id_request
     );
     res.status(201).json(newInterest);
   } catch (error) {

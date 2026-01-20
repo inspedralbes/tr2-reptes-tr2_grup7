@@ -7,6 +7,7 @@
 -- DROP TABLE IF EXISTS student_interest CASCADE;
 -- DROP TABLE IF EXISTS center_requests CASCADE;
 -- DROP TABLE IF EXISTS school_applications CASCADE;
+-- DROP TABLE IF EXISTS application_periods CASCADE;
 -- DROP TABLE IF EXISTS workshop_teachers CASCADE;
 -- DROP TABLE IF EXISTS workshops CASCADE;
 -- DROP TABLE IF EXISTS students CASCADE;
@@ -118,12 +119,22 @@ INSERT INTO workshops (title, short_description, max_slots, start_date, end_date
 -- ==========================================
 -- 5. SCHOOL APPLICATIONS & REQUESTS
 -- ==========================================
+-- ==========================================
+-- 4.5 APPLICATION PERIODS
+-- ==========================================
+INSERT INTO application_periods (name, start_date, end_date, status) VALUES
+('Convocatoria Enero 2026', '2026-01-01 00:00:00', '2026-01-31 23:59:00', 'OPEN');
+
+-- ==========================================
+-- 5. SCHOOL APPLICATIONS & REQUESTS
+-- ==========================================
 -- We need Applications for the centers created in section 2
-INSERT INTO school_applications (id_center, year_period, status, global_comments, created_at) VALUES
--- (2, '2025-2026', 'SUBMITTED', 'App Pedralbes', '2026-01-05'), -- Commented out to allow testing "New Request"
-(3, '2025-2026', 'SUBMITTED', 'App Poblenou',  '2026-01-05'),
-(4, '2025-2026', 'SUBMITTED', 'App Tecnologic','2026-01-05'),
-(5, '2025-2026', 'SUBMITTED', 'App Gracia',    '2026-01-05');
+-- Linking to Period 1
+INSERT INTO school_applications (id_center, id_period, status, global_comments, created_at) VALUES
+-- (2, 1, 'SUBMITTED', 'App Pedralbes', '2026-01-05'), -- Commented out
+(3, 1, 'SUBMITTED', 'App Poblenou',  '2026-01-05'),
+(4, 1, 'SUBMITTED', 'App Tecnologic','2026-01-05'),
+(5, 1, 'SUBMITTED', 'App Gracia',    '2026-01-05');
 
 -- Create Requests linked to Apps
 -- Request 1: Pedralbes wants Workshop 1 (Robotics)
@@ -154,62 +165,40 @@ INSERT INTO center_requests (id_application, id_workshop, requested_slots, statu
 -- (17, 1, 1, 'WAITING', TRUE, '2026-01-07'); -- Fabian (Grade 1) -- Commented out
 
 -- Request 2 (Poblenou)
-INSERT INTO student_interest (id_student, id_workshop, id_request, status, has_legal_papers, created_at) VALUES
-(13, 1, 1, 'WAITING', TRUE, '2026-01-07'), -- Berta
-(16, 1, 1, 'WAITING', TRUE, '2026-01-07'); -- Elena
+INSERT INTO student_interest (id_student, id_request, status, has_legal_papers, created_at) VALUES
+(13, 1, 'WAITING', TRUE, '2026-01-07'), -- Berta
+(16, 1, 'WAITING', TRUE, '2026-01-07'); -- Elena
 
 -- Request 4 (Gracia) -> 5 students (Test Limit)
-INSERT INTO student_interest (id_student, id_workshop, id_request, status, has_legal_papers, created_at) VALUES
-(19, 1, 3, 'WAITING', TRUE, '2026-01-07'), -- Hugo
-(20, 1, 3, 'WAITING', TRUE, '2026-01-07'), -- Irene
-(21, 1, 3, 'WAITING', TRUE, '2026-01-07'), -- Jordi
-(22, 1, 3, 'WAITING', TRUE, '2026-01-07'), -- Klara
-(23, 1, 3, 'WAITING', TRUE, '2026-01-07'); -- Lluis
+INSERT INTO student_interest (id_student, id_request, status, has_legal_papers, created_at) VALUES
+(19, 3, 'WAITING', TRUE, '2026-01-07'), -- Hugo
+(20, 3, 'WAITING', TRUE, '2026-01-07'), -- Irene
+(21, 3, 'WAITING', TRUE, '2026-01-07'), -- Jordi
+(22, 3, 'WAITING', TRUE, '2026-01-07'), -- Klara
+(23, 3, 'WAITING', TRUE, '2026-01-07'); -- Lluis
 
 -- Workshop 2: Design (5 slots)
 -- Request 3 (Tecnologic)
 -- Test Paper Rejection
-INSERT INTO student_interest (id_student, id_workshop, id_request, status, has_legal_papers, created_at) VALUES
-(14, 2, 2, 'WAITING', FALSE, '2026-01-07'); -- Carles (Valid profile but NO PAPERS) -> Should Reject
+INSERT INTO student_interest (id_student, id_request, status, has_legal_papers, created_at) VALUES
+(14, 2, 'WAITING', FALSE, '2026-01-07'); -- Carles (Valid profile but NO PAPERS) -> Should Reject
 
--- ==========================================
--- 7. CENTER REQUEST STUDENTS
--- ==========================================
--- Asociar estudiantes específicos a cada petición
--- Request 1 (Poblenou -> Workshop 1): 4 estudiantes
-INSERT INTO center_request_students (id_request, id_student) VALUES
-(1, 13), -- Berta
-(1, 16), -- Elena
-(1, 12), -- Albert (agregado para tener 4)
-(1, 15); -- David (agregado para tener 4)
 
--- Request 2 (Tecnologic -> Workshop 2): 3 estudiantes
-INSERT INTO center_request_students (id_request, id_student) VALUES
-(2, 14), -- Carles
-(2, 17), -- Fabian
-(2, 18); -- Gemma
-
--- Request 3 (Gracia -> Workshop 1): 4 estudiantes
-INSERT INTO center_request_students (id_request, id_student) VALUES
-(3, 19), -- Hugo
-(3, 20), -- Irene
-(3, 21), -- Jordi
-(3, 22); -- Klara
 
 -- ==========================================
 -- 8. WORKSHOP ENROLLMENTS (Estudiantes Aceptados)
 -- ==========================================
 -- Simular que algunas peticiones ya tienen estudiantes aceptados
 -- Request 1: 2 de 4 estudiantes aceptados
-INSERT INTO workshop_enrollments (id_workshop, id_student, enrolled_at) VALUES
-(1, 13, '2026-01-08 10:00:00'), -- Berta aceptada
-(1, 16, '2026-01-08 10:00:00'); -- Elena aceptada
--- Albert y David NO están aceptados aún
+-- INSERT INTO workshop_enrollments (id_workshop, id_student, enrolled_at) VALUES
+-- (1, 13, '2026-01-08 10:00:00'), -- Berta aceptada
+-- (1, 16, '2026-01-08 10:00:00'); -- Elena aceptada
+-- -- Albert y David NO están aceptados aún
 
--- Request 3: 3 de 4 estudiantes aceptados
-INSERT INTO workshop_enrollments (id_workshop, id_student, enrolled_at) VALUES
-(1, 19, '2026-01-08 11:00:00'), -- Hugo aceptado
-(1, 20, '2026-01-08 11:00:00'); -- Irene aceptada
+-- -- Request 3: 3 de 4 estudiantes aceptados
+-- INSERT INTO workshop_enrollments (id_workshop, id_student, enrolled_at) VALUES
+-- (1, 19, '2026-01-08 11:00:00'), -- Hugo aceptado
+-- (1, 20, '2026-01-08 11:00:00'); -- Irene aceptada
 -- Jordi (21) removido para respetar limite de 4 (Berta, Elena, Hugo, Irene)
 -- Klara NO está aceptada aún
 

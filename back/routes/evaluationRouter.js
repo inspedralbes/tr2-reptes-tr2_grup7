@@ -1,6 +1,6 @@
 import express from "express";
 import * as evaluationController from "../controllers/evaluationController.js";
-import { verifyToken, authorizeRoles } from "../middleware/auth.js";
+import { verifyToken, authorizeRoles } from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 

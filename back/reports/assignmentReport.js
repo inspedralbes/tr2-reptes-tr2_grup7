@@ -1,4 +1,39 @@
 import db from "../data/db.js";
+import puppeteer from 'puppeteer';
+
+export const generateAssignmentReportPdf = async (htmlContent) => {
+    // Launch puppeteer
+    // Launch puppeteer
+    const browser = await puppeteer.launch({
+        executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || undefined,
+        args: [
+            '--no-sandbox', 
+            '--disable-setuid-sandbox',
+            '--disable-dev-shm-usage'
+        ],
+        headless: 'new'
+    });
+    
+    try {
+        const page = await browser.newPage();
+        await page.setContent(htmlContent, { waitUntil: 'domcontentloaded' });
+        
+        const pdfBuffer = await page.pdf({
+            format: 'A4',
+            printBackground: true,
+            margin: {
+                top: '20px',
+                right: '20px',
+                bottom: '20px',
+                left: '20px'
+            }
+        });
+        
+        return pdfBuffer;
+    } finally {
+        await browser.close();
+    }
+};
 
 export const generateAssignmentReportHtml = async () => {
     const result = await db.query(`

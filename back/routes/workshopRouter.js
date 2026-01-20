@@ -1,7 +1,7 @@
 import express from "express";
 import * as workshopController from "../controllers/workshopController.js";
 import * as attendanceController from "../controllers/attendanceController.js";
-import { verifyToken, authorizeRoles } from "../middleware/auth.js";
+import { verifyToken, authorizeRoles } from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 

@@ -93,6 +93,11 @@ const router = createRouter({
           name: 'admin-centros',
           component: () => import('../components/views/admin/GestionCentros.vue'),
         },
+        {
+          path: 'admin/convocatorias',
+          name: 'admin-convocatorias',
+          component: () => import('../components/views/admin/GestionConvocatorias.vue'),
+        },
         // Rutas de Profesor
         {
           path: 'profesor/talleres',

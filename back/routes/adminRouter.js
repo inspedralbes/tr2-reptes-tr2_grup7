@@ -1,49 +1,55 @@
 import express from "express";
 import * as adminController from "../controllers/adminController.js";
-import { verifyToken } from "../middleware/auth.js";
-import { isAdmin } from "../middleware/authMiddleware.js";
+import { verifyToken, verifyAdmin } from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 
 // Estadísticas del panel de admin
-router.get("/stats", verifyToken, isAdmin, adminController.getAdminStats);
+router.get("/stats", verifyToken, verifyAdmin, adminController.getAdminStats);
 
 // Todas las peticiones para gestión
-router.get("/requests", verifyToken, isAdmin, adminController.getAllRequests);
+router.get("/requests", verifyToken, verifyAdmin, adminController.getAllRequests);
 
 // Detalles de una petición específica con estudiantes
-router.get("/requests/:id", verifyToken, isAdmin, adminController.getRequestById);
+router.get("/requests/:id", verifyToken, verifyAdmin, adminController.getRequestById);
 
 // Peticiones pendientes para asignación
-router.get("/pending-requests", verifyToken, isAdmin, adminController.getPendingRequests);
+router.get("/pending-requests", verifyToken, verifyAdmin, adminController.getPendingRequests);
 
 // Profesores disponibles
-router.get("/teachers", verifyToken, isAdmin, adminController.getAvailableTeachers);
+router.get("/teachers", verifyToken, verifyAdmin, adminController.getAvailableTeachers);
 
 // Talleres más solicitados
-router.get("/top-workshops", verifyToken, isAdmin, adminController.getTopWorkshops);
+router.get("/top-workshops", verifyToken, verifyAdmin, adminController.getTopWorkshops);
 
 // Centros disponibles
-router.get("/centers", verifyToken, isAdmin, adminController.getAllCenters);
+router.get("/centers", verifyToken, verifyAdmin, adminController.getAllCenters);
 
 
 // Teacher management routes
-router.get("/teachers/:id", verifyToken, isAdmin, adminController.getTeacherById);
-router.put("/teachers/:id", verifyToken, isAdmin, adminController.updateTeacher);
-router.put("/teachers/:id/assign-center", verifyToken, isAdmin, adminController.assignCenterToTeacher);
-router.put("/teachers/:id/toggle-active", verifyToken, isAdmin, adminController.toggleTeacherActive);
+
+router.get("/teachers/:id", verifyToken, verifyAdmin, adminController.getTeacherById);
+router.put("/teachers/:id", verifyToken, verifyAdmin, adminController.updateTeacher);
+router.put("/teachers/:id/assign-center", verifyToken, verifyAdmin, adminController.assignCenterToTeacher);
+router.put("/teachers/:id/toggle-active", verifyToken, verifyAdmin, adminController.toggleTeacherActive);
 
 
 // Operaciones CRUD de peticiones
-router.put("/requests/:id", verifyToken, isAdmin, adminController.updateRequest);
-router.put("/requests/:id/accept", verifyToken, isAdmin, adminController.acceptRequest);
-router.put("/requests/:id/reject", verifyToken, isAdmin, adminController.rejectRequest);
-router.delete("/requests/:id", verifyToken, isAdmin, adminController.deleteRequest);
+router.put("/requests/:id", verifyToken, verifyAdmin, adminController.updateRequest);
+router.put("/requests/:id/accept", verifyToken, verifyAdmin, adminController.acceptRequest);
+router.put("/requests/:id/reject", verifyToken, verifyAdmin, adminController.rejectRequest);
+router.delete("/requests/:id", verifyToken, verifyAdmin, adminController.deleteRequest);
+
+// User management routes
+router.get("/users", verifyToken, verifyAdmin, adminController.getAllUsers);
+router.put("/users/:id", verifyToken, verifyAdmin, adminController.updateUser);
+router.delete("/users/:id", verifyToken, verifyAdmin, adminController.deleteUser);
+router.post("/users", verifyToken, verifyAdmin, adminController.createUser);
 
 // Asignación manual
-router.post("/assign", verifyToken, isAdmin, adminController.manualAssign);
+router.post("/assign", verifyToken, verifyAdmin, adminController.manualAssign);
 
 // Asignación automática
-router.post("/auto-assign", verifyToken, isAdmin, adminController.autoAssign);
+router.post("/auto-assign", verifyToken, verifyAdmin, adminController.autoAssign);
 
 export default router;

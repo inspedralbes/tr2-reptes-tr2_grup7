@@ -1,5 +1,19 @@
 # Dockerfile.dev en la carpeta 'backend/'
 FROM node:20-alpine
+
+# Instalar Chromium y dependencias para Puppeteer en Alpine
+RUN apk add --no-cache \
+      chromium \
+      nss \
+      freetype \
+      harfbuzz \
+      ca-certificates \
+      ttf-freefont
+
+# Configurar Puppeteer
+ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
+ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
+
 WORKDIR /app
 # Solo copia los archivos de manifiesto para instalar dependencias primero (cache)
 COPY package*.json ./

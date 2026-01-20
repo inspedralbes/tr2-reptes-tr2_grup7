@@ -223,6 +223,11 @@ const navigationStructure = {
       name: 'Centres',
       subsections: [{ id: 'llista-centres', name: 'Llista Centres', route: '/admin/centros' }],
     },
+    {
+      id: 'configuracio',
+      name: 'Configuració',
+      subsections: [{ id: 'convocatories', name: 'Convocatòries', route: '/admin/convocatorias' }],
+    },
   ],
   teacher: [
     {
