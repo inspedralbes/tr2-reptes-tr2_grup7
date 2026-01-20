@@ -1,138 +1,114 @@
 <template>
   <div class="space-y-6">
-    <div
-      class="flex justify-between items-center"
-      style="
-        border-bottom: 2px solid var(--border-color);
-        padding-bottom: 1rem;
-        margin-bottom: 1.5rem;
-      "
-    >
-      <h1
-        class="text-2xl font-semibold"
-        style="color: var(--text-primary); text-transform: uppercase; letter-spacing: 0.5px"
-      >
-        Tauler de Control
-      </h1>
+    <!-- Header -->
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <h1 class="text-2xl sm:text-3xl font-bold text-gray-800">Tauler de Control</h1>
       <button @click="goToNewRequest" class="btn-primary px-6 py-2 flex items-center gap-2">
         <Plus :size="18" /> Nova Petició
       </button>
     </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-4 gap-5">
-      <div class="stat-card-blue text-white p-5">
+    <!-- Stats Cards -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-5">
+      <div class="stat-card-blue text-white p-5 rounded-lg shadow-sm">
         <div class="flex items-start justify-between">
           <div>
-            <p class="text-sm" style="opacity: 0.9; margin-bottom: 0.5rem; font-weight: 500">
-              Peticions Actives
-            </p>
+            <p class="text-sm opacity-90 mb-2 font-medium">Peticions Actives</p>
             <p class="text-3xl font-bold">{{ stats.requests_active }}</p>
           </div>
-          <FileText :size="32" style="opacity: 0.75" />
+          <FileText :size="32" class="opacity-75" />
         </div>
       </div>
 
-      <div class="stat-card-green text-white p-5">
+      <div class="stat-card-green text-white p-5 rounded-lg shadow-sm">
         <div class="flex items-start justify-between">
           <div>
-            <p class="text-sm" style="opacity: 0.9; margin-bottom: 0.5rem; font-weight: 500">
-              Assignacions
-            </p>
+            <p class="text-sm opacity-90 mb-2 font-medium">Assignacions</p>
             <p class="text-3xl font-bold">{{ stats.total_assignments }}</p>
           </div>
-          <CheckCircle :size="32" style="opacity: 0.75" />
+          <CheckCircle :size="32" class="opacity-75" />
         </div>
       </div>
 
-      <div class="stat-card-orange text-white p-5">
+      <div class="stat-card-orange text-white p-5 rounded-lg shadow-sm">
         <div class="flex items-start justify-between">
           <div>
-            <p class="text-sm" style="opacity: 0.9; margin-bottom: 0.5rem; font-weight: 500">
-              Pendents
-            </p>
+            <p class="text-sm opacity-90 mb-2 font-medium">Pendents</p>
             <p class="text-3xl font-bold">{{ stats.requests_pending }}</p>
           </div>
-          <Clock :size="32" style="opacity: 0.75" />
+          <Clock :size="32" class="opacity-75" />
         </div>
       </div>
 
-      <div class="stat-card-purple text-white p-5">
+      <div class="stat-card-purple text-white p-5 rounded-lg shadow-sm">
         <div class="flex items-start justify-between">
           <div>
-            <p class="text-sm" style="opacity: 0.9; margin-bottom: 0.5rem; font-weight: 500">
-              Alumnes Total
-            </p>
+            <p class="text-sm opacity-90 mb-2 font-medium">Alumnes Total</p>
             <p class="text-3xl font-bold">{{ stats.student_count }}</p>
           </div>
-          <Users :size="32" style="opacity: 0.75" />
+          <Users :size="32" class="opacity-75" />
         </div>
       </div>
     </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-      <div class="space-y-6">
-        <div class="card p-5">
-          <h3
-            class="text-base font-semibold mb-3"
-            style="
-              color: var(--text-primary);
-              padding-bottom: 0.5rem;
-              border-bottom: 1px solid var(--border-color);
-            "
+    <!-- Information Section -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div class="bg-white rounded-lg border border-gray-200 shadow-sm p-6">
+        <h2 class="text-lg font-semibold mb-4 text-gray-800 pb-3 border-b border-gray-200">
+          Estat de les Peticions
+        </h2>
+        <div class="space-y-3">
+          <div
+            class="flex items-center justify-between p-3 bg-green-50 border-l-4 border-green-500 rounded"
           >
-            Contacte Centre
-          </h3>
-          <div class="space-y-3">
-            <div>
-              <p
-                class="text-xs"
-                style="
-                  color: var(--text-secondary);
-                  text-transform: uppercase;
-                  letter-spacing: 0.5px;
-                  margin-bottom: 0.25rem;
-                "
-              >
-                Centre
-              </p>
-              <p class="font-semibold" style="color: var(--text-primary)">
-                {{ centerInfo.center_name || 'Carregant...' }}
-              </p>
-            </div>
-            <div>
-              <p
-                class="text-xs"
-                style="
-                  color: var(--text-secondary);
-                  text-transform: uppercase;
-                  letter-spacing: 0.5px;
-                  margin-bottom: 0.25rem;
-                "
-              >
-                Email
-              </p>
-              <p class="font-medium" style="color: var(--primary)">
-                {{ centerInfo.email || '-' }}
-              </p>
-            </div>
-            <div>
-              <p
-                class="text-xs"
-                style="
-                  color: var(--text-secondary);
-                  text-transform: uppercase;
-                  letter-spacing: 0.5px;
-                  margin-bottom: 0.25rem;
-                "
-              >
-                Telèfon
-              </p>
-              <p class="font-semibold" style="color: var(--text-primary)">
-                {{ centerInfo.phone || '-' }}
-              </p>
-            </div>
+            <span class="text-gray-800 font-medium">Assignades</span>
+            <span class="font-bold text-gray-900 text-2xl">
+              {{
+                stats.requests_active > 0
+                  ? Math.round((stats.total_assignments / stats.requests_active) * 100)
+                  : 0
+              }}%
+            </span>
           </div>
-          <button @click="sendMessage" class="w-full mt-4 btn-primary py-2.5">
+          <div
+            class="flex items-center justify-between p-3 bg-orange-50 border-l-4 border-orange-500 rounded"
+          >
+            <span class="text-gray-800 font-medium">Pendents</span>
+            <span class="font-bold text-gray-900 text-2xl">
+              {{
+                stats.requests_active > 0
+                  ? Math.round((stats.requests_pending / stats.requests_active) * 100)
+                  : 0
+              }}%
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-lg border border-gray-200 shadow-sm p-6">
+        <h2 class="text-lg font-semibold mb-4 text-gray-800 pb-3 border-b border-gray-200">
+          Informació del Centre
+        </h2>
+        <div class="space-y-4">
+          <div>
+            <p class="text-xs text-gray-500 uppercase tracking-wide mb-1">Centre</p>
+            <p class="font-semibold text-gray-800">
+              {{ centerInfo.center_name || 'Carregant...' }}
+            </p>
+          </div>
+          <div>
+            <p class="text-xs text-gray-500 uppercase tracking-wide mb-1">Email</p>
+            <p class="font-medium text-blue-600">
+              {{ centerInfo.email || '-' }}
+            </p>
+          </div>
+          <div>
+            <p class="text-xs text-gray-500 uppercase tracking-wide mb-1">Telèfon</p>
+            <p class="font-semibold text-gray-800">
+              {{ centerInfo.phone || '-' }}
+            </p>
+          </div>
+          <button @click="sendMessage" class="w-full mt-2 btn-primary py-2.5 rounded-lg">
             Enviar Missatge
           </button>
         </div>
