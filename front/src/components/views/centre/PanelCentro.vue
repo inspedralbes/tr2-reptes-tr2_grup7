@@ -1,70 +1,52 @@
 <template>
   <div class="space-y-6">
-    <div
-      class="flex justify-between items-center"
-      style="
-        border-bottom: 2px solid var(--border-color);
-        padding-bottom: 1rem;
-        margin-bottom: 1.5rem;
-      "
-    >
-      <h1
-        class="text-2xl font-semibold"
-        style="color: var(--text-primary); text-transform: uppercase; letter-spacing: 0.5px"
-      >
-        Tauler de Control
-      </h1>
+    <!-- Header -->
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <h1 class="text-2xl sm:text-3xl font-bold text-gray-800">Tauler de Control</h1>
       <button @click="goToNewRequest" class="btn-primary px-6 py-2 flex items-center gap-2">
         <Plus :size="18" /> Nova Petició
       </button>
     </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-4 gap-5">
-      <div class="stat-card-blue text-white p-5">
+    <!-- Stats Cards -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-5">
+      <div class="stat-card-blue text-white p-5 rounded-lg shadow-sm">
         <div class="flex items-start justify-between">
           <div>
-            <p class="text-sm" style="opacity: 0.9; margin-bottom: 0.5rem; font-weight: 500">
-              Peticions Actives
-            </p>
+            <p class="text-sm opacity-90 mb-2 font-medium">Peticions Actives</p>
             <p class="text-3xl font-bold">{{ stats.requests_active }}</p>
           </div>
-          <FileText :size="32" style="opacity: 0.75" />
+          <FileText :size="32" class="opacity-75" />
         </div>
       </div>
 
-      <div class="stat-card-green text-white p-5">
+      <div class="stat-card-green text-white p-5 rounded-lg shadow-sm">
         <div class="flex items-start justify-between">
           <div>
-            <p class="text-sm" style="opacity: 0.9; margin-bottom: 0.5rem; font-weight: 500">
-              Assignacions
-            </p>
+            <p class="text-sm opacity-90 mb-2 font-medium">Assignacions</p>
             <p class="text-3xl font-bold">{{ stats.total_assignments }}</p>
           </div>
-          <CheckCircle :size="32" style="opacity: 0.75" />
+          <CheckCircle :size="32" class="opacity-75" />
         </div>
       </div>
 
-      <div class="stat-card-orange text-white p-5">
+      <div class="stat-card-orange text-white p-5 rounded-lg shadow-sm">
         <div class="flex items-start justify-between">
           <div>
-            <p class="text-sm" style="opacity: 0.9; margin-bottom: 0.5rem; font-weight: 500">
-              Pendents
-            </p>
+            <p class="text-sm opacity-90 mb-2 font-medium">Pendents</p>
             <p class="text-3xl font-bold">{{ stats.requests_pending }}</p>
           </div>
-          <Clock :size="32" style="opacity: 0.75" />
+          <Clock :size="32" class="opacity-75" />
         </div>
       </div>
 
-      <div class="stat-card-purple text-white p-5">
+      <div class="stat-card-purple text-white p-5 rounded-lg shadow-sm">
         <div class="flex items-start justify-between">
           <div>
-            <p class="text-sm" style="opacity: 0.9; margin-bottom: 0.5rem; font-weight: 500">
-              Alumnes Total
-            </p>
+            <p class="text-sm opacity-90 mb-2 font-medium">Alumnes Total</p>
             <p class="text-3xl font-bold">{{ stats.student_count }}</p>
           </div>
-          <Users :size="32" style="opacity: 0.75" />
+          <Users :size="32" class="opacity-75" />
         </div>
       </div>
     </div>

@@ -2,9 +2,7 @@
   <div class="space-y-6">
     <!-- Header -->
     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-      <h1 class="text-2xl sm:text-3xl font-bold text-gray-800">
-        Tauler d'Administració
-      </h1>
+      <h1 class="text-2xl sm:text-3xl font-bold text-gray-800">Tauler d'Administració</h1>
     </div>
 
     <!-- Stats Cards -->
@@ -57,16 +55,28 @@
           Peticions per Estat
         </h2>
         <div class="space-y-3">
-          <div class="flex items-center justify-between p-3 bg-green-50 border-l-4 border-green-500 rounded">
+          <div
+            class="flex items-center justify-between p-3 bg-green-50 border-l-4 border-green-500 rounded"
+          >
             <span class="text-gray-800 font-medium">Assignades</span>
             <span class="font-bold text-gray-900 text-2xl">
-              {{ stats.totalRequests > 0 ? Math.round((stats.assignedRequests / stats.totalRequests) * 100) : 0 }}%
+              {{
+                stats.totalRequests > 0
+                  ? Math.round((stats.assignedRequests / stats.totalRequests) * 100)
+                  : 0
+              }}%
             </span>
           </div>
-          <div class="flex items-center justify-between p-3 bg-orange-50 border-l-4 border-orange-500 rounded">
+          <div
+            class="flex items-center justify-between p-3 bg-orange-50 border-l-4 border-orange-500 rounded"
+          >
             <span class="text-gray-800 font-medium">Pendents</span>
             <span class="font-bold text-gray-900 text-2xl">
-              {{ stats.totalRequests > 0 ? Math.round((stats.pendingRequests / stats.totalRequests) * 100) : 0 }}%
+              {{
+                stats.totalRequests > 0
+                  ? Math.round((stats.pendingRequests / stats.totalRequests) * 100)
+                  : 0
+              }}%
             </span>
           </div>
         </div>
@@ -80,10 +90,15 @@
           <div v-if="topWorkshops.length === 0" class="text-center py-4 text-gray-500">
             No hi ha dades disponibles
           </div>
-          <div v-for="workshop in topWorkshops.slice(0, 3)" :key="workshop.title" 
-               class="flex items-center justify-between py-3 border-b border-gray-100 last:border-0">
+          <div
+            v-for="workshop in topWorkshops.slice(0, 3)"
+            :key="workshop.title"
+            class="flex items-center justify-between py-3 border-b border-gray-100 last:border-0"
+          >
             <span class="text-gray-800 font-medium truncate mr-2">{{ workshop.title }}</span>
-            <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-blue-100 text-blue-800 min-w-[2.5rem] justify-center">
+            <span
+              class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-blue-100 text-blue-800 min-w-[2.5rem] justify-center"
+            >
               {{ workshop.request_count }}
             </span>
           </div>
@@ -103,7 +118,7 @@ const stats = ref({
   totalRequests: 0,
   assignedRequests: 0,
   pendingRequests: 0,
-  activeCenters: 0
+  activeCenters: 0,
 })
 
 const topWorkshops = ref([])
@@ -137,10 +152,10 @@ onMounted(() => {
   // Cargar datos iniciales
   loadStats()
   loadTopWorkshops()
-  
+
   // Conectar a Socket.io
   socketService.connect()
-  
+
   // Escuchar eventos de actualización
   socketService.on('stats_updated', handleStatsUpdate)
 })
