@@ -1,183 +1,197 @@
 <template>
-  <div class="space-y-6 pb-12">
-    <h1 class="text-2xl font-semibold" style="color: var(--text-primary); text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid var(--border-color); padding-bottom: 1rem; margin-bottom: 1.5rem;">Els meus tallers</h1>
-
-    <div v-if="loading" class="text-center py-10">
-      <p style="color: var(--text-secondary);">Carregant tallers...</p>
+  <div class="space-y-6 pb-12 animate-fade-in">
+    <!-- Header -->
+    <div
+      class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-gray-200 pb-4 mb-6"
+    >
+      <h1 class="text-2xl sm:text-3xl font-bold text-gray-800">Els Meus Tallers</h1>
     </div>
 
-    <div v-else-if="workshops.length === 0" class="text-center py-10 card">
-      <p style="color: var(--text-secondary);">Actualment no tens cap taller assignat.</p>
+    <!-- Workshop List -->
+    <div v-if="loading" class="text-center py-12">
+      <p class="text-gray-500 animate-pulse">Carregant tallers...</p>
     </div>
 
-    <div v-else class="grid grid-cols-1 md:grid-cols-3 gap-5">
-      <div v-for="workshop in workshops" :key="workshop.id_workshop" class="card p-5">
-        <div class="flex items-center justify-between mb-3" style="border-bottom: 1px solid var(--border-color); padding-bottom: 0.75rem;">
-          <div :style="{ backgroundColor: getCategoryColor(workshop.category).bg, padding: '0.5rem', borderRadius: '3px' }">
-            <BookOpen :style="{ color: getCategoryColor(workshop.category).text }" :size="22" />
-          </div>
-          <span :class="getStatusBadgeClass(workshop.status)">
-            {{ getStatusLabel(workshop.status) }}
-          </span>
-        </div>
-        <h3 class="text-base font-semibold mb-2" style="color: var(--text-primary);">
-          {{ workshop.title }}
-        </h3>
-        <p class="text-sm mb-4" style="color: var(--text-secondary);">
-          {{ workshop.category }} - {{ workshop.duration_hours }}h
-        </p>
-        <div class="space-y-2 text-sm" style="margin-bottom: 1rem;">
-          <div class="flex justify-between py-1">
-            <span style="color: var(--text-secondary);">Inscrits:</span>
-            <span class="font-semibold" style="color: var(--text-primary);">{{ workshop.enrolled_count || 0 }} / {{ workshop.max_slots }}</span>
-          </div>
-          <div class="flex justify-between py-1">
-            <span style="color: var(--text-secondary);">{{ isPast(workshop.end_date) ? 'Finalitzat el:' : 'Inici:' }}</span>
-            <span class="font-semibold" style="color: var(--text-primary);">{{ formatDate(workshop.start_date) }}</span>
-          </div>
-        </div>
-        <button v-if="!isPast(workshop.end_date)" 
-                @click="goToDetail(workshop.id_workshop)" 
-                class="w-full mt-3 btn-primary py-2" 
-                :style="{ backgroundColor: getCategoryColor(workshop.category).text + ' !important' }">
-          Veure detalls
-        </button>
-        <button v-else 
-                @click="goToDetail(workshop.id_workshop)" 
-                class="w-full mt-3 btn-outline py-2">
-          Veure historial
-        </button>
-      </div>
+    <div
+      v-else-if="workshops.length === 0"
+      class="text-center py-12 card bg-gray-50 border-gray-100"
+    >
+      <p class="text-gray-500">No tens tallers assignats actualment.</p>
     </div>
 
-    <!-- Pròximes Sessions -->
-    <div class="card p-6">
-      <h2 class="text-lg font-semibold mb-4" style="color: var(--text-primary); padding-bottom: 0.75rem; border-bottom: 1px solid var(--border-color);">
-        Pròximes sessions
-      </h2>
-      <div v-if="upcomingWorkshops.length > 0" class="space-y-3">
-        <div v-for="(workshop, index) in upcomingWorkshops" :key="'session-' + workshop.id_workshop" 
-             @click="goToDetail(workshop.id_workshop)"
-             class="flex items-center gap-4 p-4 cursor-pointer hover:opacity-90 transition-opacity" 
-             :style="{ backgroundColor: getCategoryColor(workshop.category).bg, borderLeft: '4px solid ' + getCategoryColor(workshop.category).text }">
-          <Calendar :style="{ color: getCategoryColor(workshop.category).text }" :size="24" />
-          <div class="flex-1">
-            <p class="font-semibold" style="color: var(--text-primary); margin-bottom: 0.25rem;">
+    <div v-else class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div
+        v-for="workshop in workshops"
+        :key="workshop.id_workshop"
+        class="card hover:shadow-lg transition-all duration-300 group flex flex-col relative overflow-hidden"
+      >
+        <!-- Category strip -->
+        <div
+          class="absolute top-0 left-0 w-1 h-full"
+          :style="{ backgroundColor: getCategoryColor(workshop.category).text }"
+        ></div>
+
+        <div class="flex items-start justify-between mb-4 pl-3">
+          <div class="flex-1 pr-4">
+            <h2
+              class="text-xl font-bold text-gray-800 group-hover:text-primary transition-colors line-clamp-2"
+            >
               {{ workshop.title }}
-            </p>
-            <p class="text-sm" style="color: var(--text-secondary);">
-              {{ formatSessionDate(workshop.start_date) }}
-            </p>
+            </h2>
+            <div class="flex flex-wrap items-center gap-2 mt-2">
+              <span
+                class="text-sm font-medium px-2 py-1 rounded-md"
+                :style="{
+                  backgroundColor: getCategoryColor(workshop.category).bg,
+                  color: getCategoryColor(workshop.category).text,
+                }"
+              >
+                {{ workshop.category }}
+              </span>
+              <span :class="getStatusBadgeClass(workshop.status)">
+                {{ getStatusLabel(workshop.status) }}
+              </span>
+            </div>
           </div>
-          <button 
-            @click.stop="goToAttendance(workshop.id_workshop)"
-            class="p-2 rounded-full hover:bg-gray-100 transition-colors"
-            style="margin-right: -0.5rem;"
-            title="Gestionar Assistència">
-            <ClipboardList :size="20" :style="{ color: getCategoryColor(workshop.category).text }" />
+          <div
+            class="p-2 bg-gray-50 rounded-full text-gray-400 group-hover:text-primary group-hover:bg-blue-50 transition-colors"
+          >
+            <BookOpen :size="24" />
+          </div>
+        </div>
+
+        <!-- Info Grid -->
+        <div class="grid grid-cols-2 gap-y-4 gap-x-2 mb-6 pl-3 bg-gray-50/50 p-4 rounded-lg">
+          <div class="flex items-center gap-3">
+            <Calendar :size="18" class="text-gray-400" />
+            <div>
+              <p class="text-xs text-gray-500 uppercase tracking-wide">Inici</p>
+              <p class="text-sm font-bold text-gray-800">{{ formatDate(workshop.start_date) }}</p>
+            </div>
+          </div>
+
+          <div class="flex items-center gap-3">
+            <Clock :size="18" class="text-gray-400" />
+            <div>
+              <p class="text-xs text-gray-500 uppercase tracking-wide">Durada</p>
+              <p class="text-sm font-bold text-gray-800">{{ workshop.duration_hours }}h</p>
+            </div>
+          </div>
+
+          <div class="flex items-center gap-3">
+            <Users :size="18" class="text-gray-400" />
+            <div>
+              <p class="text-xs text-gray-500 uppercase tracking-wide">Inscrits</p>
+              <p class="text-sm font-bold text-gray-800">
+                {{ workshop.enrolled_count || 0 }}
+                <span class="text-gray-400 font-normal">/ {{ workshop.max_slots }}</span>
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="mt-auto pl-3 pt-2">
+          <button
+            v-if="!isPast(workshop.end_date)"
+            @click="goToDetail(workshop.id_workshop)"
+            class="w-full btn-primary py-2.5 flex items-center justify-center gap-2 shadow-sm transition-transform active:scale-95"
+            :style="{ backgroundColor: getCategoryColor(workshop.category).text + ' !important' }"
+          >
+            <Eye :size="18" />
+            Veure detalls
           </button>
-          <button :style="{ color: getCategoryColor(workshop.category).text }">
-            <ChevronRight :size="20" />
+          <button
+            v-else
+            class="w-full btn-outline py-2.5 flex items-center justify-center gap-2 bg-gray-50 text-gray-500 cursor-not-allowed border-gray-200"
+          >
+            <Archive :size="18" />
+            Taller finalitzat
           </button>
         </div>
       </div>
-      <p v-else style="color: var(--text-secondary);" class="text-center py-4">No hi ha sessions programades pròximament.</p>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from 'vue';
-import { useRouter } from 'vue-router';
-import { BookOpen, Calendar, ChevronRight, ClipboardList } from 'lucide-vue-next';
-import apiClient from '../../../services/apiClient';
+import { ref, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
+import { BookOpen, Calendar, Users, Clock, Eye, Archive } from 'lucide-vue-next'
+import apiClient from '../../../services/apiClient'
 import { getCurrentUser } from '../../../services/authService'
 
-const router = useRouter();
-const workshops = ref([]);
-const loading = ref(true);
-const user = ref(getCurrentUser() || {});
+const router = useRouter()
+const workshops = ref([])
+const loading = ref(true)
+const user = ref(getCurrentUser() || {})
 
 const fetchWorkshops = async () => {
   try {
-    loading.value = true;
-    const teacherId = user.value.teacher_id;
+    loading.value = true
+    const teacherId = user.value.teacher_id
     if (!teacherId) {
-      console.warn('No teacher_id found in user object');
-      workshops.value = [];
-      return;
+      workshops.value = []
+      return
     }
-    const response = await apiClient.get(`/workshops/mine?teacher_id=${teacherId}`);
-    workshops.value = response.data;
+    const response = await apiClient.get(`/workshops/mine?teacher_id=${teacherId}`)
+    workshops.value = response.data
   } catch (error) {
-    console.error('Error fetching workshops:', error);
+    console.error('Error fetching workshops:', error)
   } finally {
-    loading.value = false;
+    loading.value = false
   }
-};
-
-const upcomingWorkshops = computed(() => {
-  return workshops.value
-    .filter(w => !isPast(w.end_date))
-    .sort((a, b) => new Date(a.start_date) - new Date(b.start_date))
-    .slice(0, 2);
-});
-
-const goToDetail = (id) => {
-  router.push(`/profesor/detalle/${id}`);
-};
-
-const goToAttendance = (id) => {
-  router.push(`/profesor/asistencia/${id}`);
-};
+}
 
 onMounted(() => {
-  fetchWorkshops();
-});
+  fetchWorkshops()
+})
 
-// Helpers
+const goToDetail = (id) => {
+  router.push(`/profesor/detalle/${id}`)
+}
+
 const formatDate = (dateStr) => {
-  if (!dateStr) return 'N/A';
-  const date = new Date(dateStr);
-  return date.toLocaleDateString('ca-ES', { day: '2-digit', month: '2-digit', year: 'numeric' });
-};
-
-const formatSessionDate = (dateStr) => {
-  if (!dateStr) return 'N/A';
-  const date = new Date(dateStr);
-  return date.toLocaleDateString('ca-ES', { weekday: 'long', day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' }) + 'h';
-};
+  if (!dateStr) return 'N/A'
+  const date = new Date(dateStr)
+  return date.toLocaleDateString('ca-ES', { day: '2-digit', month: '2-digit', year: 'numeric' })
+}
 
 const isPast = (dateStr) => {
-  if (!dateStr) return false;
-  return new Date(dateStr) < new Date();
-};
-
-const getStatusBadgeClass = (status) => {
-  if (status === 'OFFERED' || status === 'PENDING') return 'badge-success';
-  if (status === 'FULL') return 'badge-warning';
-  return 'badge-secondary';
-};
-
-const getStatusLabel = (status) => {
-  switch (status) {
-    case 'OFFERED': return 'Actiu';
-    case 'PENDING': return 'Pendent';
-    case 'FULL': return 'Complet';
-    case 'ARCHIVED': return 'Finalitzat';
-    default: return status;
-  }
-};
+  if (!dateStr) return false
+  return new Date(dateStr) < new Date()
+}
 
 const getCategoryColor = (category) => {
   const colors = {
     'Arts escèniques': { bg: '#f3e5f5', text: '#7b1fa2' },
     'Indústria-manufactura': { bg: '#efebe9', text: '#5d4037' },
-    'Hostaleria': { bg: '#fff3e0', text: '#e65100' },
+    Hostaleria: { bg: '#fff3e0', text: '#e65100' },
     'Indústria 4.0': { bg: '#e3f2fd', text: '#0d47a1' },
-    'Esportiu': { bg: '#e8f5e9', text: '#2e7d32' },
-    'default': { bg: '#f5f5f5', text: '#666' }
-  };
-  return colors[category] || colors.default;
-};
+    Esportiu: { bg: '#e8f5e9', text: '#2e7d32' },
+    default: { bg: '#f5f5f5', text: '#666' },
+  }
+  return colors[category] || colors.default
+}
+
+const getStatusBadgeClass = (status) => {
+  if (status === 'OFFERED' || status === 'PENDING') return 'badge-success'
+  if (status === 'FULL') return 'badge-warning'
+  return 'badge-secondary'
+}
+
+const getStatusLabel = (status) => {
+  switch (status) {
+    case 'OFFERED':
+      return 'Actiu'
+    case 'PENDING':
+      return 'Pendent'
+    case 'FULL':
+      return 'Complet'
+    case 'ARCHIVED':
+      return 'Finalitzat'
+    default:
+      return status
+  }
+}
 </script>
