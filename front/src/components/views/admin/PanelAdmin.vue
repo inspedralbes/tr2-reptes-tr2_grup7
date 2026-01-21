@@ -105,12 +105,95 @@
         </div>
       </div>
     </div>
+
+    <!-- Quick Actions Section -->
+    <div class="bg-white rounded-lg border border-gray-200 shadow-sm p-6">
+      <h2 class="text-lg font-semibold mb-4 text-gray-800 pb-3 border-b border-gray-200">
+        Accions Ràpides
+      </h2>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+        <button
+          @click="$router.push('/admin/peticiones')"
+          class="flex items-center gap-3 p-4 rounded-lg border border-gray-200 hover:border-blue-500 hover:bg-blue-50 transition-all group"
+        >
+          <div
+            class="p-2 rounded-lg bg-blue-100 text-blue-600 group-hover:bg-blue-600 group-hover:text-white transition-colors"
+          >
+            <FileText :size="20" />
+          </div>
+          <div class="text-left">
+            <p class="font-semibold text-gray-800 text-sm">Gestionar Peticions</p>
+            <p class="text-xs text-gray-500">Veure totes les sol·licituds</p>
+          </div>
+        </button>
+
+        <button
+          @click="$router.push('/admin/talleres')"
+          class="flex items-center gap-3 p-4 rounded-lg border border-gray-200 hover:border-green-500 hover:bg-green-50 transition-all group"
+        >
+          <div
+            class="p-2 rounded-lg bg-green-100 text-green-600 group-hover:bg-green-600 group-hover:text-white transition-colors"
+          >
+            <Award :size="20" />
+          </div>
+          <div class="text-left">
+            <p class="font-semibold text-gray-800 text-sm">Gestionar Tallers</p>
+            <p class="text-xs text-gray-500">Administra els tallers</p>
+          </div>
+        </button>
+
+        <button
+          @click="$router.push('/admin/centros')"
+          class="flex items-center gap-3 p-4 rounded-lg border border-gray-200 hover:border-purple-500 hover:bg-purple-50 transition-all group"
+        >
+          <div
+            class="p-2 rounded-lg bg-purple-100 text-purple-600 group-hover:bg-purple-600 group-hover:text-white transition-colors"
+          >
+            <Building2 :size="20" />
+          </div>
+          <div class="text-left">
+            <p class="font-semibold text-gray-800 text-sm">Gestionar Centres</p>
+            <p class="text-xs text-gray-500">Administra els centres</p>
+          </div>
+        </button>
+
+        <button
+          @click="$router.push('/admin/profesores')"
+          class="flex items-center gap-3 p-4 rounded-lg border border-gray-200 hover:border-orange-500 hover:bg-orange-50 transition-all group"
+        >
+          <div
+            class="p-2 rounded-lg bg-orange-100 text-orange-600 group-hover:bg-orange-600 group-hover:text-white transition-colors"
+          >
+            <Users :size="20" />
+          </div>
+          <div class="text-left">
+            <p class="font-semibold text-gray-800 text-sm">Gestionar Professors</p>
+            <p class="text-xs text-gray-500">Administra els professors</p>
+          </div>
+        </button>
+
+        <button
+          @click="$router.push('/admin/asignacion')"
+          class="flex items-center gap-3 p-4 rounded-lg border border-gray-200 hover:border-indigo-500 hover:bg-indigo-50 transition-all group"
+        >
+          <div
+            class="p-2 rounded-lg bg-indigo-100 text-indigo-600 group-hover:bg-indigo-600 group-hover:text-white transition-colors"
+          >
+            <CheckCircle :size="20" />
+          </div>
+          <div class="text-left">
+            <p class="font-semibold text-gray-800 text-sm">Eina d'Assignació</p>
+            <p class="text-xs text-gray-500">Assignació automàtica</p>
+          </div>
+        </button>
+      </div>
+    </div>
   </div>
 </template>
 
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue'
-import { FileText, CheckCircle, Clock, Users } from 'lucide-vue-next'
+import { FileText, CheckCircle, Clock, Users, Award, Building2 } from 'lucide-vue-next'
 import { adminService } from '../../../services/adminService.js'
 import socketService from '../../../services/socketService.js'
 

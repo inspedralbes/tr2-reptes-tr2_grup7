@@ -82,6 +82,26 @@ export const getCentreRequests = async (req, res) => {
   }
 };
 
+export const getCentreTopWorkshops = async (req, res) => {
+  try {
+    const workshops = await Centre.getTopWorkshopsForCenter(req.params.id);
+    res.json(workshops);
+  } catch (error) {
+    console.error("Error getting centre top workshops:", error);
+    res.status(500).json({ error: "Error fetching top workshops" });
+  }
+};
+
+export const getCentreUpcomingWorkshops = async (req, res) => {
+  try {
+    const workshops = await Centre.getUpcomingWorkshopsForCenter(req.params.id);
+    res.json(workshops);
+  } catch (error) {
+    console.error("Error getting centre upcoming workshops:", error);
+    res.status(500).json({ error: "Error fetching upcoming workshops" });
+  }
+};
+
 export const createCentre = async (req, res) => {
   try {
     const { email, password, center_name, center_code, address, phone } =

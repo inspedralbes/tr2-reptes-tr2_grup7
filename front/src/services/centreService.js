@@ -46,6 +46,16 @@ export const getRequests = async (id) => {
   return response.data
 }
 
+export const getTopWorkshops = async (id) => {
+  const response = await apiClient.get(`/centres/${id}/top-workshops`)
+  return response.data
+}
+
+export const getUpcomingWorkshops = async (id) => {
+  const response = await apiClient.get(`/centres/${id}/upcoming-workshops`)
+  return response.data
+}
+
 // Student CRUD
 export const createStudent = async (centreId, data) => {
   const response = await apiClient.post(`/centres/${centreId}/students`, data)
