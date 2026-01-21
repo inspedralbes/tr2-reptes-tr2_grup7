@@ -5,6 +5,7 @@ import { verifyToken } from "../middleware/authMiddleware.js";
 const router = express.Router();
 
 router.post("/", verifyToken, assignmentController.triggerAssignment);
-router.post("/match", verifyToken, assignmentController.runMatching);
+router.post("/run-matching", verifyToken, assignmentController.runMatching);
+router.post("/confirm-matching", verifyToken, assignmentController.confirmMatching);
 
 export default router;

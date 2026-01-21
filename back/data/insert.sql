@@ -24,7 +24,7 @@ INSERT INTO users (email, password_hash, role, is_active, created_at) VALUES
 
 -- Centers (IDs 2-6)
 ('pedralbes@edu.com', '1234', 'CENTER', TRUE, '2026-01-01'),
-('poblenou@edu.com',  '1234', 'CENTER', TRUE, '2026-01-01'),
+('a23edstorcev@inspedralbes.cat', '1234', 'CENTER', TRUE, '2026-01-01'),
 ('tecnologic@edu.com','1234', 'CENTER', TRUE, '2026-01-01'),
 ('gracia@edu.com',    '1234', 'CENTER', TRUE, '2026-01-01'),
 ('treball@edu.com',   '1234', 'CENTER', TRUE, '2026-01-01'),
@@ -72,12 +72,12 @@ INSERT INTO centers (id_user, center_name, center_code, address, phone) VALUES
 (5, 'Institut Gracia',    '08004', 'C/ Gran de Gracia','934444444'),
 (6, 'Escola del Treball', '08005', 'C/ Urgell 1',    '935555555');
 
-INSERT INTO teachers (id_user, first_name, last_name, id_center_assigned) VALUES
-(7, 'Juan', 'Perez', 2),
-(8, 'Ana', 'Lopez', 3),
-(9, 'Pol', 'Garcia', 4),
-(10, 'Sofia', 'Ruiz', 5),
-(11, 'Marc', 'Torres', 6);
+INSERT INTO teachers (id_user, first_name, last_name, specialty, id_center_assigned) VALUES
+(7, 'Juan', 'Perez', 'Tech', 2),
+(8, 'Ana', 'Lopez', 'Tech', 3),
+(9, 'Pol', 'Garcia', 'Design', 4),
+(10, 'Sofia', 'Ruiz', 'General', 5),
+(11, 'Marc', 'Torres', 'Tech', 6);
 
 -- STUDENTS: Diverse Profiles for Testing Matching Logic
 -- ID 12-31

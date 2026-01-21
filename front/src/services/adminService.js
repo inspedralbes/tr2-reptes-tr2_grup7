@@ -88,7 +88,12 @@ export const adminService = {
   },
 
   async runMatching(config) {
-    const response = await apiClient.post('/assign/match', config)
+    const response = await apiClient.post('/assign/run-matching', config)
+    return response.data
+  },
+
+  async confirmMatching(proposalId) {
+    const response = await apiClient.post('/assign/confirm-matching', { proposalId })
     return response.data
   },
 }
