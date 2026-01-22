@@ -24,9 +24,9 @@
             <div class="user-profile-badge">
               {{ getRoleInitial() }}
             </div>
-            <div class="flex flex-col">
-              <span class="text-xs text-white opacity-75 leading-none mb-1">Benvingut/da</span>
-              <span class="text-sm text-white font-semibold leading-none">{{ getRoleName() }}</span>
+            <div class="flex flex-row items-center gap-2">
+              <span class="text-xs text-white opacity-75">Benvingut/da</span>
+              <span class="text-sm text-white font-semibold">{{ getRoleName() }}</span>
             </div>
           </div>
           <button @click="handleLogout" class="logout-button" title="Tancar sessió">
@@ -231,19 +231,19 @@ const navigationStructure = {
   ],
   teacher: [
     {
-      id: 'tallers',
-      name: 'Els Meus Tallers',
+      id: 'tauler',
+      name: 'Tauler',
       subsections: [
-        { id: 'meus-tallers', name: 'Tallers Actius', route: '/profesor/talleres' },
-        { id: 'historial-tallers', name: 'Historial', route: '/profesor/historial' },
+        { id: 'tauler-inici', name: 'Inici', route: '/profesor/panel' },
       ],
     },
     {
-      id: 'sessions',
-      name: 'Sessions',
+      id: 'tallers',
+      name: 'Tallers',
       subsections: [
+        { id: 'meus-tallers', name: 'Els Meus Tallers', route: '/profesor/talleres' },
         { id: 'proximes-sessions', name: 'Pròximes Sessions', route: '/profesor/sessions' },
-        { id: 'detall-taller', name: 'Detall Taller', route: '/profesor/talleres' },
+        { id: 'historial-tallers', name: 'Historial', route: '/profesor/historial' },
       ],
     },
     {

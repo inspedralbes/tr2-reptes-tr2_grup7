@@ -82,7 +82,46 @@ export const getDashboardStats = async (id_center) => {
     requests_rejected: rejected,
     requests_partial: partial,
     requests_active: pending + accepted + partial,
+    total_assignments: accepted + partial, // Calculate on backend
   };
+};
+
+export const getTopWorkshopsForCenter = async (id_center) => {
+  const query = `
+    SELECT w.title, w.id_workshop, COUNT(cr.id_request) as request_count
+    FROM center_requests cr
+    JOIN school_applications sa ON cr.id_application = sa.id_application
+    JOIN workshops w ON cr.id_workshop = w.id_workshop
+    WHERE sa.id_center = $1
+    GROUP BY w.id_workshop, w.title
+    ORDER BY request_count DESC
+    LIMIT 5
+  `;
+  const result = await db.query(query, [id_center]);
+  return result.rows;
+};
+
+export const getUpcomingWorkshopsForCenter = async (id_center) => {
+  const query = `
+    SELECT DISTINCT 
+      w.id_workshop,
+      w.title,
+      w.start_date,
+      w.end_date,
+      w.category,
+      cr.status,
+      (SELECT COUNT(*) FROM workshop_enrollments we WHERE we.id_workshop = w.id_workshop) as enrolled_count
+    FROM workshops w
+    JOIN center_requests cr ON w.id_workshop = cr.id_workshop
+    JOIN school_applications sa ON cr.id_application = sa.id_application
+    WHERE sa.id_center = $1 
+      AND w.start_date > NOW()
+      AND cr.status IN ('ACCEPTED', 'PARTIAL')
+    ORDER BY w.start_date ASC
+    LIMIT 5
+  `;
+  const result = await db.query(query, [id_center]);
+  return result.rows;
 };
 
 // Use User.create for creating new centers (handles transaction)

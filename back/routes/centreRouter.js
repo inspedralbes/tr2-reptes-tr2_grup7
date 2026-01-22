@@ -9,6 +9,8 @@ router.get("/:id/teachers", centreController.getCentreTeachers);
 router.get("/:id/students", centreController.getCentreStudents);
 router.get("/:id/stats", centreController.getCentreStats);
 router.get("/:id/requests", centreController.getCentreRequests);
+router.get("/:id/top-workshops", centreController.getCentreTopWorkshops);
+router.get("/:id/upcoming-workshops", centreController.getCentreUpcomingWorkshops);
 router.post("/", centreController.createCentre);
 router.put("/:id", centreController.updateCentre);
 router.delete("/:id", centreController.deleteCentre);
