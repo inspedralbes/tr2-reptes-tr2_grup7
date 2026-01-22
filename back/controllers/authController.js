@@ -33,11 +33,11 @@ export const login = async (req, res) => {
     }
 
     // 3. Generar el Token (JWT)
-    const token = jwt.sign(
-      { id: user.id, role: user.role },
-      process.env.JWT_SECRET,
-      { expiresIn: "8h" }
-    );
+      const token = jwt.sign(
+        { id: user.id, role: user.role },
+        process.env.JWT_SECRET,
+        { expiresIn: "24h" }
+      );
 
     // 4. Responder al Front con lo que necesita
     const userData = {

@@ -44,6 +44,7 @@ CREATE TABLE teachers (
     id_user INT PRIMARY KEY,
     first_name VARCHAR(100) NOT NULL,
     last_name VARCHAR(100) NOT NULL,
+    specialty VARCHAR(100) DEFAULT 'General',
     id_center_assigned INT,
     CONSTRAINT fk_user_teacher FOREIGN KEY (id_user) REFERENCES users(id) ON DELETE CASCADE,
     CONSTRAINT fk_teacher_center FOREIGN KEY (id_center_assigned) REFERENCES centers(id_user) ON DELETE SET NULL
@@ -85,6 +86,7 @@ CREATE TABLE workshops (
     request_deadline TIMESTAMP,
     status VARCHAR(20) NOT NULL DEFAULT 'OFFERED' CHECK (status IN ('PENDING', 'FULL', 'OFFERED', 'ARCHIVED', 'CANCELLED')),
     modalidad CHAR(1) DEFAULT 'C' CHECK (modalidad IN ('A', 'B', 'C')),
+    gender_audience CHAR(1) DEFAULT 'A' CHECK (gender_audience IN ('A', 'M', 'F')), -- A=Todos, M=Solo Chicos, F=Solo Chicas
     center_id INT REFERENCES centers(id_user), 
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT check_dates CHECK (end_date > start_date)
@@ -169,6 +171,16 @@ CREATE TABLE evaluations (
     comments TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     UNIQUE(id_workshop, id_student)
+);
+
+-- ==========================================
+-- 7. PROPUESTAS DE ASIGNACIÓN (Manual Confirmation)
+-- ==========================================
+CREATE TABLE assignment_proposals (
+    id SERIAL PRIMARY KEY,
+    data JSONB NOT NULL,
+    status VARCHAR(20) DEFAULT 'PENDING' CHECK (status IN ('PENDING', 'APPLIED', 'DISCARDED')),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 -- -- INSERT ADMIN INICIAL
