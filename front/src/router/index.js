@@ -9,6 +9,11 @@ const router = createRouter({
       name: 'login',
       component: () => import('../components/general/login.vue'),
     },
+    {
+      path: '/change-password',
+      name: 'change-password',
+      component: () => import('../components/views/auth/CambiarPassword.vue'),
+    },
     // Layout principal con rutas protegidas
     {
       path: '/',
@@ -154,6 +159,18 @@ router.beforeEach((to, from, next) => {
   // Si intenta acceder a / sin estar autenticado, ir a login
   if (to.path === '/' && !token) {
     next('/login')
+  }
+  
+  // JAIL: Force Password Change
+  else if (localStorage.getItem('mustChangePassword') === 'true' && to.path !== '/change-password') {
+       // Allow logout logic if implemented, but basically force stay here
+       // If user tries to go to login, we might allow it so they can logout/switch user?
+       // Let's allow login page access to switch users, but nothing else.
+       if (to.path === '/login') {
+           next();
+       } else {
+           next('/change-password');
+       }
   }
   // Si está en / y autenticado, redirigir al panel correspondiente
   else if (to.path === '/' && token && user) {

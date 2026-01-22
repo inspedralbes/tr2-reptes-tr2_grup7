@@ -199,6 +199,16 @@ const handleLogin = async () => {
 
     console.log('Login correcte:', response)
 
+    // check forced password change
+    if (response.mustChangePassword) {
+        console.log("⚠️ Old password detected. Redirecting to change password.");
+        localStorage.setItem('mustChangePassword', 'true');
+        router.push('/change-password');
+        return;
+    } else {
+        localStorage.removeItem('mustChangePassword'); // Clear if not needed
+    }
+
     // Redirigir segons el rol de l'usuari
     if (response.user.role === 'ADMIN') {
       router.push('/admin/panel')

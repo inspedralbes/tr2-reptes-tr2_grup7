@@ -14,3 +14,8 @@ export const getApplicationById = async (id) => {
   const response = await apiClient.get(`/applications/${id}`);
   return response.data;
 };
+
+export const getActivePeriod = async () => {
+  const response = await apiClient.get('/applications/active-period');
+  return response.data;
+};

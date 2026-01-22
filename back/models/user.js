@@ -10,7 +10,7 @@ export const getAll = async () => {
 
 export const findByEmail = async (email) => {
   const text = `
-      SELECT u.id, u.email, u.password_hash, u.role, u.is_active,
+      SELECT u.id, u.email, u.password_hash, u.role, u.is_active, u.password_last_changed_at,
              c.center_name, c.center_code, c.address, c.phone as center_phone,
              t.id_user as teacher_id, t.first_name as t_first, t.last_name as t_last, t.id_center_assigned as t_center,
              s.first_name as s_first, s.last_name as s_last, s.birth_date, s.id_center_assigned as s_center
@@ -31,6 +31,7 @@ export const findByEmail = async (email) => {
     password_hash: raw.password_hash,
     role: raw.role,
     is_active: raw.is_active,
+    password_last_changed_at: raw.password_last_changed_at,
   };
 
   if (raw.role === "CENTER") {
@@ -172,4 +173,9 @@ export const remove = async (id) => {
   const text = "DELETE FROM users WHERE id = $1 RETURNING *";
   const result = await db.query(text, [id]);
   return result.rows[0];
+};
+
+export const updatePassword = async (id, hashedPassword) => {
+    const text = "UPDATE users SET password_hash = $1, password_last_changed_at = NOW() WHERE id = $2";
+    await db.query(text, [hashedPassword, id]);
 };

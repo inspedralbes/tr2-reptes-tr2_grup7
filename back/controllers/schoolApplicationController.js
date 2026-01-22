@@ -39,14 +39,29 @@ export const createApplication = async (req, res) => {
       }
     }
 
-    // Determine Period
+    // Determine Period and Status
     let finalPeriodId = id_period;
+    let appStatus = 'SUBMITTED';
+    let reqStatus = 'PENDING';
+
     if (!finalPeriodId) {
+        // Try to get Open Period
         const activePeriod = await Period.getActive();
-        if (!activePeriod) {
-            return res.status(400).json({ error: "No hay ninguna convocatoria abierta actualmente." });
+        if (activePeriod) {
+            finalPeriodId = activePeriod.id_period;
+        } else {
+            // No active period. Check for ANY latest period to attach to.
+            // USER REQUEST: If sent outside period, AUTO-REJECT.
+            const latestPeriod = await Period.getLatest();
+            if (latestPeriod) {
+                finalPeriodId = latestPeriod.id_period;
+                appStatus = 'ARCHIVED'; // Mark application as essentially closed
+                reqStatus = 'REJECTED'; // Explicitly reject requests
+                console.warn(`[Auto-Reject] Application created outside open period. Period: ${latestPeriod.name}`);
+            } else {
+                 return res.status(400).json({ error: "No hay ninguna convocatoria disponible (ni abierta ni cerrada)." });
+            }
         }
-        finalPeriodId = activePeriod.id_period;
     }
 
     const result = await ApplicationModel.createApplicationWithDetails(
@@ -55,6 +70,8 @@ export const createApplication = async (req, res) => {
       comments,
       items,
       teachers,
+      appStatus,
+      reqStatus
     );
 
     res.status(201).json(result);
@@ -101,4 +118,17 @@ export const getApplicationById = async (req, res) => {
     console.error(error);
     res.status(500).json({ error: "Error fetching application details" });
   }
+};
+
+export const getActivePeriod = async (req, res) => {
+    try {
+        const activePeriod = await Period.getActive();
+        if (!activePeriod) {
+            return res.json({ active: false, message: "No active period found" });
+        }
+        res.json({ active: true, period: activePeriod });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: "Error checking active period" });
+    }
 };

@@ -22,6 +22,7 @@ CREATE TABLE users (
     password_hash VARCHAR(255) NOT NULL,
     role VARCHAR(20) NOT NULL CHECK (role IN ('ADMIN', 'TEACHER', 'CENTER', 'STUDENT')),
     is_active BOOLEAN DEFAULT TRUE,
+    password_last_changed_at TIMESTAMP DEFAULT NULL, -- NULL means password change is required
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
