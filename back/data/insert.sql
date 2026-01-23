@@ -18,23 +18,23 @@
 -- ==========================================
 -- 2. USERS (Identities)
 -- ==========================================
-INSERT INTO users (email, password_hash, role, is_active, created_at) VALUES
--- Admin
-('admin@workshop.com', '123', 'ADMIN', TRUE, '2026-01-01 10:00:00'),
+INSERT INTO users (email, password_hash, role, is_active, created_at, password_last_changed_at) VALUES
+-- Admin (Has changed password)
+('admin@workshop.com', '123', 'ADMIN', TRUE, '2026-01-01 10:00:00', '2026-01-01 10:00:00'),
 
--- Centers (IDs 2-6)
-('pedralbes@edu.com', '1234', 'CENTER', TRUE, '2026-01-01'),
-('a23edstorcev@inspedralbes.cat', '1234', 'CENTER', TRUE, '2026-01-01'),
-('tecnologic@edu.com','1234', 'CENTER', TRUE, '2026-01-01'),
-('gracia@edu.com',    '1234', 'CENTER', TRUE, '2026-01-01'),
-('treball@edu.com',   '1234', 'CENTER', TRUE, '2026-01-01'),
+-- Centers (IDs 2-6) - NULL timestamp (Force Change)
+('pedralbes@edu.com', '1234', 'CENTER', TRUE, '2026-01-01', NULL),
+('a23edstorcev@inspedralbes.cat', '1234', 'CENTER', TRUE, '2026-01-01', NULL),
+('tecnologic@edu.com','1234', 'CENTER', TRUE, '2026-01-01', NULL),
+('gracia@edu.com',    '1234', 'CENTER', TRUE, '2026-01-01', NULL),
+('treball@edu.com',   '1234', 'CENTER', TRUE, '2026-01-01', NULL),
 
 -- Teachers (IDs 7-11)
-('teacher.juan@edu.com', '1234', 'TEACHER', TRUE, '2026-01-01'),
-('teacher.ana@edu.com',  '1234', 'TEACHER', TRUE, '2026-01-01'),
-('teacher.pol@edu.com',  '1234', 'TEACHER', TRUE, '2026-01-01'),
-('teacher.sofia@edu.com','1234', 'TEACHER', TRUE, '2026-01-01'),
-('teacher.marc@gmail.com', '1234', 'TEACHER', TRUE, '2026-01-01');
+('teacher.juan@edu.com', '1234', 'TEACHER', TRUE, '2026-01-01', NULL),
+('teacher.ana@edu.com',  '1234', 'TEACHER', TRUE, '2026-01-01', NULL),
+('teacher.pol@edu.com',  '1234', 'TEACHER', TRUE, '2026-01-01', NULL),
+('teacher.sofia@edu.com','1234', 'TEACHER', TRUE, '2026-01-01', NULL),
+('teacher.marc@gmail.com', '1234', 'TEACHER', TRUE, '2026-01-01', NULL);
 
 -- Students (IDs 12+)
 -- We will create students dynamically below via the students table but need users first.
@@ -206,7 +206,7 @@ INSERT INTO student_interest (id_student, id_request, status, has_legal_papers, 
 -- 9. WORKSHOP TEACHERS
 -- ==========================================
 -- Asignar profesores a los talleres
-INSERT INTO workshop_teachers (id_workshop, id_teacher) VALUES
-(1, 7), -- Juan enseña Robótica
-(1, 8), -- Ana también enseña Robótica
-(2, 9); -- Pol enseña Diseño
+-- INSERT INTO workshop_teachers (id_workshop, id_teacher) VALUES
+-- (1, 7), -- Juan enseña Robótica
+-- (1, 8), -- Ana también enseña Robótica
+-- (2, 9); -- Pol enseña Diseño

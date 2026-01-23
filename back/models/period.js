@@ -40,3 +40,9 @@ export const updateStatus = async (id, status) => {
     const result = await db.query(text, [status, id]);
     return result.rows[0];
 };
+// Get the latest period (regardless of status)
+export const getLatest = async () => {
+    const text = `SELECT * FROM application_periods ORDER BY created_at DESC LIMIT 1`;
+    const result = await db.query(text);
+    return result.rows[0];
+};

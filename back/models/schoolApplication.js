@@ -7,6 +7,8 @@ export const createApplicationWithDetails = async (
   global_comments,
   items = [],
   teachers = [],
+  applicationStatus = 'SUBMITTED', // Default
+  requestStatus = 'PENDING'        // Default
 ) => {
   const client = await db.connect();
   try {
@@ -18,12 +20,13 @@ export const createApplicationWithDetails = async (
     // 1. Create Application
     const appText = `
         INSERT INTO school_applications (id_center, id_period, status, global_comments, id_teacher_1, id_teacher_2)
-        VALUES ($1, $2, 'SUBMITTED', $3, $4, $5)
+        VALUES ($1, $2, $3, $4, $5, $6)
         RETURNING *
     `;
     const appRes = await client.query(appText, [
       id_center,
       id_period,
+      applicationStatus, // Dynamic
       global_comments,
       id_teacher_1,
       id_teacher_2,
@@ -48,7 +51,7 @@ export const createApplicationWithDetails = async (
                 id_application, id_workshop, requested_slots, comments, 
                 student_count, course_level, status
             )
-            VALUES ($1, $2, $3, $4, $5, $6, 'PENDING')
+            VALUES ($1, $2, $3, $4, $5, $6, $7)
             RETURNING *
         `;
       const reqValues = [
@@ -58,6 +61,7 @@ export const createApplicationWithDetails = async (
         comments,
         student_count,
         course_level,
+        requestStatus // Dynamic
       ];
       const reqRes = await client.query(reqText, reqValues);
       const newReq = reqRes.rows[0];

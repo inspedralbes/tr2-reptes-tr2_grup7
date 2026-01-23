@@ -60,12 +60,39 @@ export const login = async (req, res) => {
 
     console.log("✅ Login successful for:", email, "Role:", user.role);
 
+    // CHECK PASSWORD EXPIRATION / FIRST LOGIN
+    // If password_last_changed_at is NULL, force change.
+    const mustChangePassword = !user.password_last_changed_at;
+
     res.json({
       token,
       user: userData,
+      mustChangePassword // Frontend will redirect if true
     });
   } catch (error) {
     console.error("❌ Login error:", error);
     res.status(500).json({ error: "Internal server error" });
   }
+};
+
+export const changePassword = async (req, res) => {
+    try {
+        const { id } = req.user; // From middleware
+        const { newPassword } = req.body;
+
+        if (!newPassword || newPassword.length < 4) {
+             return res.status(400).json({ error: "Password must be at least 4 characters" });
+        }
+        
+
+
+        const hashedPassword = await bcrypt.hash(newPassword, 10);
+        
+        await User.updatePassword(id, hashedPassword);
+        
+        res.json({ message: "Password updated successfully" });
+    } catch (error) {
+        console.error("Change Password Error:", error);
+        res.status(500).json({ error: "Error changing password" });
+    }
 };

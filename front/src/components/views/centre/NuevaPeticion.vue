@@ -16,16 +16,26 @@
     <div v-if="isBlocked" class="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-6">
       <div class="flex">
         <div class="flex-shrink-0">
-          <!-- Icon -->
           <svg class="h-5 w-5 text-yellow-400" viewBox="0 0 20 20" fill="currentColor">
             <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
           </svg>
         </div>
         <div class="ml-3">
-          <p class="text-sm text-yellow-700">
-            <strong>Atenció:</strong> Ja has enviat una sol·licitud per a aquest curs ({{ currentPeriodName || currentPeriod }}).
-            No pots crear-ne una altra de nova, però pots consultar l'estat de la teva sol·licitud a l'historial.
-          </p>
+          <div v-if="blockReason === 'CLOSED_PERIOD'">
+             <p class="text-sm text-yellow-700 font-bold">
+                Convocatòria Tancada
+             </p>
+             <p class="text-sm text-yellow-700 mt-1">
+                Actualment no hi ha cap període d'inscripció obert. Si us plau, espera a la propera convocatòria.
+             </p>
+          </div>
+          <div v-else>
+             <p class="text-sm text-yellow-700">
+               <strong>Atenció:</strong> Ja has enviat una sol·licitud per a aquesta convocatòria.
+               No pots crear-ne una altra de nova, però pots consultar l'estat a l'historial.
+             </p>
+          </div>
+
           <p class="mt-2 text-sm">
              <button @click="$router.push('/centro/historial')" class="font-medium text-yellow-700 underline hover:text-yellow-600">
                 Torna a l'historial
@@ -296,6 +306,7 @@ const teachers = ref([])
 const students = ref([])
 const loading = ref(false)
 const isBlocked = ref(false)
+const blockReason = ref('') // 'CLOSED_PERIOD' or 'ALREADY_SUBMITTED'
 
 const requests = ref([createEmptyRequest()])
 const globalComments = ref('')
@@ -406,24 +417,22 @@ onMounted(async () => {
       console.log('Fetched Applications:', myApps);
       console.log('Active Period:', activePeriod);
 
-      if (activePeriod) {
-          currentPeriodName.value = activePeriod.name;
-          activePeriodId.value = activePeriod.id_period;
-          
-          // Check if already has application for this period ID
-          const existingApp = myApps.find(app => app.id_period === activePeriod.id_period);
-          
-          if (existingApp) {
-            // BLOCKED STATE
-            console.log('Found existing application:', existingApp);
-            isBlocked.value = true;
-          } else {
-            console.log('No existing application found for active period ID:', activePeriod.id_period);
-          }
+      // 1. Check Active Period
+      const periodStatus = await schoolApplicationService.getActivePeriod();
+      console.log('Active Period Status:', periodStatus);
+
+      if (!periodStatus.active) {
+          isBlocked.value = true;
+          blockReason.value = 'CLOSED_PERIOD'; // New Reason
       } else {
-          console.warn('No active period found.');
-          // Optional: Block if no period is open? 
-          // For now, let's leave it, but backend will reject if no period.
+           // 2. Check if already has application for THIS active period
+           // Note: periodStatus.period.id_period contains the ID
+           const existingApp = myApps.find(app => app.id_period === periodStatus.period.id_period);
+           
+           if (existingApp) {
+             isBlocked.value = true;
+             blockReason.value = 'ALREADY_SUBMITTED';
+           }
       }
 
       workshops.value = workshopsData

@@ -7,6 +7,7 @@ const router = express.Router();
 // Protected routes (Center only for creation, but we check role inside or via middleware if needed)
 // Assuming verifyToken populates req.user
 router.post('/', verifyToken, applicationController.createApplication);
+router.get('/active-period', verifyToken, applicationController.getActivePeriod); // NEW
 router.get('/', verifyToken, applicationController.getMyApplications);
 router.get('/:id', verifyToken, applicationController.getApplicationById);
 
