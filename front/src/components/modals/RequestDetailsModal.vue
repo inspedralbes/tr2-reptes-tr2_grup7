@@ -3,9 +3,7 @@
     <div class="modal-content max-w-3xl">
       <!-- Header -->
       <div class="flex items-center justify-between p-6 border-b border-gray-200">
-        <h2 class="text-xl font-bold text-gray-800">
-          Detalls de la Petició
-        </h2>
+        <h2 class="text-xl font-bold text-gray-800">Detalls de la Petició</h2>
         <button @click="close" class="text-gray-400 hover:text-gray-600 transition-colors">
           <X :size="24" />
         </button>
@@ -54,18 +52,23 @@
           <!-- Students List -->
           <div class="border-t border-gray-200 pt-6">
             <h3 class="text-lg font-semibold text-gray-800 mb-4">Alumnes de la Petició</h3>
-            
-            <div v-if="requestDetails.students && requestDetails.students.length > 0" class="space-y-2">
-              <div 
-                v-for="student in requestDetails.students" 
+
+            <div
+              v-if="requestDetails.students && requestDetails.students.length > 0"
+              class="space-y-2"
+            >
+              <div
+                v-for="student in requestDetails.students"
                 :key="student.id_user"
                 class="flex items-center justify-between p-3 rounded-lg border transition-all"
-                :class="student.is_accepted 
-                  ? 'bg-green-50 border-green-200' 
-                  : 'bg-gray-50 border-gray-200'"
+                :class="
+                  student.is_accepted
+                    ? 'bg-green-50 border-green-200'
+                    : 'bg-gray-50 border-gray-200'
+                "
               >
                 <div class="flex items-center gap-3">
-                  <div 
+                  <div
                     class="w-10 h-10 rounded-full flex items-center justify-center text-white font-semibold"
                     :class="student.is_accepted ? 'bg-green-500' : 'bg-gray-400'"
                   >
@@ -79,14 +82,14 @@
                   </div>
                 </div>
                 <div>
-                  <span 
+                  <span
                     v-if="student.is_accepted"
                     class="px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-medium flex items-center gap-1"
                   >
                     <CheckCircle :size="14" />
                     Acceptat
                   </span>
-                  <span 
+                  <span
                     v-else
                     class="px-3 py-1 bg-gray-200 text-gray-600 rounded-full text-xs font-medium"
                   >
@@ -95,7 +98,7 @@
                 </div>
               </div>
             </div>
-            
+
             <div v-else class="text-center py-8 text-gray-500">
               No hi ha alumnes associats a aquesta petició
             </div>
@@ -124,7 +127,7 @@ import { adminService } from '../../services/adminService.js'
 
 const props = defineProps({
   isOpen: Boolean,
-  request: Object
+  request: Object,
 })
 
 const emit = defineEmits(['close'])
@@ -132,15 +135,19 @@ const emit = defineEmits(['close'])
 const loading = ref(false)
 const requestDetails = ref(null)
 
-watch(() => props.isOpen, async (newValue) => {
-  if (newValue && props.request) {
-    await loadRequestDetails()
-  }
-}, { immediate: true })
+watch(
+  () => props.isOpen,
+  async (newValue) => {
+    if (newValue && props.request) {
+      await loadRequestDetails()
+    }
+  },
+  { immediate: true },
+)
 
 const loadRequestDetails = async () => {
   if (!props.request?.id) return
-  
+
   loading.value = true
   try {
     const data = await adminService.getRequestById(props.request.id)
@@ -195,7 +202,9 @@ const close = () => {
 .modal-content {
   background-color: white;
   border-radius: 0.5rem;
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  box-shadow:
+    0 20px 25px -5px rgba(0, 0, 0, 0.1),
+    0 10px 10px -5px rgba(0, 0, 0, 0.04);
   width: 100%;
   max-height: 90vh;
   overflow-y: auto;

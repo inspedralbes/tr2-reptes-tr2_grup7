@@ -41,8 +41,8 @@ export const createApplication = async (req, res) => {
 
     // Determine Period and Status
     let finalPeriodId = id_period;
-    let appStatus = 'SUBMITTED';
-    let reqStatus = 'PENDING';
+    let appStatus = "SUBMITTED";
+    let reqStatus = "PENDING";
 
     if (!finalPeriodId) {
         // Try to get Open Period
@@ -82,7 +82,7 @@ export const createApplication = async (req, res) => {
       items,
       teachers,
       appStatus,
-      reqStatus
+      reqStatus,
     );
 
     res.status(201).json(result);
@@ -132,14 +132,14 @@ export const getApplicationById = async (req, res) => {
 };
 
 export const getActivePeriod = async (req, res) => {
-    try {
-        const activePeriod = await Period.getActive();
-        if (!activePeriod) {
-            return res.json({ active: false, message: "No active period found" });
-        }
-        res.json({ active: true, period: activePeriod });
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ error: "Error checking active period" });
+  try {
+    const activePeriod = await Period.getActive();
+    if (!activePeriod) {
+      return res.json({ active: false, message: "No active period found" });
     }
+    res.json({ active: true, period: activePeriod });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Error checking active period" });
+  }
 };
