@@ -8,6 +8,7 @@
     </div>
 
     <div v-if="loading" class="text-center py-12">
+      <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
       <p class="text-gray-500">Carregant sessions...</p>
     </div>
 
@@ -21,115 +22,99 @@
     <div v-else class="space-y-6">
       <!-- Timeline de sessions -->
       <div
-        v-for="session in upcomingSessions"
-        :key="session.id_workshop"
-        class="card hover:shadow-md transition-all border-l-4"
+        v-for="(session, index) in upcomingSessions"
+        :key="session.id_session"
+        class="card hover:shadow-md transition-all border-l-4 group"
         :style="{ borderLeftColor: getCategoryColor(session.category).text }"
       >
-        <div class="flex flex-col md:flex-row md:items-start gap-6">
+        <div class="flex flex-col md:flex-row md:items-center gap-6">
           <!-- Date Box -->
           <div
-            class="flex-shrink-0 flex md:flex-col items-center justify-center p-4 rounded-lg bg-gray-50 min-w-[100px] border border-gray-100"
+            class="flex-shrink-0 flex md:flex-col items-center justify-center p-4 rounded-lg bg-gray-50 min-w-[90px] w-full md:w-auto border border-gray-100"
           >
-            <span class="text-3xl font-bold text-gray-800">{{
-              formatDay(session.start_date)
-            }}</span>
-            <span class="text-sm font-semibold uppercase tracking-wider text-gray-500">{{
-              formatMonth(session.start_date)
-            }}</span>
+            <span class="md:hidden ml-2 text-gray-400 font-light">{{ formatDateFull(session.date) }}</span>
           </div>
 
-          <div class="flex-1 w-full">
-            <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
-              <h3 class="text-xl font-bold text-gray-800">
+          <!-- Content -->
+          <div class="flex-1 w-full relative">
+            
+            <!-- Session Badge -->
+            <div class="absolute -top-6 right-0 md:top-0 md:right-0">
+               <span class="bg-gray-800 text-white text-xs font-bold px-2 py-1 rounded-bl-lg rounded-tr-lg shadow-sm">
+                 Sessió {{ session.session_number }}
+               </span>
+            </div>
+
+            <div class="mb-1">
+               <span 
+                 class="inline-block px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider mb-1"
+                 :style="{ backgroundColor: getCategoryColor(session.category).bg, color: getCategoryColor(session.category).text }"
+               >
+                 {{ session.category }}
+               </span>
+               <h3 class="text-xl font-bold text-gray-800 mb-1">
                 {{ session.title }}
               </h3>
-              <span :class="getStatusBadgeClass(session.status)">
-                {{ getStatusLabel(session.status) }}
-              </span>
+              <p class="text-sm text-gray-500 flex items-center gap-1">
+                 <MapPin v-if="session.center_name" :size="14" />
+                 {{ session.center_name || 'Centre Desconegut' }}
+              </p>
             </div>
 
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm mb-4">
-              <div class="flex items-center gap-2 text-gray-600">
-                <Clock :size="18" class="text-gray-400" />
-                <span>
-                  {{ formatTime(session.start_date) }} - {{ formatTime(session.end_date) }}
-                  <span class="font-medium text-gray-800 ml-1"
-                    >({{ session.duration_hours }}h)</span
-                  >
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm mt-3">
+              <div class="flex items-center gap-2 text-gray-600 bg-gray-50 p-2 rounded-md border border-gray-100 w-fit">
+                <Clock :size="16" class="text-primary" />
+                <span class="font-medium">
+                  {{ formatTime(session.start_time) }} - {{ formatTime(session.end_time) }}
                 </span>
               </div>
-
-              <div class="flex items-center gap-2 text-gray-600">
-                <Users :size="18" class="text-gray-400" />
-                <span>
-                  <span class="font-bold text-gray-800">{{
-                    session.max_slots - session.available_slots
-                  }}</span>
-                  / {{ session.max_slots }} alumnes inscrits
-                </span>
-              </div>
-
-              <div class="flex items-center gap-2 text-gray-600 sm:col-span-2">
-                <Tag :size="18" class="text-gray-400" />
-                <span>{{ session.category }}</span>
-              </div>
-            </div>
-
-            <div
-              v-if="session.short_description"
-              class="mb-5 p-4 bg-gray-50 rounded-lg text-gray-600 text-sm border-l-2 border-gray-300 italic"
-            >
-              {{ session.short_description }}
-            </div>
-
-            <div class="flex flex-wrap gap-3 mt-auto">
-              <button
-                @click="goToDetail(session.id_workshop)"
-                class="btn-primary py-2 px-5 flex items-center gap-2"
-                :style="{
-                  backgroundColor: getCategoryColor(session.category).text + ' !important',
-                }"
-              >
-                <BookOpen :size="18" /> Veure detalls
-              </button>
-              <button
-                @click="goToAttendance(session.id_workshop)"
-                class="btn-outline py-2 px-5 flex items-center gap-2"
-              >
-                <ClipboardList :size="18" /> Gestionar assistència
-              </button>
             </div>
           </div>
+          
+           <!-- Actions -->
+           <div class="flex flex-row md:flex-col gap-2 w-full md:w-auto mt-4 md:mt-0 pt-4 md:pt-0 border-t md:border-t-0 border-gray-100">
+              <button
+                @click="goToAttendance(session.id_workshop)"
+                class="flex-1 md:flex-none btn-primary py-2 px-4 flex items-center justify-center gap-2 text-sm whitespace-nowrap"
+              >
+                <ClipboardList :size="16" /> Assistència
+              </button>
+              <button
+                @click="goToDetail(session.id_workshop)"
+                class="flex-1 md:flex-none btn-outline py-2 px-4 flex items-center justify-center gap-2 text-sm whitespace-nowrap"
+              >
+                <BookOpen :size="16" /> Detalls
+              </button>
+           </div>
         </div>
       </div>
     </div>
 
-    <!-- Sessions passades -->
-    <div v-if="pastSessions.length > 0" class="mt-12">
+    <!-- Sessions passades (Mantem logica antiga de workshops finalitzats de moment) -->
+    <div v-if="pastWorkshops.length > 0" class="mt-12">
       <h2
         class="text-lg font-bold text-gray-800 mb-6 pb-2 border-b border-gray-200 flex items-center gap-2"
       >
-        <CheckCircle :size="20" class="text-secondary" />
-        Sessions realitzades recentment
+        <CheckCircle :size="20" class="text-gray-400" />
+        Tallers Finalitzats Recentment
       </h2>
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         <div
-          v-for="session in pastSessions"
-          :key="'past-' + session.id_workshop"
-          class="card p-4 hover:shadow-md transition-all cursor-pointer border-gray-200 opacity-80 hover:opacity-100 group"
-          @click="goToDetail(session.id_workshop)"
+          v-for="workshop in pastWorkshops"
+          :key="'past-' + workshop.id_workshop"
+          class="card p-4 hover:shadow-md transition-all cursor-pointer border-gray-200 opacity-70 hover:opacity-100 group"
+          @click="goToDetail(workshop.id_workshop)"
         >
           <div class="flex items-center gap-3">
             <div
-              class="p-2 rounded-full bg-green-50 text-green-600 group-hover:bg-green-100 transition-colors"
+              class="p-2 rounded-full bg-gray-100 text-gray-500 group-hover:bg-green-50 group-hover:text-green-600 transition-colors"
             >
               <CheckCircle :size="20" />
             </div>
             <div class="flex-1 min-w-0">
-              <p class="font-bold text-gray-800 truncate">{{ session.title }}</p>
+              <p class="font-bold text-gray-800 truncate">{{ workshop.title }}</p>
               <p class="text-sm text-gray-500">
-                {{ formatDate(session.start_date) }}
+                {{ formatDate(workshop.end_date) }}
               </p>
             </div>
             <ChevronRight :size="16" class="text-gray-300 group-hover:text-gray-500" />
@@ -151,47 +136,43 @@ import {
   BookOpen,
   ClipboardList,
   ChevronRight,
+  MapPin
 } from 'lucide-vue-next'
 import apiClient from '../../../services/apiClient'
 import { getCurrentUser } from '../../../services/authService'
 
 const router = useRouter()
-const workshops = ref([])
+const upcomingSessions = ref([])
+const pastWorkshops = ref([]) // Renamed from pastSessions to be clear it's workshops
 const loading = ref(true)
 const user = ref(getCurrentUser() || {})
 
-const fetchWorkshops = async () => {
+const fetchData = async () => {
   try {
     loading.value = true
     const teacherId = user.value.teacher_id
-    if (!teacherId) {
-      console.warn('No teacher_id found in user object')
-      workshops.value = []
-      return
-    }
-    const response = await apiClient.get(`/workshops/mine?teacher_id=${teacherId}`)
-    workshops.value = response.data
+    if (!teacherId) return
+
+    // 1. Fetch upcoming sessions (granular)
+    const sessionsRes = await apiClient.get(`/workshops/sessions/upcoming?teacher_id=${teacherId}`)
+    upcomingSessions.value = sessionsRes.data
+
+    // 2. Fetch past workshops (for history)
+    // We can still use the /mine endpoint to get all workshops and filter locally for past ones
+    // Or create a new endpoint. For now, reusing existing logic is fine.
+    const workshopsRes = await apiClient.get(`/workshops/mine?teacher_id=${teacherId}`)
+    const now = new Date()
+    pastWorkshops.value = workshopsRes.data
+        .filter((w) => new Date(w.end_date) < now)
+        .sort((a, b) => new Date(b.end_date) - new Date(a.end_date)) // Sort by end date descending
+        .slice(0, 6)
+
   } catch (error) {
-    console.error('Error fetching workshops:', error)
+    console.error('Error fetching data:', error)
   } finally {
     loading.value = false
   }
 }
-
-const upcomingSessions = computed(() => {
-  const now = new Date()
-  return workshops.value
-    .filter((w) => new Date(w.end_date) >= now)
-    .sort((a, b) => new Date(a.start_date) - new Date(b.start_date))
-})
-
-const pastSessions = computed(() => {
-  const now = new Date()
-  return workshops.value
-    .filter((w) => new Date(w.end_date) < now)
-    .sort((a, b) => new Date(b.start_date) - new Date(a.start_date))
-    .slice(0, 6)
-})
 
 const goToDetail = (id) => {
   router.push(`/profesor/detalle/${id}`)
@@ -202,7 +183,7 @@ const goToAttendance = (id) => {
 }
 
 onMounted(() => {
-  fetchWorkshops()
+  fetchData()
 })
 
 // Helpers
@@ -217,36 +198,26 @@ const formatMonth = (dateStr) => {
   return date.toLocaleDateString('ca-ES', { month: 'short' }).toUpperCase()
 }
 
-const formatTime = (dateStr) => {
-  if (!dateStr) return ''
-  return new Date(dateStr).toLocaleTimeString('ca-ES', { hour: '2-digit', minute: '2-digit' })
+const formatDateFull = (dateStr) => {
+    if (!dateStr) return '';
+    return new Date(dateStr).toLocaleDateString('ca-ES', { weekday: 'long', day: 'numeric', month: 'long' });
+}
+
+// Handle TIME strings 'HH:MM:SS' or Date objects
+const formatTime = (timeStr) => {
+  if (!timeStr) return ''
+  // If it's a full date string
+  if (timeStr.includes('T') || timeStr.includes('-')) {
+       return new Date(timeStr).toLocaleTimeString('ca-ES', { hour: '2-digit', minute: '2-digit' })
+  }
+  // If it's '10:00:00'
+  return timeStr.slice(0, 5);
 }
 
 const formatDate = (dateStr) => {
   if (!dateStr) return 'N/A'
   const date = new Date(dateStr)
   return date.toLocaleDateString('ca-ES', { day: '2-digit', month: '2-digit', year: 'numeric' })
-}
-
-const getStatusBadgeClass = (status) => {
-  if (status === 'OFFERED' || status === 'PENDING') return 'badge-success'
-  if (status === 'FULL') return 'badge-warning'
-  return 'badge-secondary'
-}
-
-const getStatusLabel = (status) => {
-  switch (status) {
-    case 'OFFERED':
-      return 'Actiu'
-    case 'PENDING':
-      return 'Pendent'
-    case 'FULL':
-      return 'Complet'
-    case 'ARCHIVED':
-      return 'Finalitzat'
-    default:
-      return status
-  }
 }
 
 const getCategoryColor = (category) => {

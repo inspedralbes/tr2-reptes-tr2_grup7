@@ -198,6 +198,13 @@
               Avaluar
             </button>
             <button
+               @click="goToAttendance(workshop.id_workshop)"
+               class="flex-1 btn-outline py-2 px-4 flex items-center justify-center gap-2 text-orange-600 border-orange-200 hover:bg-orange-50"
+            >
+              <ClipboardList :size="18" />
+              Passar Llista
+            </button>
+            <button
               @click="goToDetail(workshop.id_workshop)"
               class="flex-1 btn-outline py-2 px-4 flex items-center justify-center gap-2"
             >
@@ -287,6 +294,10 @@ const activeWorkshops = computed(() => {
 
 const goToDetail = (id) => {
   router.push(`/profesor/detalle/${id}`)
+}
+
+const goToAttendance = (id) => {
+  router.push(`/profesor/asistencia/${id}`)
 }
 
 const manageEvaluations = async (workshop) => {

@@ -1,4 +1,5 @@
 import * as Workshop from "../models/workshop.js";
+import { generateSessions } from "./sessionController.js";
 
 export const getAllWorkshops = async (req, res) => {
   try {
@@ -24,6 +25,12 @@ export const createWorkshop = async (req, res) => {
   try {
     console.log('Creating workshop with data:', req.body);
     const newData = await Workshop.create(req.body);
+    
+    // Auto-generate sessions for Modalidad C (30h = 10 sessions of 3h)
+    if (req.body.modalidad === 'C' || !req.body.modalidad) { // Default is C
+        await generateSessions(newData.id_workshop, req.body.start_date);
+    }
+
     res.status(201).json(newData);
   } catch (error) {
     console.error('Error creating workshop:', error);

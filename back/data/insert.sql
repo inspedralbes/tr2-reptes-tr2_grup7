@@ -210,3 +210,19 @@ INSERT INTO student_interest (id_student, id_request, status, has_legal_papers, 
 -- (1, 7), -- Juan enseña Robótica
 -- (1, 8), -- Ana también enseña Robótica
 -- (2, 9); -- Pol enseña Diseño
+
+-- ==========================================
+-- 10. GENERATE SESSIONS (Test Data)
+-- ==========================================
+-- Workshop 1 (Robótica) - 10 Sessions (Weekly)
+INSERT INTO workshop_sessions (id_workshop, session_number, date) VALUES
+(1, 1, '2026-05-01'),
+(1, 2, '2026-05-08'),
+(1, 3, '2026-05-15'),
+(1, 4, '2026-05-22'),
+(1, 5, '2026-05-29'),
+(1, 6, '2026-06-05'),
+(1, 7, '2026-06-12'),
+(1, 8, '2026-06-19'),
+(1, 9, '2026-06-26'),
+(1, 10, '2026-07-03');

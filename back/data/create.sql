@@ -184,6 +184,35 @@ CREATE TABLE assignment_proposals (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+-- ==========================================
+-- 8. CONTROL DE ASSISTENCIA
+-- ==========================================
+CREATE TABLE workshop_attendance (
+    id_attendance SERIAL PRIMARY KEY,
+    id_workshop INT REFERENCES workshops(id_workshop) ON DELETE CASCADE,
+    id_student INT REFERENCES students(id_user) ON DELETE CASCADE,
+    date DATE NOT NULL DEFAULT CURRENT_DATE,
+    status VARCHAR(20) NOT NULL CHECK (status IN ('PRESENT', 'ABSENT', 'LATE', 'EXCUSED')),
+    comments TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE(id_workshop, id_student, date)
+);
+
+-- ==========================================
+-- 9. SESIONES DEL TALLER (Para Modalidad C: 30h / 3h = 10 sesiones)
+-- ==========================================
+CREATE TABLE workshop_sessions (
+    id_session SERIAL PRIMARY KEY,
+    id_workshop INT REFERENCES workshops(id_workshop) ON DELETE CASCADE,
+    session_number INT, -- 1 to 10
+    date DATE NOT NULL,
+    start_time TIME DEFAULT '10:00:00',
+    end_time TIME DEFAULT '13:00:00',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE(id_workshop, session_number),
+    UNIQUE(id_workshop, date) -- Assume 1 session per day per workshop
+);
+
 -- -- INSERT ADMIN INICIAL
 -- INSERT INTO users (email, password_hash, role, is_active)
 -- VALUES ('admin@workshop.com', '123', 'ADMIN', TRUE);
