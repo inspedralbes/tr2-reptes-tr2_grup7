@@ -2,10 +2,7 @@
   <div class="space-y-6">
     <!-- Header -->
     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-      <h1 class="text-2xl sm:text-3xl font-bold text-gray-800">Tauler de Control</h1>
-      <button @click="goToNewRequest" class="btn-primary px-6 py-2 flex items-center gap-2">
-        <Plus :size="18" /> Nova Petició
-      </button>
+      <h1 class="text-2xl sm:text-3xl font-bold text-gray-800">Tauler de Control</h1>   
     </div>
 
     <!-- Stats Cards -->
