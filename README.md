@@ -30,7 +30,11 @@ El fluxe de l'aplicació consta d'un sistema que ha de soportar aques cicle comp
 **5. Preparació:** El centre omple el Checklist ("Tenim projector? Sí. Aula llista? Sí").<br>
 **6. Avaluació:** En acabar, el sistema envia enquestes de satisfacció a alumnes, profes i centres per treure informes de qualitat.<br>
 
-# Aquest fitxer ha de contenir com a mínim:
+## Projecte en Producció
+
+el projecte està en producció en el domini:
+[eduenginy.daw.inspedralbes.cat/](http://eduenginy.daw.inspedralbes.cat/)
+[![alt text](doc/image.png)](http://eduenginy.daw.inspedralbes.cat/)
 
 ## 🔗 Enllaços de Gestió del Projecte
 
@@ -43,5 +47,3 @@ Aquí podeu trobar més informació sobre la nostra planificació i disseny:
     <a href="https://www.figma.com/design/E1K0D43c4fdwcJ7YWnJklw/Untitled?node-id=0-1&p=f&t=6CSw8NrNTA7p3LXx-0" target="_blank"><img alt="Figma" src="https://wptavern.com/wp-content/uploads/2018/11/Screen-Shot-2018-11-19-at-8.43.27-PM.png" width='80' height='40' /></a>
   </p>
 </div>
-- URL de producció (quan la tingueu)
-- Estat: (explicació d'en quin punt està)
