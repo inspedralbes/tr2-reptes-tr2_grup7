@@ -415,7 +415,7 @@ onMounted(async () => {
       ])
 
       console.log('Fetched Applications:', myApps);
-      console.log('Active Period:', activePeriod);
+      console.log('Current Computed Period:', currentPeriod);
 
       // 1. Check Active Period
       const periodStatus = await schoolApplicationService.getActivePeriod();

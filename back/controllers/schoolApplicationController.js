@@ -45,30 +45,34 @@ export const createApplication = async (req, res) => {
     let reqStatus = "PENDING";
 
     if (!finalPeriodId) {
-      // Try to get Open Period
-      const activePeriod = await Period.getActive();
-      if (activePeriod) {
-        finalPeriodId = activePeriod.id_period;
-      } else {
-        // No active period. Check for ANY latest period to attach to.
-        // USER REQUEST: If sent outside period, AUTO-REJECT.
-        const latestPeriod = await Period.getLatest();
-        if (latestPeriod) {
-          finalPeriodId = latestPeriod.id_period;
-          appStatus = "ARCHIVED"; // Mark application as essentially closed
-          reqStatus = "REJECTED"; // Explicitly reject requests
-          console.warn(
-            `[Auto-Reject] Application created outside open period. Period: ${latestPeriod.name}`,
-          );
+        // Try to get Open Period
+        const activePeriod = await Period.getActive();
+        if (activePeriod) {
+            finalPeriodId = activePeriod.id_period;
         } else {
-          return res
-            .status(400)
-            .json({
-              error:
-                "No hay ninguna convocatoria disponible (ni abierta ni cerrada).",
-            });
+            // No active period. Check for ANY latest period to attach to.
+            // USER REQUEST: If sent outside period, AUTO-REJECT.
+            const latestPeriod = await Period.getLatest();
+            if (latestPeriod) {
+                finalPeriodId = latestPeriod.id_period;
+                appStatus = 'ARCHIVED'; // Mark application as essentially closed
+                reqStatus = 'REJECTED'; // Explicitly reject requests
+                console.warn(`[Auto-Reject] Application created outside open period. Period: ${latestPeriod.name}`);
+            } else {
+                 return res.status(400).json({ error: "No hay ninguna convocatoria disponible (ni abierta ni cerrada)." });
+            }
         }
-      }
+    }
+
+    // Check if application already exists for this center and period
+    const existingApps = await ApplicationModel.getByCenter(id_center);
+    const alreadyExists = existingApps.find(
+      (app) => app.id_period === finalPeriodId,
+    );
+    if (alreadyExists) {
+      return res
+        .status(400)
+        .json({ error: "Ja existeix una petició per aquest període." });
     }
 
     const result = await ApplicationModel.createApplicationWithDetails(
