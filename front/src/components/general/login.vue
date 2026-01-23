@@ -111,9 +111,7 @@
               />
               <span class="text-sm" style="color: var(--text-secondary)">Recordar-me</span>
             </label>
-            <a href="#" class="text-sm" style="color: var(--primary); text-decoration: none">
-              Has oblidat la contrasenya?
-            </a>
+            <a href="#" class="text-sm" style="color: var(--primary); text-decoration: none"> </a>
           </div>
 
           <!-- Mensaje de error -->
@@ -193,7 +191,6 @@ const handleLogin = async () => {
   loading.value = true
 
   try {
-
     // Cridar al servei d'autenticació
     const response = await login(email.value, password.value, rememberMe.value)
 
@@ -201,12 +198,12 @@ const handleLogin = async () => {
 
     // check forced password change
     if (response.mustChangePassword) {
-        console.log("⚠️ Old password detected. Redirecting to change password.");
-        localStorage.setItem('mustChangePassword', 'true');
-        router.push('/change-password');
-        return;
+      console.log('⚠️ Old password detected. Redirecting to change password.')
+      localStorage.setItem('mustChangePassword', 'true')
+      router.push('/change-password')
+      return
     } else {
-        localStorage.removeItem('mustChangePassword'); // Clear if not needed
+      localStorage.removeItem('mustChangePassword') // Clear if not needed
     }
 
     // Redirigir segons el rol de l'usuari
