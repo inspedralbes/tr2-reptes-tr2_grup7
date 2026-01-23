@@ -1,14 +1,22 @@
 import db from "../data/db.js";
 
 export const updateStudent = async (id, data) => {
-  const { first_name, last_name, phone, birth_date } = data;
+  const { first_name, last_name, phone, birth_date, eso_grade, gender } = data;
   const text = `
     UPDATE students
-    SET first_name = $1, last_name = $2, phone = $3, birth_date = $4
-    WHERE id_user = $5
+    SET first_name = $1, last_name = $2, phone = $3, birth_date = $4, eso_grade = $5, gender = $6
+    WHERE id_user = $7
     RETURNING *
   `;
-  const values = [first_name, last_name, phone, birth_date, id];
+  const values = [
+    first_name,
+    last_name,
+    phone,
+    birth_date,
+    eso_grade,
+    gender,
+    id,
+  ];
   const result = await db.query(text, values);
   return result.rows[0];
 };

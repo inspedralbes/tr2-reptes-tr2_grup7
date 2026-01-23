@@ -136,6 +136,33 @@
             required
           />
         </div>
+
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Curs (ESO) *</label>
+          <select
+            v-model="form.eso_grade"
+            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            required
+          >
+            <option disabled value="">Selecciona un curs</option>
+            <option :value="3">3r ESO</option>
+            <option :value="4">4t ESO</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Gènere *</label>
+          <select
+            v-model="form.gender"
+            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            required
+          >
+            <option disabled value="">Selecciona un gènere</option>
+            <option value="M">Masculí</option>
+            <option value="F">Femení</option>
+            <option value="O">Altre</option>
+          </select>
+        </div>
       </form>
 
       <template #footer>
@@ -183,6 +210,8 @@ const form = ref({
   email: '',
   phone: '',
   birth_date: '',
+  eso_grade: '',
+  gender: '',
 })
 const centreId = ref(null)
 
@@ -209,7 +238,10 @@ const openCreateModal = () => {
     last_name: '',
     email: '',
     phone: '',
+    phone: '',
     birth_date: '',
+    eso_grade: '',
+    gender: '',
   }
   showModal.value = true
 }
@@ -223,6 +255,8 @@ const openEditModal = (student) => {
     email: student.email, 
     phone: student.phone || '',
     birth_date: formatDateForInput(student.birth_date),
+    eso_grade: student.eso_grade,
+    gender: student.gender,
   }
   showModal.value = true
 }
@@ -241,6 +275,8 @@ const saveStudent = async () => {
         email: form.value.email,
         phone: form.value.phone || null,
         birth_date: form.value.birth_date || null,
+        eso_grade: form.value.eso_grade,
+        gender: form.value.gender,
       })
       alertStore.addAlert('success', 'Alumne actualitzat correctament!')
     } else {
@@ -249,7 +285,10 @@ const saveStudent = async () => {
         last_name: form.value.last_name,
         email: form.value.email,
         phone: form.value.phone || null,
+        phone: form.value.phone || null,
         birth_date: form.value.birth_date || null,
+        eso_grade: form.value.eso_grade,
+        gender: form.value.gender,
       })
       alertStore.addAlert('success', 'Alumne creat correctament!')
     }

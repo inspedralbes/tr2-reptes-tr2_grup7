@@ -196,9 +196,24 @@ export const deleteCentre = async (req, res) => {
 export const createStudent = async (req, res) => {
   try {
     const { id } = req.params;
-    const { first_name, last_name, email, birth_date, phone } = req.body;
+    const {
+      first_name,
+      last_name,
+      email,
+      birth_date,
+      phone,
+      eso_grade,
+      gender,
+    } = req.body;
 
-    if (!first_name || !last_name || !email || !birth_date) {
+    if (
+      !first_name ||
+      !last_name ||
+      !email ||
+      !birth_date ||
+      !eso_grade ||
+      !gender
+    ) {
       return res.status(400).json({ error: "Faltan campos obligatorios" });
     }
 
@@ -226,6 +241,8 @@ export const createStudent = async (req, res) => {
       last_name,
       birth_date,
       phone,
+      eso_grade,
+      gender,
       id_center_assigned: id,
     });
 
