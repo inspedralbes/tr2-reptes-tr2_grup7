@@ -68,7 +68,7 @@
           <div class="flex justify-between py-2.5">
             <span style="color: var(--text-secondary); font-size: 0.9rem">Estat:</span>
             <span class="font-semibold" :class="getStatusClass(workshop.status)">
-              {{ workshop.status }}
+              {{ getStatusLabel(workshop.status) }}
             </span>
           </div>
           <div class="flex justify-between py-2.5" v-if="workshop.teacher_first_name">
@@ -96,6 +96,18 @@ const getStatusClass = (status) => {
   if (status === 'ACCEPTED') return 'text-green-600'
   if (status === 'REJECTED') return 'text-red-600'
   return 'text-yellow-600'
+}
+
+const getStatusLabel = (status) => {
+  const labels = {
+    'OFFERED': 'Obert',
+    'FULL': 'Ple',
+    'PENDING': 'Pendent',
+    'ARCHIVED': 'Arxivat',
+    'ACCEPTED': 'Acceptada',
+    'REJECTED': 'Rebutjada'
+  };
+  return labels[status] || status;
 }
 
 onMounted(async () => {

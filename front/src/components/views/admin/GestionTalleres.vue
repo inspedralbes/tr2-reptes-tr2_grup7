@@ -74,7 +74,7 @@
               </td>
               <td class="px-6 py-4">
                 <span :class="getStatusClass(workshop.status)">
-                  {{ workshop.status }}
+                  {{ getStatusLabel(workshop.status) }}
                 </span>
               </td>
               <td class="px-6 py-4 text-right space-x-2">
@@ -219,6 +219,18 @@ const getStatusClass = (status) => {
     case 'ARCHIVED': return `${classes} bg-gray-100 text-gray-800`;
     default: return `${classes} bg-gray-100 text-gray-800`;
   }
+};
+
+const getStatusLabel = (status) => {
+  const labels = {
+    'OFFERED': 'Obert',
+    'FULL': 'Ple',
+    'PENDING': 'Pendent',
+    'ARCHIVED': 'Arxivat',
+    'ACCEPTED': 'Acceptada',
+    'REJECTED': 'Rebutjada'
+  };
+  return labels[status] || status;
 };
 
 const openModal = (workshop = null) => {
