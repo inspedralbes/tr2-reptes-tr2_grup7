@@ -166,6 +166,8 @@ import {
 import apiClient from '../../../services/apiClient'
 import { getCurrentUser } from '../../../services/authService'
 
+import socketService from '../../../services/socketService'
+
 const router = useRouter()
 const user = ref(getCurrentUser() || { first_name: 'Professor' })
 const stats = ref({
@@ -185,7 +187,7 @@ const fetchStats = async () => {
       const workshops = response.data
 
       stats.value = {
-        active_workshops: workshops.filter((w) => w.status === 'OFFERED').length,
+        active_workshops: workshops.filter((w) => w.status === 'OFFERED' || w.status === 'FULL').length,
         upcoming_sessions: 3, // Mocked or derived
         total_students: workshops.reduce((acc, w) => acc + (w.enrolled_count || 0), 0),
         total_hours: workshops.reduce((acc, w) => acc + (w.duration_hours || 0), 0),
@@ -198,6 +200,12 @@ const fetchStats = async () => {
 
 onMounted(() => {
   fetchStats()
+  
+  // Real-time updates
+  socketService.connect()
+  socketService.on('stats_updated', fetchStats)
+  socketService.on('workshops_updated', fetchStats)
+  socketService.on('request_status_updated', fetchStats)
 })
 </script>
 

@@ -233,10 +233,12 @@
         <div>
           <label class="block text-sm font-medium text-gray-700 mb-2"> Places assignades </label>
           <input
-            v-model="assignedSlots"
+            v-model.number="assignedSlots"
             type="number"
+            min="1"
+            max="4"
             class="w-full border border-gray-300 rounded-lg px-4 py-2"
-            placeholder="Número de plazas"
+            placeholder="Número de plazas (1-4)"
           />
         </div>
 
@@ -350,6 +352,12 @@ const confirmAssignment = async () => {
   if (!selectedRequest.value || !assignedSlots.value || !selectedTeacher1.value) {
     alertStore.addAlert('warning', 'Falten camps obligatoris')
     return
+  }
+
+  // Strict Validation 1-4
+  if (assignedSlots.value < 1 || assignedSlots.value > 4) {
+      alertStore.addAlert('error', "Les places assignades han d'estar entre 1 i 4.");
+      return;
   }
   // ... logic same as before, simplified for diff ...
   try {

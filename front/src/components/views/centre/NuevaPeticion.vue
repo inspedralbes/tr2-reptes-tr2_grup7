@@ -436,7 +436,8 @@ onMounted(async () => {
       }
 
       workshops.value = workshopsData
-      teachers.value = teachersData
+      // Filter only active teachers for new requests
+      teachers.value = teachersData.filter(t => t.is_active)
       students.value = studentsData
 
       // Check for pre-selected workshop from query params
