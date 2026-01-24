@@ -13,10 +13,10 @@ export const obtenerFiltrosPorModalidad = (modalidad) => {
   return mapaFiltros[modalidad]?.filtros || null;
 };
 
-export const assignTeachersByModality = async (modalidad, workshop, participatingCenters, globalLoad, db) => {
+export const assignTeachersByModality = async (modalidad, workshop, participatingCenters, globalLoad, db, config) => {
     const mod = mapaFiltros[modalidad];
     if (mod && mod.assignTeachers) {
-        return await mod.assignTeachers(workshop, participatingCenters, globalLoad, db);
+        return await mod.assignTeachers(workshop, participatingCenters, globalLoad, db, config);
     }
     console.warn(`⚠️ No teacher assignment logic for modality ${modalidad}`);
     return [];

@@ -14,33 +14,52 @@
 
       <p class="text-gray-600 mb-4">Configura els filtres actius per a l'assignació automàtica:</p>
 
-      <div class="flex flex-col sm:flex-row gap-6 mb-6">
-        <label class="flex items-center gap-2 cursor-pointer">
-          <input
-            type="checkbox"
-            v-model="filters.risk_enabled"
-            class="w-5 h-5 text-blue-600 rounded focus:ring-blue-500"
-          />
-          <span class="text-gray-700">Prioritzar Alumnes en Risc (x1M)</span>
-        </label>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+        <!-- Student Filters -->
+        <div class="bg-gray-50 p-4 rounded-lg">
+           <h3 class="font-bold text-gray-700 mb-3 flex items-center gap-2">
+             <span class="bg-blue-100 text-blue-700 p-1 rounded">🎓</span> Filtres d'Alumnes
+           </h3>
+           <div class="space-y-2">
+             <label class="flex items-center gap-2 cursor-pointer hover:bg-gray-100 p-1 rounded transition-colors">
+               <input type="checkbox" v-model="filters.risk_enabled" class="w-4 h-4 text-blue-600 rounded focus:ring-blue-500" />
+               <span class="text-sm text-gray-700">Prioritzar Alumnes en Risc (x1M)</span>
+             </label>
+             <label class="flex items-center gap-2 cursor-pointer hover:bg-gray-100 p-1 rounded transition-colors">
+               <input type="checkbox" v-model="filters.eso4_enabled" class="w-4 h-4 text-blue-600 rounded focus:ring-blue-500" />
+               <span class="text-sm text-gray-700">Prioritzar 4rt ESO (x10k)</span>
+             </label>
+             <label class="flex items-center gap-2 cursor-pointer hover:bg-gray-100 p-1 rounded transition-colors">
+               <input type="checkbox" v-model="filters.age_enabled" class="w-4 h-4 text-blue-600 rounded focus:ring-blue-500" />
+               <span class="text-sm text-gray-700">Prioritzar Edat (Desempat)</span>
+             </label>
+             <label class="flex items-center gap-2 cursor-pointer hover:bg-gray-100 p-1 rounded transition-colors">
+               <input type="checkbox" v-model="filters.center_limit_enabled" class="w-4 h-4 text-blue-600 rounded focus:ring-blue-500" />
+               <span class="text-sm text-gray-700">Límit Màx per Centre (4 alumnes/taller)</span>
+             </label>
+             <label class="flex items-center gap-2 cursor-pointer hover:bg-gray-100 p-1 rounded transition-colors">
+               <input type="checkbox" v-model="filters.global_limit_enabled" class="w-4 h-4 text-blue-600 rounded focus:ring-blue-500" />
+               <span class="text-sm text-gray-700">Límit Global per Centre (12 alumnes totals)</span>
+             </label>
+           </div>
+        </div>
 
-        <label class="flex items-center gap-2 cursor-pointer">
-          <input
-            type="checkbox"
-            v-model="filters.eso4_enabled"
-            class="w-5 h-5 text-blue-600 rounded focus:ring-blue-500"
-          />
-          <span class="text-gray-700">Prioritzar 4rt ESO (x10k)</span>
-        </label>
-
-        <label class="flex items-center gap-2 cursor-pointer">
-          <input
-            type="checkbox"
-            v-model="filters.age_enabled"
-            class="w-5 h-5 text-blue-600 rounded focus:ring-blue-500"
-          />
-          <span class="text-gray-700">Prioritzar Edat (Desempat)</span>
-        </label>
+        <!-- Teacher Filters -->
+        <div class="bg-gray-50 p-4 rounded-lg">
+           <h3 class="font-bold text-gray-700 mb-3 flex items-center gap-2">
+             <span class="bg-purple-100 text-purple-700 p-1 rounded">👨‍🏫</span> Filtres de Professors
+           </h3>
+           <div class="space-y-2">
+             <label class="flex items-center gap-2 cursor-pointer hover:bg-gray-100 p-1 rounded transition-colors">
+               <input type="checkbox" v-model="filters.teacher_specialty_enabled" class="w-4 h-4 text-purple-600 rounded focus:ring-purple-500" />
+               <span class="text-sm text-gray-700">Prioritzar Especialitat Docent</span>
+             </label>
+             <label class="flex items-center gap-2 cursor-pointer hover:bg-gray-100 p-1 rounded transition-colors">
+               <input type="checkbox" v-model="filters.teacher_load_enabled" class="w-4 h-4 text-purple-600 rounded focus:ring-purple-500" />
+               <span class="text-sm text-gray-700">Equilibrar Càrrega Docent (Fairness)</span>
+             </label>
+           </div>
+        </div>
       </div>
 
       <button
@@ -319,6 +338,11 @@ const filters = ref({
   risk_enabled: true,
   eso4_enabled: true,
   age_enabled: true,
+  gender_filter_enabled: true,
+  center_limit_enabled: true,
+  global_limit_enabled: true,
+  teacher_specialty_enabled: true,
+  teacher_load_enabled: true,
 })
 
 // NEW: Proposal State

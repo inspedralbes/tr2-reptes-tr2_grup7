@@ -69,8 +69,10 @@ export const generateProposal = async (config = {}) => {
                      taller.modalidad, 
                      taller, 
                      participatingCenters, 
+                     participatingCenters, 
                      simulatedTeacherLoad, 
-                     db
+                     db,
+                     config
                  );
                  
                  teacherActions.forEach(action => {
@@ -186,14 +188,15 @@ const asignarAlumnosATallerSimulado = async (taller, simulatedGlobalLoad, config
     // Filter & Sort
     const alumnosProcesados = alumnosCandidatos
         .map(alumno => {
-            if (gender_audience === 'F' && alumno.gender !== 'F') {
-                 console.log(`   ⛔ RECHAZO GÉNERO: ${alumno.first_name}`);
-                 return { ...alumno, apto: false };
-            }
-            if (gender_audience === 'M' && alumno.gender !== 'M') {
-                 console.log(`   ⛔ RECHAZO GÉNERO: ${alumno.first_name}`);
-                 return { ...alumno, apto: false };
-            }
+            // Gender Filter (Always Active based on Workshop settings)
+             if (gender_audience === 'F' && alumno.gender !== 'F') {
+                  console.log(`   ⛔ RECHAZO GÉNERO: ${alumno.first_name}`);
+                  return { ...alumno, apto: false };
+             }
+             if (gender_audience === 'M' && alumno.gender !== 'M') {
+                  console.log(`   ⛔ RECHAZO GÉNERO: ${alumno.first_name}`);
+                  return { ...alumno, apto: false };
+             }
             
             const pasaExclusiones = reglas.exclusiones.every(filtro => filtro(alumno, taller));
             if (!pasaExclusiones) return { ...alumno, apto: false };
@@ -212,10 +215,14 @@ const asignarAlumnosATallerSimulado = async (taller, simulatedGlobalLoad, config
         const centroId = alumno.id_center_assigned;
         if (!contadorPorCentro[centroId]) contadorPorCentro[centroId] = 0;
         
-        const limiteTallerSuperado = modalidad === 'C' && contadorPorCentro[centroId] >= max_students_per_center;
+        // Configurable Limits
+        const checkCenterLimit = config.center_limit_enabled !== false;
+        const checkGlobalLimit = config.global_limit_enabled !== false;
+
+        const limiteTallerSuperado = checkCenterLimit && modalidad === 'C' && contadorPorCentro[centroId] >= max_students_per_center;
         
         const currentGlobal = simulatedGlobalLoad[centroId] || 0;
-        const limiteGlobalSuperado = modalidad === 'C' && currentGlobal >= LIMIT_GLOBAL_C;
+        const limiteGlobalSuperado = checkGlobalLimit && modalidad === 'C' && currentGlobal >= LIMIT_GLOBAL_C;
 
         if (plazasLibres > 0 && !limiteTallerSuperado && !limiteGlobalSuperado) {
             // ASSIGN ACTION

@@ -29,7 +29,7 @@ export const filtrosC = {
   ]
 };
 
-export const assignTeachers = async (workshop, participatingCenters, globalLoad, db) => {
+export const assignTeachers = async (workshop, participatingCenters, globalLoad, db, config = {}) => {
     // ==============================================================
     // STRICT FAIRNESS ALGORITHM (Global Load -> Specialty -> Conflict)
     // ==============================================================
@@ -66,11 +66,15 @@ export const assignTeachers = async (workshop, participatingCenters, globalLoad,
 
     // 2. Sort Candidates (The "No Luck" Sort)
     candidates.sort((a, b) => {
-        // Priority 1: Lower Load is better
-        if (a.load !== b.load) return a.load - b.load; 
+        // Priority 1: Lower Load is better (if enabled)
+        if (config.teacher_load_enabled !== false) {
+             if (a.load !== b.load) return a.load - b.load; 
+        }
         
-        // Priority 2: Has Specialty is better
-        if (a.hasSpecialty !== b.hasSpecialty) return b.hasSpecialty - a.hasSpecialty; // true=1, false=0
+        // Priority 2: Has Specialty is better (if enabled)
+        if (config.teacher_specialty_enabled !== false) {
+             if (a.hasSpecialty !== b.hasSpecialty) return b.hasSpecialty - a.hasSpecialty; // true=1, false=0
+        }
         
         return 0; // Absolute Tie
     });
