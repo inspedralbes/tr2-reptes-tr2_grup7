@@ -47,6 +47,21 @@
               <label class="block text-sm font-medium text-gray-700">Data de Creació</label>
               <p class="text-gray-900 font-medium">{{ formatDate(requestDetails.created_at) }}</p>
             </div>
+
+            <div class="space-y-2 md:col-span-2 border-t pt-4 mt-2">
+              <label class="block text-sm font-medium text-gray-700">Places Assignades (1-4)</label>
+              <input 
+                type="number" 
+                v-model.number="localAssignedSlots" 
+                min="1" 
+                max="4" 
+                class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 outline-none transition-all"
+                placeholder="Ex: 2"
+              />
+              <p class="text-xs text-gray-500">
+                 Defineix quantes places s'atorguen finalment (independentment dels alumnes seleccionats).
+              </p>
+            </div>
           </div>
 
           <!-- Students List -->
@@ -69,8 +84,8 @@
               >
                 <div class="flex items-center gap-3">
                   <div
-                    class="w-10 h-10 rounded-full flex items-center justify-center text-white font-semibold"
-                    :class="student.is_accepted ? 'bg-green-500' : 'bg-gray-400'"
+                    class="w-10 h-10 rounded-full flex items-center justify-center text-white font-semibold transition-colors"
+                    :class="selectedStudents.has(student.id_user) ? 'bg-green-500' : 'bg-gray-400'"
                   >
                     {{ student.first_name.charAt(0) }}{{ student.last_name.charAt(0) }}
                   </div>
@@ -82,19 +97,17 @@
                   </div>
                 </div>
                 <div>
-                  <span
-                    v-if="student.is_accepted"
-                    class="px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-medium flex items-center gap-1"
-                  >
-                    <CheckCircle :size="14" />
-                    Acceptat
-                  </span>
-                  <span
-                    v-else
-                    class="px-3 py-1 bg-gray-200 text-gray-600 rounded-full text-xs font-medium"
-                  >
-                    No acceptat
-                  </span>
+                  <label class="inline-flex items-center cursor-pointer">
+                     <input 
+                        type="checkbox" 
+                        class="form-checkbox h-5 w-5 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
+                        :checked="selectedStudents.has(student.id_user)" 
+                        @change="toggleStudent(student.id_user)"
+                     />
+                     <span class="ml-2 text-sm font-medium text-gray-700">
+                        {{ selectedStudents.has(student.id_user) ? 'Acceptat' : 'Rebutjat' }}
+                     </span>
+                  </label>
                 </div>
               </div>
             </div>
@@ -103,14 +116,28 @@
               No hi ha alumnes associats a aquesta petició
             </div>
           </div>
+          
+           <!-- Error Message -->
+          <div v-if="errorMessage" class="mt-4 p-3 bg-red-100 border border-red-200 text-red-700 rounded-lg text-sm">
+             {{ errorMessage }}
+          </div>
         </div>
 
         <!-- Footer -->
         <div class="flex justify-end gap-3 pt-6 mt-6 border-t border-gray-200">
+           <button
+            type="button"
+            @click="saveChanges"
+            :disabled="isSaving"
+            class="px-4 py-2 text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2"
+          >
+            <span v-if="isSaving" class="animate-spin h-4 w-4 border-b-2 border-white rounded-full"></span>
+            Desar Canvis
+          </button>
           <button
             type="button"
             @click="close"
-            class="px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+            class="px-4 py-2 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
           >
             Tancar
           </button>
@@ -154,9 +181,76 @@ const loadRequestDetails = async () => {
     requestDetails.value = data
   } catch (error) {
     console.error('Error loading request details:', error)
+
   } finally {
     loading.value = false
   }
+}
+
+// Student Selection Logic
+const selectedStudents = ref(new Set())
+const isSaving = ref(false)
+const errorMessage = ref('')
+const localAssignedSlots = ref(null)
+
+watch(requestDetails, (newVal) => {
+    if (newVal) {
+        // Initialize selection with currently accepted students
+        if (newVal.students) {
+            const accepted = newVal.students.filter(s => s.is_accepted).map(s => s.id_user);
+            selectedStudents.value = new Set(accepted);
+        }
+        // Initialize assigned slots (default to requested or current)
+        // If there's no way to distinguish 'assigned' from 'requested' in DB yet, use requested.
+        // Assuming we are updating 'requested_slots' in DB as the final assigned count.
+        localAssignedSlots.value = newVal.requested_slots || 1; 
+    }
+})
+
+const toggleStudent = (studentId) => {
+    if (selectedStudents.value.has(studentId)) {
+        selectedStudents.value.delete(studentId);
+    } else {
+        selectedStudents.value.add(studentId);
+    }
+}
+
+const saveChanges = async () => {
+    isSaving.value = true;
+    errorMessage.value = '';
+    
+    // Validate 1-4
+    if (localAssignedSlots.value < 1 || localAssignedSlots.value > 4) {
+        errorMessage.value = "Les places han d'estar entre 1 i 4.";
+        isSaving.value = false;
+        return;
+    }
+
+    try {
+        const studentIds = Array.from(selectedStudents.value);
+        const res = await adminService.manageRequestStudents(
+            props.request.id, 
+            studentIds, 
+            localAssignedSlots.value
+        );
+        
+        // Refresh details
+        await loadRequestDetails();
+        
+        // Notify parent to refresh list (optional but recommended)
+        // If we want to close, emit close. If we want to stay, just show success.
+        // Let's just refresh data.
+        
+    } catch (error) {
+        console.error("Error saving students:", error);
+        if (error.response && error.response.data && error.response.data.error) {
+            errorMessage.value = error.response.data.error;
+        } else {
+            errorMessage.value = 'Error al desar els canvis.';
+        }
+    } finally {
+        isSaving.value = false;
+    }
 }
 
 const getStatusClass = (status) => {

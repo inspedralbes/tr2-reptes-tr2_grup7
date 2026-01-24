@@ -56,6 +56,14 @@ export const adminService = {
     return response.data
   },
 
+  async manageRequestStudents(requestId, acceptedStudents, assignedSlots) {
+    const response = await apiClient.put(`/admin/requests/${requestId}/students`, { 
+      acceptedStudents,
+      assignedSlots 
+    })
+    return response.data
+  },
+
   async manualAssign(assignmentData) {
     const response = await apiClient.post('/admin/assign', assignmentData)
     return response.data

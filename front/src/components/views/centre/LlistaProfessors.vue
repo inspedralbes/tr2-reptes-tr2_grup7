@@ -1,19 +1,24 @@
 <template>
   <div class="space-y-6">
-    <div class="flex justify-between items-center">
-      <h1
-        class="text-2xl font-semibold"
-        style="color: var(--text-primary); text-transform: uppercase; letter-spacing: 0.5px"
-      >
-        Llistat de Professors
-      </h1>
-      <button
-        @click="openCreateModal"
-        class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2"
-      >
-        <Plus :size="20" />
-        Nou Professor
-      </button>
+    <div class="flex">
+      <div class="flex-1">
+        <h1
+          class="text-2xl font-semibold"
+          style="color: var(--text-primary); text-transform: uppercase; letter-spacing: 0.5px"
+        >
+          Llista de Professors
+        </h1>
+      </div>
+      <div class="flex-1 flex justify-center">
+        <button
+          @click="openCreateModal"
+          class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2"
+        >
+          <Plus :size="20" />
+          Nou Professor
+        </button>
+      </div>
+      <div class="flex-1"></div>
     </div>
 
     <div v-if="loading" class="text-center py-8">

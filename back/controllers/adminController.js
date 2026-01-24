@@ -36,19 +36,19 @@ export const getPendingRequests = async (req, res) => {
 export const getRequestById = async (req, res) => {
   try {
     const { id } = req.params;
-    
+
     const request = await Admin.getRequestById(id);
     if (!request) {
       return res.status(404).json({ error: "Request not found" });
     }
-    
+
     const students = await Admin.getRequestStudents(id, request.id_workshop);
-    
+
     res.json({
       ...request,
       students,
       total_students: students.length,
-      accepted_students: students.filter(s => s.is_accepted).length
+      accepted_students: students.filter((s) => s.is_accepted).length,
     });
   } catch (error) {
     console.error(error);
@@ -86,10 +86,39 @@ export const getAllCenters = async (req, res) => {
   }
 };
 
+// Helper to assign teachers to a workshop
+const assignTeachersToWorkshop = async (id_workshop, teacherIds) => {
+  if (!id_workshop || !teacherIds || teacherIds.length === 0) return;
+
+  for (const teacherId of teacherIds) {
+    if (teacherId) {
+      await db.query(
+        "INSERT INTO workshop_teachers (id_workshop, id_teacher) VALUES ($1, $2) ON CONFLICT DO NOTHING",
+        [id_workshop, teacherId],
+      );
+    }
+  }
+};
+
 export const acceptRequest = async (req, res) => {
   try {
     const { id } = req.params;
-    await Admin.updateRequestStatus(id, 'ACCEPTED');
+
+    // 1. Get Request Details to find teachers and workshop
+    const request = await Admin.getRequestById(id);
+    if (!request) {
+      return res.status(404).json({ error: "Request not found" });
+    }
+
+    // 2. Assign Teachers
+    const teachersToAssign = [];
+    if (request.id_teacher_1) teachersToAssign.push(request.id_teacher_1);
+    if (request.id_teacher_2) teachersToAssign.push(request.id_teacher_2);
+
+    await assignTeachersToWorkshop(request.id_workshop, teachersToAssign);
+
+    // 3. Update Status
+    await Admin.updateRequestStatus(id, "ACCEPTED");
 
     io.emit("stats_updated");
     io.emit("request_status_updated", {
@@ -97,7 +126,9 @@ export const acceptRequest = async (req, res) => {
       status: "ACCEPTED",
     });
 
-    res.json({ message: "Request accepted successfully" });
+    res.json({
+      message: "Request accepted and teachers assigned successfully",
+    });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Error accepting request" });
@@ -107,7 +138,7 @@ export const acceptRequest = async (req, res) => {
 export const rejectRequest = async (req, res) => {
   try {
     const { id } = req.params;
-    await Admin.updateRequestStatus(id, 'REJECTED');
+    await Admin.updateRequestStatus(id, "REJECTED");
 
     io.emit("stats_updated");
 
@@ -178,19 +209,172 @@ export const updateRequest = async (req, res) => {
   }
 };
 
+export const manageRequestStudents = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { acceptedStudents } = req.body; // Array of student IDs to accept
+
+    // 1. Get Request Details (including Workshop ID and Associated Teachers)
+    const request = await Admin.getRequestById(id);
+    if (!request) return res.status(404).json({ error: "Request not found" });
+
+    // 2. Validate Workshop Capacity
+    // Get current enrollment count (excluding students from THIS request to allow re-evaluation?)
+    // Actually, enrollment table handles unique students. simpler to check capacity.
+    const workshopResult = await db.query(
+      "SELECT max_slots, available_slots, id_workshop FROM workshops WHERE id_workshop = $1",
+      [request.id_workshop],
+    );
+    const workshop = workshopResult.rows[0];
+
+    // Calculate REAL available slots (excluding current enrollments for THIS request if any, tricky)
+    // Simplified: Check if we are ADDING more students than available.
+    // Better: Get current enrollment count.
+    const enrollCountRes = await db.query(
+      "SELECT COUNT(*) FROM workshop_enrollments WHERE id_workshop = $1",
+      [request.id_workshop],
+    );
+    const currentEnrolled = parseInt(enrollCountRes.rows[0].count);
+
+    // We need to know which students from THIS request are ALREADY enrolled to calculate net change.
+    const requestStudents = await Admin.getRequestStudents(
+      id,
+      request.id_workshop,
+    );
+    const currentlyAcceptedCount = requestStudents.filter(
+      (s) => s.is_accepted,
+    ).length;
+
+    const newCount = acceptedStudents.length;
+    const netChange = newCount - currentlyAcceptedCount;
+
+    // available_slots in DB might be stale or tricky. Let's use max - currentEnrolled
+    const realAvailable = workshop.max_slots - currentEnrolled;
+
+    // If we are increasing count, check if we have space
+    if (netChange > 0 && netChange > realAvailable) {
+      return res.status(400).json({
+        error: `Not enough slots. Available: ${realAvailable}, Trying to add: ${netChange}`,
+      });
+    }
+
+    // 3. Update Students
+    for (const student of requestStudents) {
+      const isNowAccepted = acceptedStudents.includes(student.id_user);
+
+      // Only update if changed (optimization) or just enforce always
+      await Admin.setStudentAcceptedStatus(
+        id,
+        student.id_user,
+        isNowAccepted,
+        request.id_workshop,
+      );
+    }
+
+    // 4. Update Request Status (PARTIAL, ACCEPTED, REJECTED)
+    const finalCount = newCount;
+    const totalRequestStudents = requestStudents.length;
+    let newStatus = "PENDING";
+
+    if (finalCount === 0)
+      newStatus = "REJECTED"; // Or PENDING if just reset? But usually rejected if processed.
+    else if (finalCount === totalRequestStudents) newStatus = "ACCEPTED";
+    else newStatus = "PARTIAL";
+
+    await Admin.updateRequestStatus(id, newStatus);
+
+    // 5. Force specific status in DB for rejected? No, logic above handles it.
+
+    // 6. AUTO-ASSIGN TEACHERS TO WORKSHOP
+    // If at least one student is accepted, ensure teachers are assigned
+    if (finalCount > 0) {
+      console.log(
+        `[AutoAssign] Request ${id}: Accepted students > 0. Checking teachers...`,
+      );
+
+      const teachersToAssign = [];
+      if (request.id_teacher_1) teachersToAssign.push(request.id_teacher_1);
+      if (request.id_teacher_2) teachersToAssign.push(request.id_teacher_2);
+
+      if (teachersToAssign.length > 0) {
+        await assignTeachersToWorkshop(request.id_workshop, teachersToAssign);
+        console.log(
+          `[AutoAssign] Assigned teachers [${teachersToAssign.join(", ")}] to Workshop ${request.id_workshop}`,
+        );
+      }
+
+      // Force workshop status update (optional, but good practice)
+      await db.query(
+        `UPDATE workshops SET available_slots = max_slots - (SELECT COUNT(*) FROM workshop_enrollments WHERE id_workshop = $1) WHERE id_workshop = $1`,
+        [request.id_workshop],
+      );
+    } else {
+      console.log(
+        `[AutoAssign] Request ${id}: No accepted students. Skipping teacher assignment.`,
+      );
+    }
+
+    io.emit("stats_updated");
+    io.emit("request_status_updated", { id_request: id, status: newStatus });
+
+    res.json({ message: "Students updated successfully", status: newStatus });
+  } catch (error) {
+    console.error("[manageRequestStudents] Error:", error);
+    res.status(500).json({ error: "Error updating request students" });
+  }
+};
+
 export const manualAssign = async (req, res) => {
   try {
     const { requestId, assignedSlots, teacher1Id, teacher2Id, comments } =
       req.body;
 
-    // Aquí implementarías la lógica de asignación manual
-    // Por ahora, solo actualizaremos el estado de la petición
-    await Admin.updateRequestStatus(requestId, 'ACCEPTED');
+    // 1. Validate Slots
+    if (
+      assignedSlots !== undefined &&
+      assignedSlots !== null &&
+      assignedSlots !== ""
+    ) {
+      const slots = parseInt(assignedSlots);
+      if (isNaN(slots) || slots < 1 || slots > 4) {
+        return res
+          .status(400)
+          .json({ error: "Les places hauríen de ser entre 1 i 4 (manual)." });
+      }
+      // Update request slots
+      await db.query(
+        "UPDATE center_requests SET requested_slots = $1 WHERE id_request = $2",
+        [slots, requestId],
+      );
+    }
 
-    // Podrías crear registros en workshop_teachers o alguna tabla de asignaciones
-    // Por simplicidad, solo cambiamos el estado
+    // 2. Get Request to find workshop ID
+    const request = await Admin.getRequestById(requestId);
+    if (!request) {
+      return res.status(404).json({ error: "Request not found" });
+    }
 
-    res.json({ message: "Assignment completed successfully" });
+    // 3. Assign Teachers
+    const teachersToAssign = [];
+    if (teacher1Id) teachersToAssign.push(teacher1Id);
+    if (teacher2Id) teachersToAssign.push(teacher2Id);
+
+    if (teachersToAssign.length > 0) {
+      await assignTeachersToWorkshop(request.id_workshop, teachersToAssign);
+    }
+
+    // 4. Update Request Status
+    await Admin.updateRequestStatus(requestId, "ACCEPTED");
+
+    // 5. Recalculate available slots just in case
+    await db.query(
+      `UPDATE workshops SET available_slots = max_slots - (SELECT COUNT(*) FROM workshop_enrollments WHERE id_workshop = $1) WHERE id_workshop = $1`,
+      [request.id_workshop],
+    );
+
+    res.json({
+      message: "Assignment completed and teachers assigned successfully",
+    });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Error in manual assignment" });
@@ -199,14 +383,33 @@ export const manualAssign = async (req, res) => {
 
 export const autoAssign = async (req, res) => {
   try {
-    // Lógica simple de asignación automática: aceptar todas las peticiones pendientes
-    const result = await db.query(
-      "UPDATE center_requests SET status = 'ACCEPTED' WHERE status = 'PENDING'",
-    );
+    // 1. Get all pending requests
+    const pendingRequests = await Admin.getPendingRequests();
+
+    // 2. For each request, assign its default teachers
+    let updatedCount = 0;
+
+    for (const req of pendingRequests) {
+      const teachersToAssign = [];
+      // Note: Admin.getPendingRequests join result might need checking column names.
+      // Looking at model: SELECT cr.*, c.center_name, ... FROM ...
+      // It DOES NOT select id_teacher_1/2. We need to fetch full details or update query.
+      // Let's safe fetch details for each to get teachers.
+      const fullReq = await Admin.getRequestById(req.id_request);
+
+      if (fullReq) {
+        if (fullReq.id_teacher_1) teachersToAssign.push(fullReq.id_teacher_1);
+        if (fullReq.id_teacher_2) teachersToAssign.push(fullReq.id_teacher_2);
+
+        await assignTeachersToWorkshop(fullReq.id_workshop, teachersToAssign);
+        await Admin.updateRequestStatus(req.id_request, "ACCEPTED");
+        updatedCount++;
+      }
+    }
 
     res.json({
       message: "Auto assignment completed successfully",
-      updatedRequests: result.rowCount,
+      updatedRequests: updatedCount,
     });
   } catch (error) {
     console.error(error);
@@ -410,19 +613,21 @@ export const createUser = async (req, res) => {
   try {
     // Basic User Creation (Admin usage)
     const { name, email, password, role } = req.body;
-    
+
     if (!email || !password || !role) {
-        return res.status(400).json({ error: "Missing required fields" });
+      return res.status(400).json({ error: "Missing required fields" });
     }
 
     // Check if email exists
-    const userCheck = await db.query("SELECT id FROM users WHERE email = $1", [email]);
+    const userCheck = await db.query("SELECT id FROM users WHERE email = $1", [
+      email,
+    ]);
     if (userCheck.rows.length > 0) {
-        return res.status(400).json({ error: "Email already exists" });
+      return res.status(400).json({ error: "Email already exists" });
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
-    
+
     // Insert into users
     const query = `
         INSERT INTO users (email, password_hash, role, is_active)
@@ -433,7 +638,6 @@ export const createUser = async (req, res) => {
     const newUser = result.rows[0];
 
     res.status(201).json(newUser);
-
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Error creating user" });
@@ -449,24 +653,38 @@ export const updateUser = async (req, res) => {
     const values = [];
     let paramCount = 1;
 
-    if (email !== undefined) { updates.push(`email = $${paramCount}`); values.push(email); paramCount++; }
-    if (role !== undefined) { updates.push(`role = $${paramCount}`); values.push(role); paramCount++; }
-    if (is_active !== undefined) { updates.push(`is_active = $${paramCount}`); values.push(is_active); paramCount++; }
+    if (email !== undefined) {
+      updates.push(`email = $${paramCount}`);
+      values.push(email);
+      paramCount++;
+    }
+    if (role !== undefined) {
+      updates.push(`role = $${paramCount}`);
+      values.push(role);
+      paramCount++;
+    }
+    if (is_active !== undefined) {
+      updates.push(`is_active = $${paramCount}`);
+      values.push(is_active);
+      paramCount++;
+    }
     if (password !== undefined && password.trim() !== "") {
-        const hashedPassword = await bcrypt.hash(password, 10);
-        updates.push(`password_hash = $${paramCount}`); 
-        values.push(hashedPassword); 
-        paramCount++;
+      const hashedPassword = await bcrypt.hash(password, 10);
+      updates.push(`password_hash = $${paramCount}`);
+      values.push(hashedPassword);
+      paramCount++;
     }
 
-    if (updates.length === 0) return res.status(400).json({ error: "No fields to update" });
+    if (updates.length === 0)
+      return res.status(400).json({ error: "No fields to update" });
 
     values.push(id);
     const query = `UPDATE users SET ${updates.join(", ")} WHERE id = $${paramCount} RETURNING id, email, role, is_active`;
-    
+
     const result = await db.query(query, values);
-    
-    if (result.rows.length === 0) return res.status(404).json({ error: "User not found" });
+
+    if (result.rows.length === 0)
+      return res.status(404).json({ error: "User not found" });
 
     res.json(result.rows[0]);
   } catch (error) {
@@ -481,9 +699,7 @@ export const deleteUser = async (req, res) => {
     await db.query("DELETE FROM users WHERE id = $1", [id]);
     res.json({ message: "User deleted successfully" });
   } catch (error) {
-    console.error("Delete user error:", error); 
+    console.error("Delete user error:", error);
     res.status(500).json({ error: "Error deleting user (check dependencies)" });
   }
 };
-
-

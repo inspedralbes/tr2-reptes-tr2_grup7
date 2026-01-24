@@ -173,18 +173,26 @@ const navigationStructure = {
   centre: [
     {
       id: 'taula',
-      name: 'Taula',
+      name: 'Dashboard',
       subsections: [
-        { id: 'taula-centre', name: 'Taula Central', route: '/centro/panel' },
-        { id: 'info-taller', name: 'Informació Tallers', route: '/centro/info' },
+        { id: 'taula-centre', name: 'Resum General', route: '/centro/panel' },
+      ],
+    },
+    {
+      id: 'llistats',
+      name: 'Llistat',
+      subsections: [
         { id: 'alumnes', name: 'Llista Alumnes', route: '/centro/alumnos' },
         { id: 'professors', name: 'Llista Professors', route: '/centro/profesores' },
       ],
     },
     {
       id: 'catalog',
-      name: 'Catàleg',
-      subsections: [{ id: 'catalog', name: 'Veure Catàleg', route: '/centro/catalogo' }],
+      name: 'Taller',
+      subsections: [
+        { id: 'catalog', name: 'Veure Tallers', route: '/centro/catalogo' },
+        { id: 'info-taller', name: 'Tallers Sol·licitats', route: '/centro/info' },
+      ],
     },
     {
       id: 'peticions',

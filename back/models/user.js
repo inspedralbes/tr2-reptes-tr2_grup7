@@ -77,6 +77,8 @@ export const create = async (usuario) => {
     id_center_assigned: teacher_center,
     // Alumnos
     birth_date,
+    eso_grade,
+    gender,
     id_center_assigned: student_center,
   } = usuario;
 
@@ -112,8 +114,8 @@ export const create = async (usuario) => {
       await client.query(teacherText, teacherValues);
     } else if (role === "STUDENT") {
       const studentText = `
-            INSERT INTO students (id_user, first_name, last_name, birth_date, phone, id_center_assigned)
-            VALUES ($1, $2, $3, $4, $5, $6)
+            INSERT INTO students (id_user, first_name, last_name, birth_date, phone, eso_grade, gender, id_center_assigned)
+            VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
         `;
       const studentValues = [
         userId,
@@ -121,6 +123,8 @@ export const create = async (usuario) => {
         last_name,
         birth_date,
         phone,
+        eso_grade,
+        gender,
         student_center,
       ];
       await client.query(studentText, studentValues);
@@ -176,6 +180,7 @@ export const remove = async (id) => {
 };
 
 export const updatePassword = async (id, hashedPassword) => {
-    const text = "UPDATE users SET password_hash = $1, password_last_changed_at = NOW() WHERE id = $2";
-    await db.query(text, [hashedPassword, id]);
+  const text =
+    "UPDATE users SET password_hash = $1, password_last_changed_at = NOW() WHERE id = $2";
+  await db.query(text, [hashedPassword, id]);
 };

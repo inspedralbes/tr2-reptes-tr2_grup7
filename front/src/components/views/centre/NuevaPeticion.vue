@@ -297,220 +297,229 @@ import * as schoolApplicationService from '../../../services/schoolApplicationSe
 
 import { getCurrentUser } from '../../../services/authService'
 
-const getUser = () => getCurrentUser() || {}
+  import { useAlertStore } from '../../../stores/alert'; // Import store
 
-const router = useRouter()
-const route = useRoute()
-const workshops = ref([])
-const teachers = ref([])
-const students = ref([])
-const loading = ref(false)
-const isBlocked = ref(false)
-const blockReason = ref('') // 'CLOSED_PERIOD' or 'ALREADY_SUBMITTED'
-
-const requests = ref([createEmptyRequest()])
-const globalComments = ref('')
-const teacher1 = ref('')
-const teacher2 = ref('')
-const activePeriodId = ref(null) // key for payload
-
-function createEmptyRequest() {
-  return {
-    id_workshop: '',
-    students: [],
-    course_level: '',
-    comments: '',
-    requested_slots: 1,
-    selectedStudentToAdd: '', // Helper for UI specific to this request
-  }
-}
-
-// Helpers
-const getAvailableWorkshops = (currentIndex) => {
-    // Get IDs of workshops selected in OTHER requests
-    const selectedWorkshopIds = requests.value
-        .map((r, idx) => (idx !== currentIndex ? r.id_workshop : null))
-        .filter(id => id); // Remove nulls/undefined
-    
-    // Return workshops that are NOT in the used list
-    return workshops.value.filter(w => !selectedWorkshopIds.includes(w.id_workshop));
-}
-
-const getAvailableStudentsForRequest = (index) => {
-  // Get ALL students selected in ANY request (including this one so we don't duplicate logic,
-  // but importantly we want to filter out those already used in OTHERS too)
-  const allSelectedStudents = requests.value.flatMap(r => r.students);
+  const getUser = () => getCurrentUser() || {}
   
-  // NOTE: If we want to allow the user to see students currently in THIS request 
-  // (so they disappear only when added), the logic is slightly different.
-  // The current UI adds them to a list below and clears the select.
-  // So we should filter out ANY student that is currently in 'students' array of ANY request.
+  const router = useRouter()
+  const route = useRoute()
+  const alertStore = useAlertStore() // Initialize store
+  const workshops = ref([])
+  const teachers = ref([])
+  const students = ref([])
+  const loading = ref(false)
+  const isBlocked = ref(false)
+  const blockReason = ref('') // 'CLOSED_PERIOD' or 'ALREADY_SUBMITTED'
   
-  return students.value.filter((student) => !allSelectedStudents.includes(student.id_user))
-}
-
-const getStudentName = (id) => {
-  const s = students.value.find((student) => student.id_user === id)
-  return s ? `${s.first_name} ${s.last_name}` : 'Desconegut'
-}
-
-const addStudentToRequest = (index) => {
-  const req = requests.value[index]
-  if (req.selectedStudentToAdd && req.students.length < 4) {
-    req.students.push(req.selectedStudentToAdd)
-    req.selectedStudentToAdd = ''
-  }
-}
-
-const removeStudentFromRequest = (reqIndex, studentId) => {
-  const req = requests.value[reqIndex]
-  req.students = req.students.filter((id) => id !== studentId)
-}
-
-const addNewRequest = () => {
-  requests.value.push(createEmptyRequest())
-  // Optional: scroll to bottom logic could go here
-}
-
-const removeRequest = (index) => {
-  if (confirm('Estàs segur de voler eliminar aquesta petició?')) {
-    requests.value.splice(index, 1)
-    if (requests.value.length === 0) {
-      addNewRequest() // Always keep at least one
+  const requests = ref([createEmptyRequest()])
+  const globalComments = ref('')
+  const teacher1 = ref('')
+  const teacher2 = ref('')
+  const activePeriodId = ref(null) // key for payload
+  
+  function createEmptyRequest() {
+    return {
+      id_workshop: '',
+      students: [],
+      course_level: '',
+      comments: '',
+      requested_slots: 1,
+      selectedStudentToAdd: '', // Helper for UI specific to this request
     }
   }
-}
-
-// Helper to calculate academic year
-const getCurrentSchoolYear = () => {
-  const today = new Date();
-  const month = today.getMonth(); // 0-11
-  const year = today.getFullYear();
-  // If we are in September (8) or later, it's the start of a year (e.g., Sept 2025 -> 2025-2026)
-  // If we are before September, it's the end of a year (e.g., Jan 2026 -> 2025-2026)
-  return month >= 8 ? `${year}-${year + 1}` : `${year - 1}-${year}`;
-}
-
-const currentPeriod = getCurrentSchoolYear();
-
-import * as periodService from '../../../services/periodService'
-
-// ... existing imports
-
-const currentPeriodName = ref('')
-
-onMounted(async () => {
-  try {
-    const user = getUser()
-    if (user && user.id) {
-      console.log('Fetching data for user:', user.id);
+  
+  // Helpers
+  const getAvailableWorkshops = (currentIndex) => {
+      // Get IDs of workshops selected in OTHER requests
+      const selectedWorkshopIds = requests.value
+          .map((r, idx) => (idx !== currentIndex ? r.id_workshop : null))
+          .filter(id => id); // Remove nulls/undefined
       
-      // Parallel fetch
-      const [workshopsData, teachersData, studentsData, myApps, activePeriod] = await Promise.all([
-        workshopService.getAll(),
-        centreService.getTeachers(user.id),
-        centreService.getStudents(user.id),
-        schoolApplicationService.getMyApplications(),
-        periodService.getActive()
-      ])
-
-      console.log('Fetched Applications:', myApps);
-      console.log('Current Computed Period:', currentPeriod);
-
-      // 1. Check Active Period
-      const periodStatus = await schoolApplicationService.getActivePeriod();
-      console.log('Active Period Status:', periodStatus);
-
-      if (!periodStatus.active) {
-          isBlocked.value = true;
-          blockReason.value = 'CLOSED_PERIOD'; // New Reason
-      } else {
-           // 2. Check if already has application for THIS active period
-           // Note: periodStatus.period.id_period contains the ID
-           const existingApp = myApps.find(app => app.id_period === periodStatus.period.id_period);
-           
-           if (existingApp) {
-             isBlocked.value = true;
-             blockReason.value = 'ALREADY_SUBMITTED';
-           }
-      }
-
-      workshops.value = workshopsData
-      teachers.value = teachersData
-      students.value = studentsData
-
-      // Check for pre-selected workshop from query params
-      if (route.query.workshopId) {
-        const preSelectedId = parseInt(route.query.workshopId)
-        if (!isNaN(preSelectedId)) {
-          requests.value[0].id_workshop = preSelectedId
-        }
-      }
-    } else {
-      console.error('User not found in local storage')
-      router.push('/login')
-    }
-  } catch (error) {
-    console.error('Error loading data:', error)
-  }
-})
-
-const submitRequests = async () => {
-  // Validate ALL requests
-  for (let i = 0; i < requests.value.length; i++) {
-    const req = requests.value[i]
-    if (!req.id_workshop) {
-      alert(`La petició #${i + 1} no té taller seleccionat.`)
-      return
-    }
-    if (req.students.length === 0) {
-      alert(`La petició #${i + 1} no té alumnes seleccionats.`)
-      return
-    }
-    if (!req.course_level) {
-      alert(`La petició #${i + 1} no té curs/nivell.`)
-      return
-    }
-  }
-
-  if (!teacher1.value) {
-    alert("Has de seleccionar almenys un professor referent principal.");
-    return;
+      // Return workshops that are NOT in the used list
+      return workshops.value.filter(w => !selectedWorkshopIds.includes(w.id_workshop));
   }
   
-  const teachersPayload = [teacher1.value];
-  if (teacher2.value) {
-      teachersPayload.push(teacher2.value);
-  }
-
-  loading.value = true
-  try {
-    // Construct the single application object
-    const applicationPayload = {
-      id_period: activePeriodId.value, // Send the explicit ID
-      year_period: currentPeriodName.value || currentPeriod, // Keep for legacy/display if needed
-      comments: globalComments.value,
-      items: requests.value.map(req => {
-       // eslint-disable-next-line no-unused-vars
-       const { selectedStudentToAdd, ...data } = req
-       return data
-    }),
-    teachers: teachersPayload
-    };
-
-    await schoolApplicationService.createApplication(applicationPayload);
+  const getAvailableStudentsForRequest = (index) => {
+    // Get ALL students selected in ANY request (including this one so we don't duplicate logic,
+    // but importantly we want to filter out those already used in OTHERS too)
+    const allSelectedStudents = requests.value.flatMap(r => r.students);
     
-    alert(`Sol·licitud creada correctament amb ${requests.value.length} tallers!`)
-    router.push('/centro/historial') // Redirect to history to see the new app
-  } catch (error) {
-    console.error('Error submitting application:', error)
-    if (error.response && error.response.data && error.response.data.error) {
-        alert('Error: ' + error.response.data.error);
-    } else {
-        alert('Error al crear la sol·licitud. Si us plau, torna-ho a provar.')
-    }
-  } finally {
-    loading.value = false
+    // NOTE: If we want to allow the user to see students currently in THIS request 
+    // (so they disappear only when added), the logic is slightly different.
+    // The current UI adds them to a list below and clears the select.
+    // So we should filter out ANY student that is currently in 'students' array of ANY request.
+    
+    return students.value.filter((student) => !allSelectedStudents.includes(student.id_user))
   }
-}
-</script>
+  
+  const getStudentName = (id) => {
+    const s = students.value.find((student) => student.id_user === id)
+    return s ? `${s.first_name} ${s.last_name}` : 'Desconegut'
+  }
+  
+  const addStudentToRequest = (index) => {
+    const req = requests.value[index]
+    if (req.selectedStudentToAdd && req.students.length < 4) {
+      req.students.push(req.selectedStudentToAdd)
+      req.selectedStudentToAdd = ''
+    }
+  }
+  
+  const removeStudentFromRequest = (reqIndex, studentId) => {
+    const req = requests.value[reqIndex]
+    req.students = req.students.filter((id) => id !== studentId)
+  }
+  
+  const addNewRequest = () => {
+    requests.value.push(createEmptyRequest())
+    // Optional: scroll to bottom logic could go here
+  }
+  
+  const removeRequest = async (index) => {
+    const confirmed = await alertStore.confirm(
+      'Estàs segur de voler eliminar aquesta petició?', 
+      'Confirmar eliminació',
+      { type: 'danger', confirmText: 'Eliminar' }
+    );
+    
+    if (confirmed) {
+      requests.value.splice(index, 1)
+      if (requests.value.length === 0) {
+        addNewRequest() // Always keep at least one
+      }
+    }
+  }
+  
+  // Helper to calculate academic year
+  const getCurrentSchoolYear = () => {
+    const today = new Date();
+    const month = today.getMonth(); // 0-11
+    const year = today.getFullYear();
+    // If we are in September (8) or later, it's the start of a year (e.g., Sept 2025 -> 2025-2026)
+    // If we are before September, it's the end of a year (e.g., Jan 2026 -> 2025-2026)
+    return month >= 8 ? `${year}-${year + 1}` : `${year - 1}-${year}`;
+  }
+  
+  const currentPeriod = getCurrentSchoolYear();
+  
+  import * as periodService from '../../../services/periodService'
+  
+  // ... existing imports
+  
+  const currentPeriodName = ref('')
+  
+  onMounted(async () => {
+    try {
+      const user = getUser()
+      if (user && user.id) {
+        console.log('Fetching data for user:', user.id);
+        
+        // Parallel fetch
+        const [workshopsData, teachersData, studentsData, myApps, activePeriod] = await Promise.all([
+          workshopService.getAll(),
+          centreService.getTeachers(user.id),
+          centreService.getStudents(user.id),
+          schoolApplicationService.getMyApplications(),
+          periodService.getActive()
+        ])
+  
+        console.log('Fetched Applications:', myApps);
+        console.log('Current Computed Period:', currentPeriod);
+  
+        // 1. Check Active Period
+        const periodStatus = await schoolApplicationService.getActivePeriod();
+        console.log('Active Period Status:', periodStatus);
+  
+        if (!periodStatus.active) {
+            isBlocked.value = true;
+            blockReason.value = 'CLOSED_PERIOD'; // New Reason
+        } else {
+             // 2. Check if already has application for THIS active period
+             // Note: periodStatus.period.id_period contains the ID
+             const existingApp = myApps.find(app => app.id_period === periodStatus.period.id_period);
+             
+             if (existingApp) {
+               isBlocked.value = true;
+               blockReason.value = 'ALREADY_SUBMITTED';
+             }
+        }
+  
+        workshops.value = workshopsData
+        // Filter only active teachers for new requests
+        teachers.value = teachersData.filter(t => t.is_active)
+        students.value = studentsData
+  
+        // Check for pre-selected workshop from query params
+        if (route.query.workshopId) {
+          const preSelectedId = parseInt(route.query.workshopId)
+          if (!isNaN(preSelectedId)) {
+            requests.value[0].id_workshop = preSelectedId
+          }
+        }
+      } else {
+        console.error('User not found in local storage')
+        router.push('/login')
+      }
+    } catch (error) {
+      console.error('Error loading data:', error)
+    }
+  })
+  
+  const submitRequests = async () => {
+    // Validate ALL requests
+    for (let i = 0; i < requests.value.length; i++) {
+      const req = requests.value[i]
+      if (!req.id_workshop) {
+        alertStore.addAlert('warning', `La petició #${i + 1} no té taller seleccionat.`);
+        return
+      }
+      if (req.students.length === 0) {
+        alertStore.addAlert('warning', `La petició #${i + 1} no té alumnes seleccionats.`);
+        return
+      }
+      if (!req.course_level) {
+        alertStore.addAlert('warning', `La petició #${i + 1} no té curs/nivell.`);
+        return
+      }
+    }
+  
+    if (!teacher1.value) {
+      alertStore.addAlert('warning', "Has de seleccionar almenys un professor referent principal.");
+      return;
+    }
+    
+    const teachersPayload = [teacher1.value];
+    if (teacher2.value) {
+        teachersPayload.push(teacher2.value);
+    }
+  
+    loading.value = true
+    try {
+      // Construct the single application object
+      const applicationPayload = {
+        id_period: activePeriodId.value, // Send the explicit ID
+        year_period: currentPeriodName.value || currentPeriod, // Keep for legacy/display if needed
+        comments: globalComments.value,
+        items: requests.value.map(req => {
+         // eslint-disable-next-line no-unused-vars
+         const { selectedStudentToAdd, ...data } = req
+         return data
+      }),
+      teachers: teachersPayload
+      };
+  
+      await schoolApplicationService.createApplication(applicationPayload);
+      
+      alertStore.addAlert('success', `Sol·licitud creada correctament amb ${requests.value.length} tallers!`);
+      router.push('/centro/historial') // Redirect to history to see the new app
+    } catch (error) {
+      console.error('Error submitting application:', error)
+      if (error.response && error.response.data && error.response.data.error) {
+          alertStore.addAlert('error', 'Error: ' + error.response.data.error);
+      } else {
+          alertStore.addAlert('error', 'Error al crear la sol·licitud. Si us plau, torna-ho a provar.')
+      }
+    } finally {
+      loading.value = false
+    }
+  }</script>
