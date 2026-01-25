@@ -1,19 +1,27 @@
 # Documentació
-Llistat d'alguns dels punts que han de quedar explicats en aquesta carpeta. Poden ser tots en aquest fitxer o en diversos fitxers enllaçats.
 
-És obligatori modificar aquest document!!
+En aquesta part de la documentació es troba la documentació bàsica del projecte.
 
-## Documentació bàsica MÍNIMA
- * Objectius
- * Arquitectura bàsica
-   * Tecnologies utilitzades
-   * Interrelació entre els diversos components
- * Com crees l'entorn de desenvolupament
- * Com desplegues l'aplicació a producció
- * Llistat d'endpoints de l'API de backend (també podeu documentar-ho amb swagger)
-    * Rutes
-   * Exemples de JSON de peticó
-   * Exemples de JSON de resposta i els seus codis d'estat 200? 404?
- * Aplicació Android
- * Altres elements importants.
- * ...
+## Objectius del projecte
+
+Els objectius del projecte están apuntats en aquest [PDF](./ObjectiusTR2.pdf)
+
+[![Objectius](./Objectius.png)](./ObjectiusTR2.pdf)
+
+## Planificació del projecte
+
+La planificació del projecte està apuntada en aquest [PDF](./DOCUMENT_DE_PLANIFICACIÓ_TÉCNICA_Y_FUNCIONAL.pdf)
+
+[![Planificació](./planificacio.png)](./DOCUMENT_DE_PLANIFICACIÓ_TÉCNICA_Y_FUNCIONAL.pdf)
+
+## Diagrames
+
+Aquí tenim els diagrames del projecte:
+
+### Diagrama de Casos d'Ús
+
+![Diagrama de Casos d'Ús](./Diagrama_casos_de_uso.drawio.png)
+
+### Diagrama de Relació de la Base de Dades
+
+![Diagrama de Relació de la BD](./Diagrama_relació_BD%20.drawio.png)

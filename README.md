@@ -44,6 +44,6 @@ Aquí podeu trobar més informació sobre la nostra planificació i disseny:
   <p>
     <a href="https://github.com/inspedralbes/tr2-reptes-tr2_grup7" target="_blank"><img alt="Github" src="https://img.shields.io/badge/GitHub-%2312100E.svg?&style=for-the-badge&logo=Github&logoColor=white" width='100' height='33' /></a>
     <a href="https://tree.taiga.io/project/varito9-tr2-reptes-tr2_grup7/timeline" target="_blank"><img alt="Taiga" src="https://docs.taiga.io/imgs/logo.png" width='80' height='30' /></a>
-    <a href="https://www.figma.com/design/E1K0D43c4fdwcJ7YWnJklw/Untitled?node-id=0-1&p=f&t=6CSw8NrNTA7p3LXx-0" target="_blank"><img alt="Figma" src="https://wptavern.com/wp-content/uploads/2018/11/Screen-Shot-2018-11-19-at-8.43.27-PM.png" width='80' height='40' /></a>
+    <a href="https://www.figma.com/design/BfBFgObpm2yyukx3ZIwwdM/Tallers-TR2?node-id=0-1&t=M5fazd302Bhd1s9r-1" target="_blank"><img alt="Figma" src="https://wptavern.com/wp-content/uploads/2018/11/Screen-Shot-2018-11-19-at-8.43.27-PM.png" width='80' height='40' /></a>
   </p>
 </div>
