@@ -19,3 +19,5 @@ export const getActivePeriod = async () => {
   const response = await apiClient.get('/applications/active-period');
   return response.data;
 };
+
+

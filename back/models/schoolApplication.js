@@ -143,7 +143,7 @@ export const getApplicationDetails = async (id_application) => {
   for (const req of requests) {
     const studentRes = await db.query(
       `
-            SELECT s.id_user, s.first_name, s.last_name, si.status as interest_status
+            SELECT s.id_user, s.first_name, s.last_name, si.id_interest, si.status as interest_status, si.has_legal_papers
             FROM student_interest si
             JOIN students s ON si.id_student = s.id_user
             WHERE si.id_request = $1
@@ -154,4 +154,15 @@ export const getApplicationDetails = async (id_application) => {
   }
 
   return { ...appData, requests };
+};
+
+export const updateStudentInterest = async (id_interest, has_legal_papers) => {
+    const text = `
+        UPDATE student_interest 
+        SET has_legal_papers = $1
+        WHERE id_interest = $2
+        RETURNING *
+    `;
+    const res = await db.query(text, [has_legal_papers, id_interest]);
+    return res.rows[0];
 };

@@ -151,6 +151,7 @@
 
 <script setup>
 import { ref, onMounted, onUnmounted, computed } from 'vue'
+import { FileText } from 'lucide-vue-next'
 import { useRouter } from 'vue-router'
 import * as schoolApplicationService from '../../../services/schoolApplicationService'
 import { getCurrentUser } from '../../../services/authService'
@@ -249,6 +250,21 @@ onMounted(async () => {
     loading.value = false
   }
 })
+
+const togglePapers = async (student) => {
+    // Optimistic Update
+    const oldVal = student.has_legal_papers;
+    student.has_legal_papers = !oldVal;
+    
+    try {
+        await schoolApplicationService.updateStudentPapers(student.id_interest, student.has_legal_papers);
+    } catch (error) {
+        console.error("Error toggling papers:", error);
+        // Revert on failure
+        student.has_legal_papers = oldVal;
+        alert("Error actualitzant l'estat dels documents.");
+    }
+}
 
 onUnmounted(() => {
     socketService.disconnect();

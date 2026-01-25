@@ -172,7 +172,7 @@ const asignarAlumnosATallerSimulado = async (taller, simulatedGlobalLoad, config
 
     const result = await db.query(`
         SELECT 
-            si.id_interest, si.id_student, si.has_legal_papers, si.created_at, si.id_request,
+            si.id_interest, si.id_student, s.has_legal_papers, si.created_at, si.id_request,
             s.id_center_assigned, s.eso_grade, s.gender, s.risk_level, s.birth_date, s.first_name, s.last_name,
             cr.requested_slots 
         FROM student_interest si

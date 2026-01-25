@@ -64,6 +64,7 @@ CREATE TABLE students (
     eso_grade INT NOT NULL CHECK (eso_grade BETWEEN 1 AND 4), -- [cite: 148, 158]
     gender CHAR(1) NOT NULL CHECK (gender IN ('M', 'F', 'O')), -- M=Masculino, F=Femenino, O=Otros 
     risk_level INT DEFAULT 0 CHECK (risk_level BETWEEN 0 AND 5), -- Nivel de riesgo (0=Nulo, 1-5=Escala)
+    has_legal_papers BOOLEAN DEFAULT FALSE, -- Documents entregados
     CONSTRAINT fk_user_student FOREIGN KEY (id_user) REFERENCES users(id) ON DELETE CASCADE,
     CONSTRAINT fk_student_center FOREIGN KEY (id_center_assigned) REFERENCES centers(id_user) ON DELETE SET NULL
 );
@@ -140,7 +141,6 @@ CREATE TABLE student_interest (
     id_interest SERIAL PRIMARY KEY,
     id_student INT REFERENCES students(id_user) ON DELETE CASCADE,
     id_request INT REFERENCES center_requests(id_request) ON DELETE CASCADE,
-    has_legal_papers BOOLEAN DEFAULT FALSE,
     verified_by_teacher_id INT REFERENCES teachers(id_user),
     status VARCHAR(20) DEFAULT 'WAITING' CHECK (status IN ('WAITING', 'CONFIRMED', 'CANCELLED')),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,

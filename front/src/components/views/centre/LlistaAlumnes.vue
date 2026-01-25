@@ -38,6 +38,8 @@
             <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700">Email</th>
             <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700">Telèfon</th>
             <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700">Data Naixement</th>
+ççç            <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700">Papers</th>
+            <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700">Risc</th>
             <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700">Estat</th>
             <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700">Accions</th>
           </tr>
@@ -53,6 +55,20 @@
             <td class="px-6 py-4 text-sm text-gray-600">{{ student.email }}</td>
             <td class="px-6 py-4 text-sm text-gray-600">{{ student.phone || '-' }}</td>
             <td class="px-6 py-4 text-sm text-gray-600">{{ formatDate(student.birth_date) }}</td>
+            <td class="px-6 py-4 text-sm font-medium">
+               <span v-if="student.has_legal_papers" class="text-green-600 bg-green-50 px-2 py-1 rounded border border-green-100 flex items-center gap-1 w-fit">
+                 <CheckCircle :size="14" /> Sí
+               </span>
+               <span v-else class="text-red-500 bg-red-50 px-2 py-1 rounded border border-red-100 flex items-center gap-1 w-fit">
+                 <XCircle :size="14" /> No
+               </span>
+            </td>
+            <td class="px-6 py-4 text-sm font-medium">
+               <span v-if="student.risk_level > 0" class="text-orange-600 bg-orange-50 px-2 py-1 rounded border border-orange-100">
+                 Nivell {{ student.risk_level }}
+               </span>
+               <span v-else class="text-gray-400">-</span>
+            </td>
             <td class="px-6 py-4">
               <span
                 class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium"
@@ -168,6 +184,36 @@
             <option value="O">Altre</option>
           </select>
         </div>
+
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">
+             Nivell d'Absentisme / Risc (0-5)
+             <span class="text-xs text-gray-500 block font-normal">0 (Baix) - 5 (Alt/Crític)</span>
+          </label>
+          <select
+            v-model.number="form.risk_level"
+            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+          >
+            <option :value="0">0 - Sense Risc / Assistència Perfecta</option>
+            <option :value="1">1 - Risc Baix</option>
+            <option :value="2">2 - Risc Moderat</option>
+            <option :value="3">3 - Risc Alt</option>
+            <option :value="4">4 - Absentisme Crònic</option>
+            <option :value="5">5 - Situació Crítica</option>
+          </select>
+        </div>
+
+        <div class="flex items-center gap-2 pt-2">
+            <input 
+                type="checkbox" 
+                v-model="form.has_legal_papers"
+                id="hasPapers"
+                class="w-4 h-4 text-blue-600 rounded focus:ring-blue-500 border-gray-300"
+            />
+            <label for="hasPapers" class="text-sm font-medium text-gray-700 select-none">
+                Documents / Autorització entregada
+            </label>
+        </div>
       </form>
 
       <template #footer>
@@ -195,7 +241,7 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 // Ensure Plus is imported
-import { Plus, Pencil, Trash2 } from 'lucide-vue-next'
+import { Plus, Pencil, Trash2, CheckCircle, XCircle } from 'lucide-vue-next'
 import * as centreService from '../../../services/centreService'
 import { getCurrentUser } from '../../../services/authService'
 import Modal from '../../shared/Modal.vue'
@@ -216,7 +262,11 @@ const form = ref({
   phone: '',
   birth_date: '',
   eso_grade: '',
+  eso_grade: '',
   gender: '',
+  gender: '',
+  risk_level: 0,
+  has_legal_papers: false,
 })
 const centreId = ref(null)
 
@@ -246,7 +296,10 @@ const openCreateModal = () => {
     phone: '',
     birth_date: '',
     eso_grade: '',
+    eso_grade: '',
     gender: '',
+    risk_level: 0,
+    has_legal_papers: false,
   }
   showModal.value = true
 }
@@ -261,7 +314,11 @@ const openEditModal = (student) => {
     phone: student.phone || '',
     birth_date: formatDateForInput(student.birth_date),
     eso_grade: student.eso_grade,
+    eso_grade: student.eso_grade,
     gender: student.gender,
+    gender: student.gender,
+    risk_level: student.risk_level || 0,
+    has_legal_papers: student.has_legal_papers || false,
   }
   showModal.value = true
 }
@@ -282,6 +339,8 @@ const saveStudent = async () => {
         birth_date: form.value.birth_date || null,
         eso_grade: form.value.eso_grade,
         gender: form.value.gender,
+        risk_level: form.value.risk_level,
+        has_legal_papers: form.value.has_legal_papers,
       })
       alertStore.addAlert('success', 'Alumne actualitzat correctament!')
     } else {
@@ -290,10 +349,11 @@ const saveStudent = async () => {
         last_name: form.value.last_name,
         email: form.value.email,
         phone: form.value.phone || null,
-        phone: form.value.phone || null,
         birth_date: form.value.birth_date || null,
         eso_grade: form.value.eso_grade,
         gender: form.value.gender,
+        risk_level: form.value.risk_level,
+        has_legal_papers: form.value.has_legal_papers,
       })
       alertStore.addAlert('success', 'Alumne creat correctament!')
     }

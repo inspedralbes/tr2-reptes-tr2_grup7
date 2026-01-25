@@ -204,6 +204,8 @@ export const createStudent = async (req, res) => {
       phone,
       eso_grade,
       gender,
+      risk_level,
+      has_legal_papers,
     } = req.body;
 
     if (
@@ -243,6 +245,8 @@ export const createStudent = async (req, res) => {
       phone,
       eso_grade,
       gender,
+      risk_level,
+      has_legal_papers,
       id_center_assigned: id,
     });
 

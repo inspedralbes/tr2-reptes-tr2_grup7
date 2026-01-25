@@ -79,6 +79,8 @@ export const create = async (usuario) => {
     birth_date,
     eso_grade,
     gender,
+    risk_level,
+    has_legal_papers,
     id_center_assigned: student_center,
   } = usuario;
 
@@ -114,8 +116,8 @@ export const create = async (usuario) => {
       await client.query(teacherText, teacherValues);
     } else if (role === "STUDENT") {
       const studentText = `
-            INSERT INTO students (id_user, first_name, last_name, birth_date, phone, eso_grade, gender, id_center_assigned)
-            VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+            INSERT INTO students (id_user, first_name, last_name, birth_date, phone, eso_grade, gender, risk_level, has_legal_papers, id_center_assigned)
+            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
         `;
       const studentValues = [
         userId,
@@ -125,6 +127,8 @@ export const create = async (usuario) => {
         phone,
         eso_grade,
         gender,
+        risk_level || 0,
+        has_legal_papers || false,
         student_center,
       ];
       await client.query(studentText, studentValues);

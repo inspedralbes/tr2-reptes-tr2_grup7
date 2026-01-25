@@ -177,6 +177,7 @@
             <div>
               <label class="block text-sm font-semibold mb-2" style="color: var(--text-primary)">
                 Selecciona Alumnes (Màx 4) *
+                <span class="text-xs font-normal text-gray-500 block">Només alumnes amb documentació entregada</span>
               </label>
               <div class="space-y-4">
                 <div class="flex gap-2">
@@ -349,7 +350,10 @@ import { getCurrentUser } from '../../../services/authService'
     // The current UI adds them to a list below and clears the select.
     // So we should filter out ANY student that is currently in 'students' array of ANY request.
     
-    return students.value.filter((student) => !allSelectedStudents.includes(student.id_user))
+    return students.value.filter((student) => 
+      !allSelectedStudents.includes(student.id_user) && 
+      student.has_legal_papers
+    )
   }
   
   const getStudentName = (id) => {
