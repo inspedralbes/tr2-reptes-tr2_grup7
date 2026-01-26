@@ -212,7 +212,7 @@ const handleLogin = async () => {
     } else if (response.user.role === 'CENTER') {
       router.push('/centro/panel')
     } else if (response.user.role === 'TEACHER') {
-      router.push('/profesor/talleres')
+      router.push('/profesor/panel')
     } else {
       error.value = "Rol d'usuari no reconegut"
     }

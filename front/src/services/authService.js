@@ -7,6 +7,13 @@ export const login = async (email, password, rememberMe = false) => {
 
     // Si hay token, persistimos la sesión en el navegador
     if (response.data.token) {
+      // 1. Limpiamos cualquier sesión previa para evitar conflictos
+      localStorage.removeItem('token')
+      localStorage.removeItem('user')
+      sessionStorage.removeItem('token')
+      sessionStorage.removeItem('user')
+
+      // 2. Guardamos en el storage seleccionado
       const storage = rememberMe ? localStorage : sessionStorage
       storage.setItem('token', response.data.token)
       storage.setItem('user', JSON.stringify(response.data.user))

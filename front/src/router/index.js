@@ -203,7 +203,7 @@ router.beforeEach((to, from, next) => {
     } else if (userData.role === 'CENTER') {
       next('/centro/panel')
     } else if (userData.role === 'TEACHER') {
-      next('/profesor/talleres')
+      next('/profesor/panel')
     } else {
       next()
     }
