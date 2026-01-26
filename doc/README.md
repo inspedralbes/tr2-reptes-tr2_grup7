@@ -25,3 +25,8 @@ Aquí tenim els diagrames del projecte:
 ### Diagrama de Relació de la Base de Dades
 
 ![Diagrama de Relació de la BD](./Diagrama_relació_BD%20.drawio.png)
+
+## Esquema d'estructura de tecnologies
+
+En aquesta imatge es troba l'estructura de tecnologies que hem utilitzat per a desenvolupar el projecte.
+![Esquema d'estructura de tecnologies](./esquema_estructura_Tecnologies.png)
