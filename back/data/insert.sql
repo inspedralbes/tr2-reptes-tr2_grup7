@@ -23,8 +23,8 @@ INSERT INTO users (email, password_hash, role, is_active, created_at, password_l
 ('admin@workshop.com', '123', 'ADMIN', TRUE, '2026-01-01 10:00:00', '2026-01-01 10:00:00'),
 
 -- Centers (IDs 2-6) - NULL timestamp (Force Change)
-('pedralbes@edu.com', '1234', 'CENTER', TRUE, '2026-01-01', NULL),
 ('a23edstorcev@inspedralbes.cat', '1234', 'CENTER', TRUE, '2026-01-01', NULL),
+('pedralbes@edu.com', '1234', 'CENTER', TRUE, '2026-01-01', NULL),
 ('tecnologic@edu.com','1234', 'CENTER', TRUE, '2026-01-01', NULL),
 ('gracia@edu.com',    '1234', 'CENTER', TRUE, '2026-01-01', NULL),
 ('treball@edu.com',   '1234', 'CENTER', TRUE, '2026-01-01', NULL),
