@@ -38,7 +38,7 @@ el projecte està en producció en el domini:
 
 ## 🔗 Enllaços de Gestió del Projecte
 
-Aquí podeu trobar més informació sobre la nostra planificació i disseny:
+Aquí podeu trobar més informació sobre la nostra planificació i disseny del projecte:
 
 <div align="center">
   <p>
